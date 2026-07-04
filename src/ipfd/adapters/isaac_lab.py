@@ -1,14 +1,23 @@
 """Isaac Lab adapter: collect a Franka pick-and-place rollout with a recovery probe.
 
-STATUS: written against the standard Isaac Lab manager-based RL env API, but
-**not yet verified on a live Isaac Lab install**. It is import-gated so the rest of
-IPFD (and CI) runs without Isaac Lab or a GPU. The two touchpoints most likely to
-need adjustment for your Isaac Lab version are flagged inline with ``VERIFY:``:
+STATUS: **runtime-verified on Isaac Lab 4.5.22** (env ``Isaac-Lift-Cube-Franka-v0``,
+single env, RTX 5070) via ``scripts/verify_isaac_runtime.py`` -> ``REAL_COMPATIBLE``.
+Confirmed against the live sim, no mocks:
 
-  1. how a single environment's full simulation state is saved and restored
-     (needed for the recovery probe), and
-  2. the exact keys of the observation dict and the success/termination signal.
+  * ``env.reset(seed=...) -> (obs_dict, info)`` and the 5-tuple ``env.step``;
+  * the observation group key is ``"policy"`` (shape ``(1, 36)``); ``_extract_obs``
+    yields a flat ``float64`` vector;
+  * both simulation-state touchpoints EXIST and execute: ``env.unwrapped.scene``
+    exposes ``get_state()`` and ``reset_to(state)``, so the recovery probe runs
+    real save/restore.
 
+Still open (a policy/oracle gap, NOT an API gap): meaningful PRE-failure PoNR and
+imminence need a TRAINED policy plus a real recovery controller. With an untrained
+policy the recovery oracle never recovers, ``recovery_success`` is all-False, and
+PoNR degenerates to step 0. The ``VERIFY:`` tags below mark the (now-confirmed)
+sim touchpoints; keep them, since exact APIs can shift between Isaac Lab versions.
+
+It is import-gated so the rest of IPFD (and CI) runs without Isaac Lab or a GPU.
 Everything above this layer (detectors, PoNR, metrics, report, viz) is stable and
 tested; only this file talks to the simulator.
 

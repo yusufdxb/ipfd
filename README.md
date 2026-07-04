@@ -136,10 +136,28 @@ rollout = collect_rollout(env, my_policy, recovery_controller=my_recovery, seed=
 print(build_report(rollout).summary())
 ```
 
-> `adapters/isaac_lab.py` is written against the standard manager-based Isaac Lab env
-> API but is **not yet verified on a live install**. Two touchpoints are flagged
-> inline with `VERIFY:` — sim state save/restore (for the recovery probe) and the
-> observation/success keys. Everything above the adapter is tested and stable.
+> `adapters/isaac_lab.py` is **runtime-verified on Isaac Lab 4.5.22** with
+> `Isaac-Lift-Cube-Franka-v0` on a live GPU — see
+> [`scripts/verify_isaac_runtime.py`](scripts/verify_isaac_runtime.py), which reports
+> `overall_verdict: REAL_COMPATIBLE`. Both flagged touchpoints are confirmed against
+> the real sim: the observation key is `policy` (shape `(1, 36)`), and
+> `env.unwrapped.scene` exposes `get_state()` / `reset_to()`, so the recovery probe
+> runs real state save/restore. What is *not* yet shown: **meaningful** pre-failure
+> PoNR/imminence needs a trained policy plus a real recovery controller — with an
+> untrained oracle the probe never recovers and PoNR degenerates to step 0. That is a
+> policy/oracle gap, not an API gap.
+
+### Verifying it yourself
+
+```bash
+OMNI_KIT_ACCEPT_EULA=YES \
+  ~/Sim/isaac-sim-venv/bin/python scripts/verify_isaac_runtime.py --headless
+```
+
+The script launches a live Franka env, drives it through IPFD's own adapter (no
+mocks), runs `build_report` on the real rollout, and prints a machine-readable
+`IPFD_RUNTIME_COMPATIBILITY` block. It detects every API assumption at runtime rather
+than trusting it.
 
 ---
 
