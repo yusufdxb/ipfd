@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+# NOTE: examples/figures/*.png|json ARE committed — they are the README hero image
+# and deliverable "example runs with saved plots". Regenerate via run_synthetic.py.
