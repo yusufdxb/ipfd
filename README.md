@@ -208,6 +208,24 @@ Two further scripts stress the recovery probe that PoNR depends on:
   the block is the persistent `reset_to` side effect, measured against ground
   truth.
 
+- [`scripts/verify_multienv_isolation.py`](scripts/verify_multienv_isolation.py)
+  — tests whether the poison is *global* or *per-env*. Measured: churning env 1
+  through 14 `reset_to` calls leaves **env 0 bit-identical** (lift `+0.320` with
+  and without). So `reset_to` is **local to the reset env** — the poison only
+  bites `num_envs=1` because there's nowhere else to run. `isolation_viable: YES`.
+
+- [`scripts/verify_pnor_isolated.py`](scripts/verify_pnor_isolated.py) — uses
+  that isolation: primary rollout recorded in env 0 (never reset), recovery
+  probes farmed to env 1. This **solves the corruption/poison block** — the
+  primary is now pristine and lifts (`success=True`), and grasped-region recovery
+  verdicts are correct with a *continue-the-policy* oracle. **Still honest-partial**
+  (`meaningful_pnor_detected: NO`): pre-grasp recovery probes stall in the
+  approach phase because `reset_to` hands the probe a cold PhysX contact state
+  that derails the scripted grasp's sub-cm alignment (`--debug_step` traces it).
+  IPFD's analysis, single-step restore, and env-isolated probing are sound; the
+  residual blocker is recovery-oracle robustness to a cold-contact restart during
+  fine manipulation — a controller property, not an IPFD gap.
+
 ---
 
 ## Metrics (the minimal set)
