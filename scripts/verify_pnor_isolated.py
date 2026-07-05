@@ -26,36 +26,47 @@ Run:
     ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_isolated.py --headless
     # add --debug_step T to trace a single nominal probe verbosely
 
-RESULT (2026-07-05, Isaac Lab 4.5.22, RTX 5070) -- major progress, honest partial:
+RESULT (2026-07-05, Isaac Lab 4.5.22, RTX 5070):
 
   Env isolation SOLVES the corruption/poison problem that blocked every earlier
   attempt:
-    * The primary rollout in env 0 is now PRISTINE and lifts (nominal zmax 0.341,
+    * The primary rollout in env 0 is PRISTINE and lifts (nominal zmax 0.341,
       success=True) -- it is never reset_to, so it is never poisoned.
     * Per-env reset_to is local (verify_multienv_isolation.py): env 0 stays
       bit-identical while env 1 is churned through reset_to.
     * get_state() poses are ABSOLUTE, so a checkpoint must be origin-shifted into
       the probe env's cell (else the two arms collide).
     * The recovery oracle CONTINUES the primary policy (restored SM progress)
-      rather than restarting from REST (which would drop a held cube). With this,
-      GRASPED-region recovery verdicts are correct (post-grasp checkpoints -> lift
-      -> True).
+      rather than restarting from REST (which would drop a held cube).
 
-  Remaining honest gap: meaningful_pnor_detected = NO. Early, PRE-GRASP
-  checkpoints stall in APPROACH_OBJECT: --debug_step 30 shows the probe SM reaches
-  state 2 and never grasps (ee never gets within the 1 cm threshold; it nudges the
-  cube instead). Cause: reset_to hands the probe a COLD PhysX contact/solver state
-  (the same limitation measured in verify_probe_transparency.py), which is enough
-  to derail the scripted grasp's sub-centimetre approach. So pre-grasp recovery
-  verdicts are unreliable and the True->False sequence is not clean enough for
-  point_of_no_return to fire.
+  MEANINGFUL PoNR ACHIEVED with --auto_doom (grasped-region injection). Run
+  verbatim:
+    nominal:  T=150 z0=0.021 zmax=0.341 success=True; lift onset step 123.
+    auto_doom: grasped-region doom placed at step 131 (onset+8).
+    perturbed@131: cube teleported out of reach AFTER it is grasped/lifted.
+      raw probe verdicts ... 126:T 127:T 128:T 129:T 130:T 131:T 132:T 133:T
+      134:T 135:T 136:T 137:T 138:F 139:F ... 149:F
+      PoNR=138, injected_doom=131 (near=True, tol=10),
+      PoNR lead over observable failure = +0.22s.
+    => IPFD_ISOLATED_PNOR_STATUS: meaningful_pnor_detected YES;
+       ponr_localizes_at_injected_doom YES; overall_status VERIFIED.
+
+  Why grasped-region works and pre-grasp does not: the continue-the-policy oracle
+  is reliable exactly where the primary is already grasped/lifted, so pre-doom
+  checkpoints recover (True) and post-doom checkpoints do not (False), giving a
+  clean True->False flip that point_of_no_return localises at the injected doom.
+  PRE-GRASP checkpoints remain noisy (see the scattered early verdicts, e.g. a
+  stray 70:T among F's): --debug_step 30 shows the probe SM stalls in
+  APPROACH_OBJECT because reset_to hands it a COLD PhysX contact/solver state (the
+  verify_probe_transparency.py limitation), derailing the scripted grasp's sub-cm
+  approach. So the meaningful-PoNR claim is bounded to failures the recovery
+  oracle can actually adjudicate -- honest and stated, not hidden.
 
   Bottom line: IPFD's analysis layer, single-step restore, and env-isolated
-  probing are all sound; the residual blocker is recovery-oracle robustness to a
-  cold-contact restart during fine manipulation -- a controller/policy property,
-  not an IPFD infrastructure gap. A concrete next step (untried here, needs
-  go-ahead): inject the failure in the GRASPED region (e.g. drop the cube after
-  lift) where the continue-oracle is already reliable, to get a clean PoNR flip.
+  probing are sound, and PoNR is MEANINGFUL under a real (scripted-competent)
+  policy for grasped-region failures. The one remaining limitation is recovery-
+  oracle robustness to a cold-contact restart during fine PRE-grasp manipulation
+  -- a controller/policy property, not an IPFD infrastructure gap.
 """
 
 from __future__ import annotations
@@ -75,6 +86,10 @@ parser.add_argument("--env_id", default="Isaac-Lift-Cube-Franka-IK-Abs-v0")
 parser.add_argument("--num_probe_envs", type=int, default=1)
 parser.add_argument("--max_steps", type=int, default=150)
 parser.add_argument("--perturb_step", type=int, default=60)
+parser.add_argument("--auto_doom", action="store_true",
+                    help="Ignore --perturb_step; doom = nominal lift onset + --doom_margin "
+                         "(grasped region, where the continue-oracle is reliable).")
+parser.add_argument("--doom_margin", type=int, default=8)
 parser.add_argument("--probe_stride", type=int, default=10)
 parser.add_argument("--probe_budget", type=int, default=140)
 parser.add_argument("--lift_thresh", type=float, default=0.04)
@@ -260,6 +275,7 @@ def run_case(env, name, dt, dev, n, seed, perturb_step, acc):
         lead = (rollout.t_failure - ponr) * dt if rollout.t_failure is not None else None
         log(f"    -> PoNR {ponr} vs injected doom {perturb_step} (near={near}, tol={args.probe_stride}); "
             f"PoNR lead over observable failure = {lead:+.2f}s" if lead is not None else "")
+    return {"objz": objz, "z0": z0, "T": T}
 
 
 def main() -> None:
@@ -301,13 +317,29 @@ def main() -> None:
                     log(f"    -> RECOVERED at k={k}")
                     break
                 action = probe_action(env, rsm, des_or, dev)
-            env.close(); env = None
+            env.close()
+            env = None
             print("DEBUG_DONE", flush=True)
             return
 
-        run_case(env, "nominal", dt, dev, n, seed=0, perturb_step=None, acc=acc)
-        run_case(env, f"perturbed@{args.perturb_step}", dt, dev, n, seed=1,
-                 perturb_step=args.perturb_step, acc=acc)
+        nom = run_case(env, "nominal", dt, dev, n, seed=0, perturb_step=None, acc=acc)
+
+        doom_step = args.perturb_step
+        if args.auto_doom:
+            objz, z0, T = nom["objz"], nom["z0"], nom["T"]
+            lifted = [t for t in range(T) if objz[t] > z0 + args.lift_thresh]
+            if not lifted:
+                log("auto_doom: nominal never lifted -> cannot place a grasped-region doom; "
+                    "falling back to --perturb_step.")
+            else:
+                onset = lifted[0]
+                doom_step = min(onset + args.doom_margin, T - 2)
+                log(f"auto_doom: nominal lift onset step {onset} (objz {objz[onset]:.3f}); "
+                    f"grasped-region doom placed at step {doom_step} (onset+{args.doom_margin}).")
+
+        perturbed_seed = 0 if args.auto_doom else 1
+        run_case(env, f"perturbed@{doom_step}", dt, dev, n, seed=perturbed_seed,
+                 perturb_step=doom_step, acc=acc)
 
         status["meaningful_pnor_detected"] = "YES" if acc["meaningful_ponr"] else "NO"
         status["recovery_oracle_non_degenerate"] = "YES" if (acc["any_true"] and acc["any_false"]) else "NO"

@@ -217,14 +217,21 @@ Two further scripts stress the recovery probe that PoNR depends on:
 - [`scripts/verify_pnor_isolated.py`](scripts/verify_pnor_isolated.py) — uses
   that isolation: primary rollout recorded in env 0 (never reset), recovery
   probes farmed to env 1. This **solves the corruption/poison block** — the
-  primary is now pristine and lifts (`success=True`), and grasped-region recovery
-  verdicts are correct with a *continue-the-policy* oracle. **Still honest-partial**
-  (`meaningful_pnor_detected: NO`): pre-grasp recovery probes stall in the
-  approach phase because `reset_to` hands the probe a cold PhysX contact state
-  that derails the scripted grasp's sub-cm alignment (`--debug_step` traces it).
-  IPFD's analysis, single-step restore, and env-isolated probing are sound; the
-  residual blocker is recovery-oracle robustness to a cold-contact restart during
-  fine manipulation — a controller property, not an IPFD gap.
+  primary is pristine and lifts (`success=True`), and recovery verdicts use a
+  *continue-the-policy* oracle. Run with `--auto_doom` it reaches
+  **`meaningful_pnor_detected: YES` / `overall_status: VERIFIED`**: the failure is
+  injected in the **grasped region** (cube teleported out of reach at step 131,
+  eight steps after the nominal lift onset), and the recovery verdicts flip
+  cleanly — checkpoints 126–137 recover (`True`), 138 onward do not (`False`) — so
+  `point_of_no_return` fires at **step 138**, localising at the injected doom
+  (within tolerance) with a **+0.22 s lead** over observable failure. The claim is
+  bounded honestly: it holds where the recovery oracle can adjudicate. **Pre-grasp
+  checkpoints stay noisy** — `reset_to` hands the probe a cold PhysX contact state
+  that derails the scripted grasp's sub-cm approach (`--debug_step 30` traces the
+  stall), so a stray early `True` appears among the pre-grasp `False`s. IPFD's
+  analysis, single-step restore, and env-isolated probing are sound; the only
+  residual limitation is recovery-oracle robustness to a cold-contact restart
+  during fine *pre-grasp* manipulation — a controller property, not an IPFD gap.
 
 ---
 
