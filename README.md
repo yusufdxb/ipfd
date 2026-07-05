@@ -159,6 +159,28 @@ mocks), runs `build_report` on the real rollout, and prints a machine-readable
 `IPFD_RUNTIME_COMPATIBILITY` block. It detects every API assumption at runtime rather
 than trusting it.
 
+### State-restore fidelity and the recovery-probe limitation
+
+Two further scripts stress the recovery probe that PoNR depends on:
+
+- [`scripts/verify_state_fidelity.py`](scripts/verify_state_fidelity.py) —
+  save → replay a fixed action → `reset_to` → replay again. On Isaac Lab 4.5.22
+  the round trip is **bit-exact**: write-back, observation, joint-state and
+  object-state diffs are all `0.0`, reward diff `~1e-6`. Single-step state restore
+  is faithful. **`STATE_RESTORE_FIDELITY: PASS`.**
+
+- [`scripts/verify_real_policy.py`](scripts/verify_real_policy.py) — drives IPFD
+  with a *competent* policy (Isaac Lab's scripted pick-and-lift state machine;
+  no trained checkpoint exists on the test machine). **Honest result:** run
+  uninterrupted (`--diagnose`) the policy lifts the cube on every seed, but with
+  the recovery probe interleaved in the *same* env, the primary rollout is
+  corrupted and PoNR degenerates. Single-step restore is exact, yet repeatedly
+  restoring across a *contact-rich* grasp does not preserve the primary
+  trajectory. So under a real policy, **PoNR is not yet meaningful in the loop**
+  (`meaningful_pnor_detected: NO`) — an open limitation of the recovery-probe
+  design, not of the detectors or analysis layer. See the `RESULT` block in that
+  script for the full accounting.
+
 ---
 
 ## Metrics (the minimal set)
