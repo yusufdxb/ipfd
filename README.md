@@ -181,6 +181,33 @@ Two further scripts stress the recovery probe that PoNR depends on:
   design, not of the detectors or analysis layer. See the `RESULT` block in that
   script for the full accounting.
 
+- [`scripts/verify_probe_transparency.py`](scripts/verify_probe_transparency.py)
+  — **root-causes** the above. It injects a probe before contact vs after the
+  grasp and compares the primary trajectory with vs without the probe. Measured
+  result: the entity **write-back diff is `0.0` in both cases** (`reset_to` does
+  restore joint/object pose and velocity bit-exactly, even post-grasp), yet the
+  post-grasp trajectory diverges *immediately* (A-vs-B observation diff `1.2`,
+  onset step 0) while the pre-contact probe is transparent. The unrestored state
+  is therefore the **PhysX contact-manifold / solver warm-start cache**, which is
+  not part of Isaac Lab's `scene.get_state()`. `root_cause:
+  CONTACT_STATE_NOT_RESTORED`.
+
+- [`scripts/verify_pnor_decoupled.py`](scripts/verify_pnor_decoupled.py) — the
+  implied fix was to **decouple** probing from the primary (record the primary
+  once, evaluate `recovery_success[t]` in separate passes that never resume it).
+  Building and running it surfaced a **deeper, directly confirmed blocker**:
+  `reset_to_poisons_env: YES`. A fresh episode lifts the cube (`zmax 0.341`);
+  after *one* `reset_to` probe followed by `env.reset(seed=0)`, the same seed no
+  longer lifts (`zmax 0.045`). So a single `reset_to()` **permanently corrupts
+  the PhysX sim and the corruption survives `env.reset()`** — which poisons
+  pass-2 probes for each other and invalidates their verdicts. **PoNR is
+  therefore not meaningful in a single shared env instance in this Isaac Lab
+  version** (`meaningful_pnor_detected: NO`); a correct implementation needs env
+  *isolation* (a separate sim instance per probe) or a `reset_to` that also
+  restores PhysX solver/contact state. Single-step restore remains bit-exact;
+  the block is the persistent `reset_to` side effect, measured against ground
+  truth.
+
 ---
 
 ## Metrics (the minimal set)
