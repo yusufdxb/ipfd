@@ -26,7 +26,7 @@ Run:
     ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_isolated.py --headless
     # add --debug_step T to trace a single nominal probe verbosely
 
-RESULT (2026-07-05, Isaac Lab 4.5.22, RTX 5070):
+RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU):
 
   Env isolation SOLVES the corruption/poison problem that blocked every earlier
   attempt:
@@ -118,6 +118,7 @@ sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
 from _lift_sm import PickAndLiftSm, sm_action  # noqa: E402
 from ipfd import build_report  # noqa: E402
+from ipfd.adapters.isaac_lab import offset_root_positions, slice_state  # noqa: E402
 from ipfd.types import Rollout  # noqa: E402
 from ipfd.ponr import point_of_no_return  # noqa: E402
 
@@ -136,28 +137,6 @@ def n_identity(n: int, dev) -> torch.Tensor:
 
 def obj_z(env, i: int) -> float:
     return float(wp.to_torch(env.unwrapped.scene["object"].data.root_pos_w)[i, 2].item())
-
-
-def slice_state(state, idx):
-    if torch.is_tensor(state):
-        return state[idx].clone()
-    if isinstance(state, dict):
-        return {k: slice_state(v, idx) for k, v in state.items()}
-    if isinstance(state, (list, tuple)):
-        return type(state)(slice_state(v, idx) for v in state)
-    return state
-
-
-def offset_root_positions(state, delta):
-    """get_state() poses are ABSOLUTE world coords. To drop env 0's checkpoint into
-    the probe env's own cell (not on top of env 0), shift every root position by
-    delta = origin(probe) - origin(0). Joints/velocities are origin-independent."""
-    s = slice_state(state, slice(None))  # deep clone
-    for grp in ("articulation", "rigid_object"):
-        for _name, fields in s.get(grp, {}).items():
-            if isinstance(fields, dict) and "root_pose" in fields:
-                fields["root_pose"][:, :3] += delta
-    return s
 
 
 def displace_env0(env, push: float) -> None:

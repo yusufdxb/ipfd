@@ -27,7 +27,7 @@ Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
     ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_decoupled.py --headless
 
-RESULT (2026-07-05, Isaac Lab 4.5.22, RTX 5070) -- honest, negative:
+RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, negative:
 
   The decoupling is necessary but NOT sufficient, because of a deeper, directly
   confirmed Isaac Lab behaviour: ``reset_to_poisons_env: YES``. A fresh episode

@@ -60,9 +60,12 @@ import isaaclab_tasks  # noqa: E402,F401
 from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
+_REPO = os.path.dirname(_HERE)
 sys.path.insert(0, _HERE)
+sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
 from _lift_sm import PickAndLiftSm, sm_action  # noqa: E402
+from ipfd.adapters.isaac_lab import slice_state  # noqa: E402
 
 
 def log(msg: str) -> None:
@@ -77,17 +80,6 @@ def n_identity(n: int, dev) -> torch.Tensor:
 
 def obj_z_all(env) -> torch.Tensor:
     return wp.to_torch(env.unwrapped.scene["object"].data.root_pos_w)[:, 2].clone()
-
-
-def slice_state(state, idx):
-    """reset_to(env_ids) expects the state already sized to len(env_ids); slice it."""
-    if torch.is_tensor(state):
-        return state[idx].clone()
-    if isinstance(state, dict):
-        return {k: slice_state(v, idx) for k, v in state.items()}
-    if isinstance(state, (list, tuple)):
-        return type(state)(slice_state(v, idx) for v in state)
-    return state
 
 
 def rest_height(objz_hist: list[torch.Tensor], n: int) -> torch.Tensor:

@@ -30,7 +30,7 @@ Run:
     ~/Sim/isaac-sim-venv/bin/python scripts/verify_real_policy.py --headless
     # add --diagnose to run the scripted policy uninterrupted (sanity check)
 
-RESULT (2026-07-04, Isaac Lab 4.5.22, RTX 5070) -- honest, not the hoped-for one:
+RESULT (2026-07-04, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, not the hoped-for one:
 
   * ``--diagnose`` (scripted policy, NO probes): lifts the cube on every seed
     (+0.23..+0.41 m, reaches all SM states 0->4). The controller is competent.

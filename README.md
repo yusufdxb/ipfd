@@ -128,24 +128,37 @@ plot_timeline(rollout, report, "timeline.png")
 
 ### With a real Franka rollout (needs Isaac Lab + a GPU)
 
+The recovery probe uses **environment isolation** and therefore requires
+`num_envs >= 2`: env 0 is the pristine primary (never `reset_to`), env 1 is the
+probe cell. This is the design proven correct by the evidence chain below; the
+single-env probe it replaces was measured to poison the sim and has been removed.
+
 ```python
 from ipfd.adapters.isaac_lab import collect_rollout
 from ipfd import build_report
 
+# env created with num_envs >= 2
 rollout = collect_rollout(env, my_policy, recovery_controller=my_recovery, seed=0)
 print(build_report(rollout).summary())
 ```
 
 > `adapters/isaac_lab.py` is **runtime-verified on Isaac Lab 4.5.22** with
-> `Isaac-Lift-Cube-Franka-v0` on a live GPU — see
-> [`scripts/verify_isaac_runtime.py`](scripts/verify_isaac_runtime.py), which reports
-> `overall_verdict: REAL_COMPATIBLE`. Both flagged touchpoints are confirmed against
-> the real sim: the observation key is `policy` (shape `(1, 36)`), and
-> `env.unwrapped.scene` exposes `get_state()` / `reset_to()`, so the recovery probe
-> runs real state save/restore. What is *not* yet shown: **meaningful** pre-failure
-> PoNR/imminence needs a trained policy plus a real recovery controller — with an
-> untrained oracle the probe never recovers and PoNR degenerates to step 0. That is a
-> policy/oracle gap, not an API gap.
+> `Isaac-Lift-Cube-Franka-IK-Abs-v0` on a live GPU. The env-isolated probe reaches
+> `overall_status: VERIFIED` end-to-end in
+> [`scripts/verify_pnor_grasped.py`](scripts/verify_pnor_grasped.py): for a
+> grasped-region gripper-slip failure the recovery verdicts flip cleanly and PoNR
+> localises at the injected slip with a **+0.42 s lead** over observable failure,
+> while a live assertion shows the probe never perturbs the primary (max env-0 pose
+> delta `0.00e+00` across 51 probe resets).
+>
+> **Honest bounds.** The competent policy is Isaac Lab's *scripted* pick-lift state
+> machine (no trained checkpoint), so the internal detectors (entropy / embedding
+> drift) have no signal to fire on and the demonstrated result is PoNR, not
+> detection. The failure is injected in the grasped region because that is where the
+> recovery oracle can adjudicate; **pre-grasp** checkpoints stay noisy (a cold PhysX
+> contact state derails the scripted sub-cm re-grasp). Closing these two gaps — a
+> trained policy, and detection that fires before PoNR — is the roadmap, not a
+> shipped claim.
 
 ### Verifying it yourself
 
@@ -232,6 +245,15 @@ Two further scripts stress the recovery probe that PoNR depends on:
   analysis, single-step restore, and env-isolated probing are sound; the only
   residual limitation is recovery-oracle robustness to a cold-contact restart
   during fine *pre-grasp* manipulation — a controller property, not an IPFD gap.
+
+- [`scripts/verify_pnor_grasped.py`](scripts/verify_pnor_grasped.py) — the
+  **terminal, self-contained demonstration**, and the mechanic the packaged
+  `collect_rollout` now uses. A *different* failure model (a physical gripper
+  slip: force the gripper open once lifted so the cube drops under gravity, no
+  teleport) reaches the **same PoNR** and emits a `DUAL_PROBE_STATUS` block with
+  `overall_status: VERIFIED`. It also asserts primary integrity live: across 51
+  probe `reset_to` calls into env 1, **max env-0 pose delta = `0.00e+00` m**. This
+  is the run to reproduce first; the scripts above are its evidence trail.
 
 ---
 
