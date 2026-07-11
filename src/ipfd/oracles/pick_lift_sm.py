@@ -1,12 +1,16 @@
-"""Vendored Isaac Lab scripted pick-and-lift state machine (importable).
+"""Vendored Isaac Lab scripted pick-and-lift state machine (installable).
 
 Copyright (c) 2022-2026, The Isaac Lab Project Developers. BSD-3-Clause.
-Reproduced verbatim from scripts/environments/state_machine/lift_cube_sm.py so
-the scripted policy is the proven reference controller, not a reimplementation.
+Reproduced verbatim from ``scripts/environments/state_machine/lift_cube_sm.py`` in
+Isaac Lab so the scripted policy is the proven reference recovery controller, not a
+reimplementation that might silently mis-grasp. This is the recovery *oracle* whose
+success/failure defines the Point of No Return (see :mod:`ipfd.ponr`).
 
-IMPORTANT: import this module ONLY AFTER AppLauncher has launched the sim and
-``warp`` is initialised -- the ``@wp.kernel`` / ``wp.constant`` at module scope
-compile against the live warp runtime, exactly as in the reference script.
+IMPORTANT: this module imports ``torch`` and ``warp`` at module scope and compiles
+its ``@wp.kernel`` / ``wp.constant`` against the live warp runtime. Import it ONLY
+AFTER Isaac Lab's ``AppLauncher`` has launched the sim -- exactly as in the
+reference script. It is therefore deliberately *not* re-exported from
+``ipfd.oracles.__init__``, so the pure analysis layer stays GPU-free.
 """
 
 from __future__ import annotations

@@ -2,9 +2,9 @@
 
 No trained checkpoint exists on this machine, so the strongest available policy
 (priority: trained -> scripted -> heuristic) is Isaac Lab's own scripted
-pick-and-lift state machine. Its warp kernel + ``PickAndLiftSm`` class are
-vendored verbatim below (BSD-3-Clause, Isaac Lab) so the controller is exactly
-the proven reference, not a reimplementation that might silently mis-grasp.
+pick-and-lift state machine, imported from :mod:`ipfd.oracles.pick_lift_sm`
+(BSD-3-Clause, Isaac Lab, reproduced verbatim) so the controller is exactly the
+proven reference, not a reimplementation that might silently mis-grasp.
 
 Experiment (env ``Isaac-Lift-Cube-Franka-IK-Abs-v0``, single env, real physics):
 
@@ -98,170 +98,16 @@ from ipfd.ponr import point_of_no_return  # noqa: E402
 wp.init()
 
 
-# ======================================================================
-# Vendored from Isaac Lab scripts/environments/state_machine/lift_cube_sm.py
-# Copyright (c) 2022-2026, The Isaac Lab Project Developers. BSD-3-Clause.
-# Reproduced verbatim so the scripted policy is the proven reference controller.
-# ======================================================================
-class GripperState:
-    OPEN = wp.constant(1.0)
-    CLOSE = wp.constant(-1.0)
-
-
-class PickSmState:
-    REST = wp.constant(0)
-    APPROACH_ABOVE_OBJECT = wp.constant(1)
-    APPROACH_OBJECT = wp.constant(2)
-    GRASP_OBJECT = wp.constant(3)
-    LIFT_OBJECT = wp.constant(4)
-
-
-class PickSmWaitTime:
-    REST = wp.constant(0.2)
-    APPROACH_ABOVE_OBJECT = wp.constant(0.5)
-    APPROACH_OBJECT = wp.constant(0.6)
-    GRASP_OBJECT = wp.constant(0.3)
-    LIFT_OBJECT = wp.constant(1.0)
-
-
-@wp.func
-def distance_below_threshold(current_pos: wp.vec3, desired_pos: wp.vec3, threshold: float) -> bool:
-    return wp.length(current_pos - desired_pos) < threshold
-
-
-@wp.kernel
-def infer_state_machine(
-    dt: wp.array(dtype=float),
-    sm_state: wp.array(dtype=int),
-    sm_wait_time: wp.array(dtype=float),
-    ee_pose: wp.array(dtype=wp.transform),
-    object_pose: wp.array(dtype=wp.transform),
-    des_object_pose: wp.array(dtype=wp.transform),
-    des_ee_pose: wp.array(dtype=wp.transform),
-    gripper_state: wp.array(dtype=float),
-    offset: wp.array(dtype=wp.transform),
-    position_threshold: float,
-):
-    tid = wp.tid()
-    state = sm_state[tid]
-    if state == PickSmState.REST:
-        des_ee_pose[tid] = ee_pose[tid]
-        gripper_state[tid] = GripperState.OPEN
-        if sm_wait_time[tid] >= PickSmWaitTime.REST:
-            sm_state[tid] = PickSmState.APPROACH_ABOVE_OBJECT
-            sm_wait_time[tid] = 0.0
-    elif state == PickSmState.APPROACH_ABOVE_OBJECT:
-        des_ee_pose[tid] = wp.transform_multiply(offset[tid], object_pose[tid])
-        gripper_state[tid] = GripperState.OPEN
-        if distance_below_threshold(
-            wp.transform_get_translation(ee_pose[tid]),
-            wp.transform_get_translation(des_ee_pose[tid]),
-            position_threshold,
-        ):
-            if sm_wait_time[tid] >= PickSmWaitTime.APPROACH_OBJECT:
-                sm_state[tid] = PickSmState.APPROACH_OBJECT
-                sm_wait_time[tid] = 0.0
-    elif state == PickSmState.APPROACH_OBJECT:
-        des_ee_pose[tid] = object_pose[tid]
-        gripper_state[tid] = GripperState.OPEN
-        if distance_below_threshold(
-            wp.transform_get_translation(ee_pose[tid]),
-            wp.transform_get_translation(des_ee_pose[tid]),
-            position_threshold,
-        ):
-            if sm_wait_time[tid] >= PickSmWaitTime.APPROACH_OBJECT:
-                sm_state[tid] = PickSmState.GRASP_OBJECT
-                sm_wait_time[tid] = 0.0
-    elif state == PickSmState.GRASP_OBJECT:
-        des_ee_pose[tid] = object_pose[tid]
-        gripper_state[tid] = GripperState.CLOSE
-        if sm_wait_time[tid] >= PickSmWaitTime.GRASP_OBJECT:
-            sm_state[tid] = PickSmState.LIFT_OBJECT
-            sm_wait_time[tid] = 0.0
-    elif state == PickSmState.LIFT_OBJECT:
-        des_ee_pose[tid] = des_object_pose[tid]
-        gripper_state[tid] = GripperState.CLOSE
-        if distance_below_threshold(
-            wp.transform_get_translation(ee_pose[tid]),
-            wp.transform_get_translation(des_ee_pose[tid]),
-            position_threshold,
-        ):
-            if sm_wait_time[tid] >= PickSmWaitTime.LIFT_OBJECT:
-                sm_state[tid] = PickSmState.LIFT_OBJECT
-                sm_wait_time[tid] = 0.0
-    sm_wait_time[tid] = sm_wait_time[tid] + dt[tid]
-
-
-class PickAndLiftSm:
-    def __init__(self, dt, num_envs, device="cpu", position_threshold=0.01):
-        self.dt = float(dt)
-        self.num_envs = num_envs
-        self.device = device
-        self.position_threshold = position_threshold
-        self.sm_dt = torch.full((self.num_envs,), self.dt, device=self.device)
-        self.sm_state = torch.full((self.num_envs,), 0, dtype=torch.int32, device=self.device)
-        self.sm_wait_time = torch.zeros((self.num_envs,), device=self.device)
-        self.des_ee_pose = torch.zeros((self.num_envs, 7), device=self.device)
-        self.des_gripper_state = torch.full((self.num_envs,), 0.0, device=self.device)
-        self.offset = torch.zeros((self.num_envs, 7), device=self.device)
-        self.offset[:, 2] = 0.1
-        self.offset[:, -1] = 1.0
-        self.sm_dt_wp = wp.from_torch(self.sm_dt, wp.float32)
-        self.sm_state_wp = wp.from_torch(self.sm_state, wp.int32)
-        self.sm_wait_time_wp = wp.from_torch(self.sm_wait_time, wp.float32)
-        self.des_ee_pose_wp = wp.from_torch(self.des_ee_pose, wp.transform)
-        self.des_gripper_state_wp = wp.from_torch(self.des_gripper_state, wp.float32)
-        self.offset_wp = wp.from_torch(self.offset, wp.transform)
-
-    def reset_idx(self, env_ids=None):
-        if env_ids is None:
-            env_ids = slice(None)
-        self.sm_state[env_ids] = 0
-        self.sm_wait_time[env_ids] = 0.0
-
-    def compute(self, ee_pose, object_pose, des_object_pose):
-        ee_pose_wp = wp.from_torch(ee_pose.contiguous(), wp.transform)
-        object_pose_wp = wp.from_torch(object_pose.contiguous(), wp.transform)
-        des_object_pose_wp = wp.from_torch(des_object_pose.contiguous(), wp.transform)
-        wp.launch(
-            kernel=infer_state_machine,
-            dim=self.num_envs,
-            inputs=[
-                self.sm_dt_wp, self.sm_state_wp, self.sm_wait_time_wp,
-                ee_pose_wp, object_pose_wp, des_object_pose_wp,
-                self.des_ee_pose_wp, self.des_gripper_state_wp, self.offset_wp,
-                self.position_threshold,
-            ],
-            device=self.device,
-        )
-        return torch.cat([self.des_ee_pose, self.des_gripper_state.unsqueeze(-1)], dim=-1)
-# ======================================================================
-# End vendored code.
-# ======================================================================
+from ipfd.oracles.pick_lift_sm import (  # noqa: E402
+    PickAndLiftSm,
+    sm_action,
+    object_z,
+    identity_action as _identity_action,
+)
 
 
 def log(msg: str) -> None:
     print(f"[real-policy] {msg}", flush=True)
-
-
-def sm_action(env, sm: PickAndLiftSm, desired_orientation: torch.Tensor) -> torch.Tensor:
-    """Compute the scripted action from live env tensors (mirrors the reference)."""
-    ee = env.unwrapped.scene["ee_frame"]
-    origins = env.unwrapped.scene.env_origins
-    tcp_pos = wp.to_torch(ee.data.target_pos_w)[..., 0, :].clone() - origins
-    tcp_quat = wp.to_torch(ee.data.target_quat_w)[..., 0, :].clone()
-    obj = env.unwrapped.scene["object"].data
-    obj_pos = wp.to_torch(obj.root_pos_w) - origins
-    des_pos = env.unwrapped.command_manager.get_command("object_pose")[..., :3]
-    return sm.compute(
-        torch.cat([tcp_pos, tcp_quat], dim=-1),
-        torch.cat([obj_pos, desired_orientation], dim=-1),
-        torch.cat([des_pos, desired_orientation], dim=-1),
-    )
-
-
-def object_z(env) -> float:
-    return float(wp.to_torch(env.unwrapped.scene["object"].data.root_pos_w)[0, 2].item())
 
 
 def displace_object_out_of_reach(env, push: float) -> None:
@@ -272,12 +118,6 @@ def displace_object_out_of_reach(env, push: float) -> None:
     obj.write_root_pose_to_sim(pose)
     vel = wp.to_torch(obj.data.root_vel_w).clone() * 0.0
     obj.write_root_velocity_to_sim(vel)
-
-
-def _identity_action(dev) -> torch.Tensor:
-    a = torch.zeros((1, 8), dtype=torch.float32, device=dev)
-    a[:, 3] = 1.0  # matches reference initial action
-    return a
 
 
 def probe_recovery(env, desired_orientation, z0, dt, dev) -> bool:

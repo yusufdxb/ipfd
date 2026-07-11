@@ -61,10 +61,9 @@ from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(_HERE)
-sys.path.insert(0, _HERE)
 sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
-from _lift_sm import PickAndLiftSm, sm_action  # noqa: E402
+from ipfd.oracles.pick_lift_sm import PickAndLiftSm, sm_action  # noqa: E402
 from ipfd.adapters.isaac_lab import slice_state  # noqa: E402
 
 

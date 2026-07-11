@@ -87,6 +87,8 @@ ipfd/
   adapters/
     synthetic.py        simulator-free rollouts for tests/examples/CI
     isaac_lab.py        real Franka rollout collection + recovery probe (GPU, gated)
+  oracles/
+    pick_lift_sm.py     scripted pick-lift recovery oracle (vendored Isaac Lab, GPU, gated)
 ```
 
 **The analysis layer never imports a simulator.** Detectors, PoNR, metrics, report,
@@ -112,7 +114,7 @@ false-alarm). Combined by a weighted max into a single **failure-imminence score
 
 ```bash
 pip install -e ".[dev]"      # analysis layer only — no GPU, no Isaac Lab
-pytest                        # 24 tests, all pure-NumPy
+pytest                        # 31 tests, all pure-NumPy
 python examples/run_synthetic.py   # prints two reports, writes plots + JSON to examples/figures/
 ```
 

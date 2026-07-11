@@ -65,13 +65,14 @@ import isaaclab_tasks  # noqa: E402,F401
 from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, _HERE)
+_REPO = os.path.dirname(_HERE)
+sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
-from _lift_sm import (  # noqa: E402
+from ipfd.oracles.pick_lift_sm import (  # noqa: E402
     PickAndLiftSm, sm_action, object_z, identity_action,
 )
 
-# SM state ids (from _lift_sm.PickSmState): 0 REST, 1 APPROACH_ABOVE, 2 APPROACH,
+# SM state ids (from PickSmState): 0 REST, 1 APPROACH_ABOVE, 2 APPROACH,
 # 3 GRASP, 4 LIFT. Used as plain ints to avoid warp-version .val attribute risk.
 STATE_APPROACH_ABOVE = 1
 STATE_LIFT = 4
