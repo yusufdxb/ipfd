@@ -112,11 +112,14 @@ def test_collect_rollout_rejects_single_env_probe():
         class unwrapped:
             num_envs = 1
 
-    class _Ctl:
-        def act(self, obs):
-            return np.zeros(8), None, None
+    def _policy(obs):
+        return np.zeros((1, 8))
 
     import pytest
 
     with pytest.raises(ValueError, match="num_envs >= 2"):
-        collect_rollout(_Env(), _Ctl(), recovery_controller=_Ctl())
+        collect_rollout(
+            _Env(), _policy,
+            object_height=lambda e, i: 0.0, rest_height=0.0,
+            recovery_policy=_policy,
+        )

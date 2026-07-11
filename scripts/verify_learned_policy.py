@@ -83,8 +83,6 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_REPO, "src"))
 from ipfd import build_report
-from ipfd.types import Rollout
-from ipfd.adapters.isaac_lab import slice_state, offset_root_positions
 from ipfd.oracles.rsl_rl_policy import load_learned_policy
 
 
@@ -115,105 +113,26 @@ def teleport_out_of_reach(env, push: float) -> None:
     obj.write_root_pose_to_sim(pose, env_ids=torch.tensor([0], device=env.unwrapped.device))
 
 
-def record_primary(env, policy, dt, z_rest, args):
-    """Pass 1: pristine env-0 rollout with the learned policy + injected slip."""
-    obs = env.get_observations()
-    obs_list, act_list, ent_list, emb_list = [], [], [], []
-    states: dict[int, object] = {}
-    slip_step = None
-    t_failure = None
-    success = False
+def make_on_step(env, z_rest):
+    """Failure-injection hook for the library rollout: once the cube is genuinely
+    lifted, either force the gripper open (recoverable slip) or teleport the cube
+    out of reach (irrecoverable). Mirrors the previously verified standalone driver."""
+    trig = {"on": False}
 
-    for step in range(args.max_steps):
-        if step % args.probe_stride == 0:
-            states[step] = slice_state(env.unwrapped.scene.get_state(), slice(0, 1))
-
-        actions = policy(obs)  # captures embedding + entropy for all envs
-        obs_vec = obs["policy"][0].detach().float().cpu().numpy().reshape(-1)
-        act_vec = actions[0].detach().float().cpu().numpy().reshape(-1)
-        emb = policy.last_embedding[0] if policy.last_embedding is not None else None
-        ent = float(policy.last_entropy[0]) if policy.last_entropy is not None else None
-
-        z = obj_z(env, 0)
-        if slip_step is None and z > z_rest + args.lift_margin:
-            slip_step = step  # first genuine lift -> inject the failure here
+    def on_step(step, e, actions):
+        if not trig["on"] and obj_z(e, 0) > z_rest + args.lift_margin:
+            trig["on"] = True
             if args.failure == "teleport":
-                teleport_out_of_reach(env, args.reach_push)
-        if slip_step is not None and args.failure == "slip":
+                teleport_out_of_reach(e, args.reach_push)
+        if trig["on"] and args.failure == "slip":
             force_gripper_open(actions, 0, args.gripper_open)
 
-        obs_list.append(obs_vec)
-        act_list.append(act_vec)
-        if ent is not None:
-            ent_list.append(ent)
-        if emb is not None:
-            emb_list.append(emb)
-
-        obs, _rew, dones, _extra = env.step(actions)
-        policy.reset(dones)
-
-        if slip_step is not None and bool(dones[0].item()):
-            t_failure = step  # object_dropping / timeout became observable
-            break
-
-    T = len(obs_list)
-    if t_failure is None:
-        success = slip_step is not None and obj_z(env, 0) > z_rest + args.lift_margin
-        if not success:
-            t_failure = T - 1
-
-    return {
-        "obs": np.asarray(obs_list),
-        "act": np.asarray(act_list),
-        "ent": np.asarray(ent_list) if len(ent_list) == T else None,
-        "emb": np.asarray(emb_list) if len(emb_list) == T else None,
-        "states": states,
-        "slip_step": slip_step,
-        "t_failure": t_failure,
-        "success": success,
-        "T": T,
-    }
-
-
-def evaluate_recovery(env, policy, states, z_rest, args) -> dict[int, bool]:
-    """Pass 2: env-isolated learned-oracle recovery from each saved checkpoint."""
-    origins = env.unwrapped.scene.env_origins
-    delta = (origins[1] - origins[0]).detach()
-    verdicts: dict[int, bool] = {}
-    loc_max = 0.0
-
-    for step, state in sorted(states.items()):
-        pose_before = wp.to_torch(env.unwrapped.scene["object"].data.root_pose_w)[0].detach().clone()
-        state_probe = offset_root_positions(state, delta)
-        env_ids = torch.tensor([1], device=env.unwrapped.device, dtype=torch.long)
-        env.unwrapped.scene.reset_to(state_probe, env_ids)
-        pose_after = wp.to_torch(env.unwrapped.scene["object"].data.root_pose_w)[0].detach()
-        loc_max = max(loc_max, float((pose_after - pose_before).abs().max().item()))
-        if hasattr(env.unwrapped, "episode_length_buf"):
-            env.unwrapped.episode_length_buf[:] = 0
-
-        obs = env.get_observations()
-        recovered = False
-        for _ in range(args.probe_budget):
-            actions = policy(obs)
-            obs, _rew, dones, _extra = env.step(actions)
-            if obj_z(env, 1) > z_rest + args.lift_margin:
-                recovered = True
-                break
-            if bool(dones[1].item()):
-                break
-        verdicts[step] = recovered
-
-    log(f"probe primary-integrity max env-0 pose delta = {loc_max:.2e} m across {len(states)} resets")
-    return verdicts
-
-
-def forward_fill(verdicts: dict[int, bool], T: int) -> np.ndarray:
-    from ipfd.adapters.isaac_lab import forward_fill_recovery
-    return forward_fill_recovery(verdicts, T)
+    return on_step
 
 
 def main() -> None:
+    from ipfd.adapters.isaac_lab import collect_rollout
+
     torch.manual_seed(args.seed)
     env_cfg = parse_env_cfg(args.task, num_envs=args.num_envs)
     agent_cfg = load_cfg_from_registry(args.task, "rsl_rl_cfg_entry_point")
@@ -233,46 +152,31 @@ def main() -> None:
     z_rest = rest_height(env, 0)
     log(f"settled object rest height (env0) = {z_rest:.3f} m")
 
+    # Drive the PACKAGED library API end-to-end (env-isolated probe + PoNR live here).
     env.reset()
-    prim = record_primary(env, policy, float(env.unwrapped.step_dt), z_rest, args)
-    log(f"primary: T={prim['T']} slip_step={prim['slip_step']} "
-        f"t_failure={prim['t_failure']} success={prim['success']}")
-
-    recovery = None
-    if args.probe and prim["states"]:
-        try:
-            env.reset()
-            verdicts = evaluate_recovery(env, policy, prim["states"], z_rest, args)
-            recovery = forward_fill(verdicts, prim["T"])
-            log(f"recovery verdicts: {sorted(verdicts.items())}")
-        except Exception as exc:  # pragma: no cover
-            log(f"PROBE FAILED (reporting detectors only): {type(exc).__name__}: {exc}")
-
-    rollout = Rollout(
-        observations=prim["obs"],
-        actions=prim["act"],
-        entropy=prim["ent"],
-        embeddings=prim["emb"],
-        success=prim["success"],
-        t_failure=None if prim["success"] else prim["t_failure"],
-        recovery_success=recovery,
-        dt=float(env.unwrapped.step_dt),
-        seed=args.seed,
-        meta={"source": "isaac_lab", "policy": "rsl_rl_ppo", "task": args.task,
-              "checkpoint": os.path.basename(args.checkpoint)},
+    rollout = collect_rollout(
+        env, policy,
+        object_height=obj_z, rest_height=z_rest, lift_threshold=args.lift_margin,
+        recovery_policy=policy if args.probe else None,
+        max_steps=args.max_steps, probe_stride=args.probe_stride, probe_budget=args.probe_budget,
+        on_step=make_on_step(env, z_rest), seed=args.seed,
+        meta={"policy": "rsl_rl_ppo", "checkpoint": os.path.basename(args.checkpoint)},
     )
+    log(f"primary: T={rollout.T} t_failure={rollout.t_failure} success={rollout.success} "
+        f"probe_resets={rollout.meta.get('probe_resets')} "
+        f"primary_integrity_max_delta={rollout.meta.get('primary_integrity_max_delta'):.2e} m")
+
     report = build_report(rollout)
     print(report.summary())
 
     ent = rollout.entropy
     ent_flat = ent is None or (ent.size and float(np.std(ent)) < 1e-6)
     print("\n=== IPFD_LEARNED_STATUS ===")
-    print(f"real_learned_policy: YES")
+    print("real_learned_policy: YES")
     print(f"detector_alarm_fired: {'YES' if report.t_alarm is not None else 'NO'}")
     print(f"entropy_signal: {'FLAT (state-independent std)' if ent_flat else 'VARIES'}")
     print(f"ponr_detected: {'YES' if report.t_ponr is not None else 'NO'}")
-    if report.t_ponr is not None and report.t_failure is not None:
-        print(f"silent_doom_window_s: {report.silent_doom_window_s}")
+    print(f"primary_integrity_max_delta_m: {rollout.meta.get('primary_integrity_max_delta')}")
     print(f"failure_lead_time_s: {report.failure_lead_time_s}")
 
     env.close()
