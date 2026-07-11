@@ -153,14 +153,34 @@ print(build_report(rollout).summary())
 > while a live assertion shows the probe never perturbs the primary (max env-0 pose
 > delta `0.00e+00` across 51 probe resets).
 >
-> **Honest bounds.** The competent policy is Isaac Lab's *scripted* pick-lift state
-> machine (no trained checkpoint), so the internal detectors (entropy / embedding
-> drift) have no signal to fire on and the demonstrated result is PoNR, not
-> detection. The failure is injected in the grasped region because that is where the
-> recovery oracle can adjudicate; **pre-grasp** checkpoints stay noisy (a cold PhysX
-> contact state derails the scripted sub-cm re-grasp). Closing these two gaps — a
-> trained policy, and detection that fires before PoNR — is the roadmap, not a
-> shipped claim.
+> **Honest bounds.** The competent policy above is Isaac Lab's *scripted* pick-lift
+> state machine. The failure is injected in the grasped region because that is where
+> the recovery oracle can adjudicate; **pre-grasp** checkpoints stay noisy (a cold
+> PhysX contact state derails the scripted sub-cm re-grasp).
+
+### On a real trained (learned) policy
+
+The scripted result above is now corroborated on an actual **learned** policy — the
+official NVIDIA-published `rsl_rl` PPO checkpoint for `Isaac-Lift-Cube-Franka-v0`
+(100 % lift success, mean lift 0.585 m), driven through
+[`scripts/verify_learned_policy.py`](scripts/verify_learned_policy.py) via the
+[`ipfd.oracles.rsl_rl_policy`](src/ipfd/oracles/rsl_rl_policy.py) adapter. Measured
+on Isaac Lab 4.5.22:
+
+- **The env-isolated probe holds on a learned policy** — max env-0 pose delta
+  `0.00e+00` across probe resets, same as the scripted case.
+- **PoNR works when the failure is truly irrecoverable.** A gripper slip is
+  *recoverable* by this competent policy (the cube drops within reach and the probe
+  re-grasps it), so IPFD correctly reports **no PoNR**. Teleporting the cube out of
+  reach makes it irrecoverable, and the recovery verdicts flip cleanly to give a
+  **PoNR at the injected doom, +0.72 s before the alarm's actionable window**.
+- **Honest detector limitations.** This policy uses a *state-independent* action
+  std, so the entropy signal is **flat** — that detector simply does not fire, and
+  IPFD says so rather than hiding it. The action-variance / drift alarm fires at the
+  natural **grasp transition**, i.e. before the injected failure: self-calibrated
+  detectors are noisy on a real multi-phase policy. On a learned policy the reliable
+  signal is **PoNR**, not the imminence alarm — closing that detector gap
+  (phase-aware calibration) is the honest next step.
 
 ### Verifying it yourself
 
