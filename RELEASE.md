@@ -5,13 +5,27 @@
 IPFD follows [Semantic Versioning](https://semver.org/). The public API for semver
 purposes is the analysis layer's importable surface (`ipfd.__all__`) and the JSON
 schema emitted by `FailureDebugReport.to_json()`. The Isaac Lab adapter and oracles
-are considered a lower-stability surface until 1.0, because they depend on a specific
-Isaac Lab version (currently 4.5.22).
+are a lower-stability surface, because they depend on a specific Isaac Lab version
+(currently 4.5.22).
 
-- **MAJOR**: breaking change to the analysis-layer API or the report JSON schema.
-- **MINOR**: new detectors, metrics, oracles, or adapter capabilities, backward
-  compatible.
-- **PATCH**: bug fixes and documentation.
+Releases are defined by **verified capabilities**, not by feature count. A new
+detector, metric, or oracle does **not**, on its own, justify a release. It qualifies
+only once it is verified by a run or a test, documented, and reproducible. Code that
+exists but has no evidence behind it is not a shipped capability and does not move the
+version. This follows the project's operating philosophy: verified claims over
+speculative ones, reproducibility over novelty, maintainability over feature count,
+and stable APIs over rapid expansion.
+
+- **MAJOR**: a breaking change to the analysis-layer API or the report JSON schema.
+- **MINOR**: a new **verified, documented, backward-compatible capability**, a
+  detector/metric/oracle or adapter capability that ships with the run or test that
+  demonstrates it. Unverified additions do not qualify.
+- **PATCH**: bug fixes, documentation, and non-breaking runtime guards, with no change
+  to the API or report schema.
+
+No release, at any level, may contain a claim that has not been reproduced on the
+tagged commit. The GPU headline is re-run on `main` before every tag that touches the
+adapter or oracles.
 
 ### What 1.0.0 means here
 
