@@ -1,0 +1,25 @@
+{
+  "success": false,
+  "T": 220,
+  "dt": 0.02,
+  "seed": 0,
+  "t_ponr": null,
+  "t_failure": 219,
+  "t_alarm": 20,
+  "time_to_failure_s": 4.38,
+  "failure_lead_time_s": 3.98,
+  "ponr_lead_time_s": null,
+  "silent_doom_window_s": null,
+  "false_continuity_rate": null,
+  "drift_at_collapse": null,
+  "meta": {
+    "source": "isaac_lab",
+    "robot": "franka",
+    "task": "pick_place",
+    "probe": "env_isolated",
+    "primary_integrity_max_delta": 0.0,
+    "probe_resets": 28,
+    "policy": "rsl_rl_ppo",
+    "checkpoint": "checkpoint.pt"
+  }
+}

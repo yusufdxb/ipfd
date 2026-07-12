@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and usage help
+    url: https://github.com/yusufdxb/ipfd/discussions
+    about: Ask how to use IPFD, share a rollout you are trying to debug, or discuss the Point-of-No-Return method. Please do not open an issue for questions.

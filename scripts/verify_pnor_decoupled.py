@@ -27,7 +27,7 @@ Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
     ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_decoupled.py --headless
 
-RESULT (2026-07-05, Isaac Lab 4.5.22, RTX 5070) -- honest, negative:
+RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, negative:
 
   The decoupling is necessary but NOT sufficient, because of a deeper, directly
   confirmed Isaac Lab behaviour: ``reset_to_poisons_env: YES``. A fresh episode
@@ -84,10 +84,9 @@ from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(_HERE)
-sys.path.insert(0, _HERE)
 sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
-from _lift_sm import PickAndLiftSm, sm_action, object_z, identity_action  # noqa: E402
+from ipfd.oracles.pick_lift_sm import PickAndLiftSm, sm_action, object_z, identity_action  # noqa: E402
 from ipfd import build_report  # noqa: E402
 from ipfd.types import Rollout  # noqa: E402
 from ipfd.ponr import point_of_no_return  # noqa: E402

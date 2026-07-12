@@ -95,18 +95,18 @@ from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(_HERE)
-sys.path.insert(0, _HERE)
 sys.path.insert(0, os.path.join(_REPO, "src"))
 wp.init()
-from _lift_sm import PickAndLiftSm, sm_action  # noqa: E402
+from ipfd.oracles.pick_lift_sm import PickAndLiftSm, sm_action  # noqa: E402
 from ipfd import build_report  # noqa: E402
+from ipfd.adapters.isaac_lab import offset_root_positions, slice_state  # noqa: E402
 from ipfd.types import Rollout  # noqa: E402
 from ipfd.ponr import point_of_no_return  # noqa: E402
 
 PRIMARY_ENV = 0  # NEVER reset_to or action-corrupted by the probe
 PROBE_ENV = 1    # receives exported snapshots; diverges freely
 GRIPPER_CH = 7   # action = [pos(3), quat(4), gripper(1)]; OPEN=+1, CLOSE=-1
-LIFT_STATE = 4   # PickSmState.LIFT_OBJECT (see _lift_sm.py)
+LIFT_STATE = 4   # PickSmState.LIFT_OBJECT (see ipfd.oracles.pick_lift_sm)
 
 
 def log(msg: str) -> None:
@@ -125,28 +125,6 @@ def obj_pose(env, i: int) -> torch.Tensor:
 
 def obj_z(env, i: int) -> float:
     return float(wp.to_torch(env.unwrapped.scene["object"].data.root_pos_w)[i, 2].item())
-
-
-def slice_state(state, idx):
-    if torch.is_tensor(state):
-        return state[idx].clone()
-    if isinstance(state, dict):
-        return {k: slice_state(v, idx) for k, v in state.items()}
-    if isinstance(state, (list, tuple)):
-        return type(state)(slice_state(v, idx) for v in state)
-    return state
-
-
-def offset_root_positions(state, delta):
-    """get_state() poses are ABSOLUTE world coords. Shift env 0's checkpoint into
-    the probe env's own cell so the two arms do not collide. Joints/vels are
-    origin-independent."""
-    s = slice_state(state, slice(None))  # deep clone
-    for grp in ("articulation", "rigid_object"):
-        for _name, fields in s.get(grp, {}).items():
-            if isinstance(fields, dict) and "root_pose" in fields:
-                fields["root_pose"][:, :3] += delta
-    return s
 
 
 def probe_action(env, rsm, des_or) -> torch.Tensor:

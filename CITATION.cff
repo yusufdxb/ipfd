@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use IPFD in your research, please cite it as below."
+title: "IPFD: Isaac Policy Failure Debugger"
+abstract: >-
+  A headless debugging utility for robot-policy rollouts in Isaac Lab that
+  localizes the Point of No Return, the first timestep a manipulation episode is
+  irrecoverable under a provided recovery oracle, and reports whether any internal
+  signal predicted the failure before it was externally observable. Scope is
+  Franka Emika Panda single-object pick-and-place.
+type: software
+authors:
+  - given-names: Yusuf
+    family-names: Guenena
+    email: yusuf.a.guenena@gmail.com
+repository-code: "https://github.com/yusufdxb/ipfd"
+url: "https://github.com/yusufdxb/ipfd"
+license: MIT
+version: 1.0.0
+date-released: "2026-07-12"
+keywords:
+  - robot-learning
+  - isaac-lab
+  - manipulation
+  - failure-analysis
+  - debugging
+  - reinforcement-learning

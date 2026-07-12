@@ -1,0 +1,37 @@
+name: Feature request
+description: Propose a change to IPFD's behavior or scope.
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        IPFD is deliberately narrow: one policy-failure debugger for Franka single-object
+        pick-and-place in Isaac Lab. Requests that widen scope are welcome, but the bar is
+        high. Please frame the proposal against that scope so we can weigh it honestly.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the debugging situation you are stuck in, not the feature. What can you not currently do?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Does this widen the supported scope?
+      description: New tasks, new robots, new simulators, or ML inside the detectors all widen scope.
+      options:
+        - "No: it stays within Franka single-object pick-and-place / pure-NumPy analysis"
+        - "Yes: it adds a task, robot, simulator, or learned component"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

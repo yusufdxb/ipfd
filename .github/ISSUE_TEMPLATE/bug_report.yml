@@ -1,0 +1,55 @@
+name: Bug report
+description: Something in IPFD behaves incorrectly or crashes.
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. IPFD has two layers with very different dependencies.
+        Please tell us which one you hit, so we can reproduce it correctly.
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Which layer?
+      description: The analysis layer is pure NumPy/Matplotlib and runs with no GPU. The adapters/oracles touch Isaac Lab.
+      options:
+        - Analysis layer (detectors / ponr / metrics / report / viz)
+        - Isaac Lab adapter or recovery oracle (GPU)
+        - Packaging / install / CI
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you observe, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest command or snippet that triggers it. For analysis-layer bugs, a Rollout construction plus build_report is ideal.
+      render: python
+    validations:
+      required: true
+  - type: input
+    id: ipfd-version
+    attributes:
+      label: IPFD version / commit
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Python, NumPy, and (if relevant) Isaac Lab versions
+      placeholder: "Python 3.11, NumPy 1.26, Isaac Lab 4.5.22"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: Traceback, or the machine-readable status block (IPFD_RUNTIME_SMOKE / DUAL_PROBE_STATUS) if a GPU script.
+      render: shell

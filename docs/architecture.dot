@@ -1,0 +1,68 @@
+// IPFD architecture: the dual-environment recovery probe and the CPU/GPU boundary.
+// Render: dot -Tsvg docs/architecture.dot -o docs/architecture.svg
+//         rsvg-convert -z 2 docs/architecture.svg -o examples/figures/architecture.png
+digraph IPFD {
+  rankdir=TB;
+  bgcolor="#faf8f4";
+  fontname="Helvetica";
+  labelloc="t";
+  fontsize=12;
+  fontcolor="#6b6b6b";
+  label="IPFD  ·  the recovery-probe array is the one interface between the GPU sim and the CPU analysis\n";
+  node [fontname="Helvetica", shape=box, style="rounded,filled", color="#d8d2c8",
+        fillcolor="#ffffff", fontcolor="#1a1a1a", fontsize=12, margin="0.18,0.11"];
+  edge [fontname="Helvetica", fontsize=10, color="#8a8378", fontcolor="#6b6b6b", arrowsize=0.7];
+
+  // ---- GPU / Isaac Lab: produces the Rollout ----
+  subgraph cluster_sim {
+    label="GPU  ·  Isaac Lab   produces the Rollout";
+    fontsize=13; fontcolor="#4a4a4a"; color="#c7bfb2"; style="rounded"; bgcolor="#f2ede4";
+    policy [label="Policy under test"];
+    env0   [label="env 0  ·  PRIMARY\nnever reset_to", fillcolor="#eef4f0", color="#9db8ab"];
+    states [label="saved sim states\nget_state, every stride"];
+    env1   [label="env 1  ·  PROBE\noffset + reset_to (this env only)", fillcolor="#fbeee6", color="#d8a883"];
+    oracle [label="recovery oracle\nrun for a fixed budget"];
+    recov  [label="recovery_success[t]", shape=note, fillcolor="#f7f2ea"];
+
+    policy -> env0   [label="  act"];
+    env0   -> states [label="  checkpoint"];
+    states -> env1   [label="  offset_root_positions\n  + reset_to (pass 2)"];
+    oracle -> env1   [style=dashed];
+    env1   -> recov  [label="  recovered?"];
+    { rank=same; policy; env0; }
+    { rank=same; oracle; env1; recov; }
+  }
+
+  // ---- The boundary object ----
+  rollout [label="the Rollout\nobs · actions · entropy · embeddings · t_failure · recovery_success",
+           shape=note, fillcolor="#fff8ee", color="#b5451d", penwidth=1.8, fontcolor="#1a1a1a", fontsize=13];
+
+  // ---- CPU / CI: consumes the Rollout ----
+  subgraph cluster_cpu {
+    label="CPU  ·  CI  ·  pure NumPy   consumes the Rollout, no GPU";
+    fontsize=13; fontcolor="#4a4a4a"; color="#c7bfb2"; style="rounded"; bgcolor="#f2ede4";
+    detect  [label="detectors\naction-variance · entropy · drift"];
+    immin   [label="failure-imminence\n→ first_alarm"];
+    ponr    [label="point_of_no_return()", fillcolor="#fbeee6", color="#d8a883"];
+    metrics [label="metrics\nlead time · silent-doom · false-continuity"];
+    report  [label="FailureDebugReport\n+ timeline plot", fillcolor="#fff8ee", color="#b5451d"];
+
+    detect  -> immin;
+    immin   -> metrics;
+    ponr    -> metrics;
+    metrics -> report;
+    { rank=same; detect; ponr; }
+  }
+
+  // ---- cross-boundary edges ----
+  env0    -> rollout [label="  record primary (pass 1)"];
+  recov   -> rollout;
+  rollout -> detect;
+  rollout -> ponr;
+
+  // primary-integrity annotation
+  integ [label="primary integrity: env 0 is never reset_to  ·  measured max pose delta = 0.00e+00 m",
+         shape=plaintext, style="", fontcolor="#9d7a1d", fontsize=10];
+  { rank=same; rollout; integ; }
+  rollout -> integ [style=invis];
+}
