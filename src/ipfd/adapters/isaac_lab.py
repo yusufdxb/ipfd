@@ -1,7 +1,7 @@
 """Isaac Lab adapter: collect a Franka pick-and-place rollout with a recovery probe.
 
 STATUS: **runtime-verified on Isaac Lab 4.5.22** (env ``Isaac-Lift-Cube-Franka-IK-Abs-v0``,
-RTX-class GPU) via the ``scripts/verify_pnor_*.py`` evidence chain. The recovery
+a CUDA GPU) via the ``scripts/verify_pnor_*.py`` evidence chain. The recovery
 probe here uses **environment isolation**, which is the design those scripts
 proved correct:
 

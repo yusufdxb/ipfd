@@ -50,7 +50,9 @@ from isaaclab.app import AppLauncher
 
 parser = argparse.ArgumentParser(description="IPFD on a trained rsl_rl policy")
 parser.add_argument("--task", default="Isaac-Lift-Cube-Franka-v0")
-parser.add_argument("--checkpoint", required=True, help="Path to an rsl_rl model_*.pt")
+parser.add_argument("--checkpoint", default="", help="Path to an rsl_rl model_*.pt")
+parser.add_argument("--use_pretrained", action="store_true",
+                    help="Fetch NVIDIA's official published rsl_rl checkpoint for the task.")
 parser.add_argument("--num_envs", type=int, default=4, help=">=2 for the isolation probe")
 parser.add_argument("--max_steps", type=int, default=220)
 parser.add_argument("--lift_margin", type=float, default=0.06, help="Object rise [m] counted as lifted.")
@@ -62,6 +64,7 @@ parser.add_argument("--probe", action="store_true", help="Run the env-isolated r
 parser.add_argument("--probe_stride", type=int, default=8)
 parser.add_argument("--probe_budget", type=int, default=90)
 parser.add_argument("--seed", type=int, default=0)
+parser.add_argument("--save_plot", default="", help="If set, write the IPFD timeline figure here.")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True
@@ -82,7 +85,7 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper, handle_deprecated_rsl_rl_cfg
 
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_REPO, "src"))
-from ipfd import build_report
+from ipfd import build_report, plot_timeline
 from ipfd.oracles.rsl_rl_policy import load_learned_policy
 
 
@@ -143,8 +146,14 @@ def main() -> None:
     device = str(env.unwrapped.device)
     log(f"env {args.task} num_envs={env.num_envs} device={device}")
 
-    policy = load_learned_policy(env, agent_cfg.to_dict(), args.checkpoint, device=device)
-    log(f"loaded policy from {args.checkpoint}")
+    checkpoint = args.checkpoint
+    if args.use_pretrained or not checkpoint:
+        from isaaclab_rl.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
+        checkpoint = get_published_pretrained_checkpoint("rsl_rl", args.task)
+        if not checkpoint:
+            raise SystemExit(f"No published checkpoint for {args.task}; pass --checkpoint instead.")
+    policy = load_learned_policy(env, agent_cfg.to_dict(), checkpoint, device=device)
+    log(f"loaded policy from {checkpoint}")
 
     env.reset()
     for _ in range(15):  # let the scene settle
@@ -160,7 +169,7 @@ def main() -> None:
         recovery_policy=policy if args.probe else None,
         max_steps=args.max_steps, probe_stride=args.probe_stride, probe_budget=args.probe_budget,
         on_step=make_on_step(env, z_rest), seed=args.seed,
-        meta={"policy": "rsl_rl_ppo", "checkpoint": os.path.basename(args.checkpoint)},
+        meta={"policy": "rsl_rl_ppo", "checkpoint": os.path.basename(checkpoint)},
     )
     log(f"primary: T={rollout.T} t_failure={rollout.t_failure} success={rollout.success} "
         f"probe_resets={rollout.meta.get('probe_resets')} "
@@ -178,6 +187,11 @@ def main() -> None:
     print(f"ponr_detected: {'YES' if report.t_ponr is not None else 'NO'}")
     print(f"primary_integrity_max_delta_m: {rollout.meta.get('primary_integrity_max_delta')}")
     print(f"failure_lead_time_s: {report.failure_lead_time_s}")
+
+    if args.save_plot:
+        plot_timeline(rollout, report, args.save_plot)
+        report.to_json(args.save_plot.rsplit(".", 1)[0] + ".json")
+        log(f"wrote timeline figure -> {args.save_plot}")
 
     env.close()
     simulation_app.close()
