@@ -8,5 +8,7 @@ dist/
 .ruff_cache/
 .venv/
 venv/
+# Downloaded pretrained checkpoints (fetched at runtime by --use_pretrained); never commit
+.pretrained_checkpoints/
 # NOTE: examples/figures/*.png|json ARE committed — they are the README hero image
 # and deliverable "example runs with saved plots". Regenerate via run_synthetic.py.
