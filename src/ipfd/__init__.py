@@ -21,7 +21,7 @@ from .report import AnalysisConfig, FailureDebugReport, build_report
 from .types import Rollout
 from .viz import plot_timeline
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 __all__ = [
     "Rollout",
