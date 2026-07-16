@@ -1,0 +1,56 @@
+name: release
+
+# Minimal tag-triggered release build. Push an annotated tag like `v1.0.1` (which
+# MUST equal the pyproject / ipfd.__version__ version) and this builds the sdist +
+# wheel, validates them, stores them as a workflow artifact, and -- once you have
+# opted in -- publishes to PyPI via trusted publishing (OIDC; no API token stored).
+#
+# To enable PyPI publishing:
+#   1. On PyPI, add this repo as a Trusted Publisher for the project `ipfd`
+#      (Publishing -> Add a pending publisher: workflow `release.yml`,
+#       environment `pypi`).
+#   2. Set the repository variable  PYPI_PUBLISH = true  (Settings -> Variables).
+# Until then the build/validate steps run and the publish step is skipped, so
+# tagging never fails on an unconfigured repo.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build and validate
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          twine check dist/*
+      - name: Tag matches package version
+        run: |
+          TAG=${GITHUB_REF_NAME#v}
+          VER=$(python -c "import tomllib,pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'])")
+          echo "tag=$TAG pyproject=$VER"
+          test "$TAG" = "$VER" || { echo "::error::tag $TAG != pyproject version $VER"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish:
+    needs: build
+    if: ${{ vars.PYPI_PUBLISH == 'true' }}
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # OIDC for PyPI trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1

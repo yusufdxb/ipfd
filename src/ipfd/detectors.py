@@ -59,6 +59,8 @@ def _upper_deviation_score(x: np.ndarray, baseline_window: int, k: float = 3.0) 
 
 def _rolling_std(x: np.ndarray, window: int) -> np.ndarray:
     """Trailing rolling standard deviation, same length as ``x`` (edge-padded)."""
+    if window < 1:
+        raise ValueError(f"window must be >= 1, got {window!r}.")
     T = x.shape[0]
     out = np.zeros(T)
     for t in range(T):
@@ -83,6 +85,16 @@ def action_variance_score(
     Returns:
         ``(T,)`` score in ``[0, 1]``.
     """
+    actions = np.asarray(actions, dtype=np.float64)
+    if actions.ndim != 2:
+        raise ValueError(f"actions must be a 2-D array with shape (T, act_dim), got {actions.shape}.")
+    if actions.shape[0] == 0:
+        raise ValueError("actions has zero timesteps (T=0); expected at least one timestep.")
+    if actions.shape[1] == 0:
+        raise ValueError("actions has zero action dimensions (act_dim=0); expected at least one action dimension.")
+    if not np.isfinite(actions).all():
+        bad = tuple(int(i) for i in np.argwhere(~np.isfinite(actions))[0])
+        raise ValueError(f"actions contains a non-finite value at index {list(bad)}.")
     per_dim_std = np.stack([_rolling_std(actions[:, i], window) for i in range(actions.shape[1])], axis=1)
     agg = per_dim_std.mean(axis=1)
     return _upper_deviation_score(agg, baseline_window)
@@ -157,6 +169,15 @@ def failure_imminence_score(
     """
     w = {"action_variance": 1.0, "entropy_collapse": 1.0, "drift": 1.0}
     if weights:
+        unknown = set(weights) - set(w)
+        if unknown:
+            raise ValueError(
+                f"unknown detector weight key(s): {sorted(unknown)}; "
+                f"valid keys are {sorted(w)}."
+            )
+        for name, value in weights.items():
+            if not np.isfinite(value):
+                raise ValueError(f"detector weight {name!r} must be finite, got {value!r}.")
         w.update(weights)
 
     T = rollout.T
@@ -182,6 +203,8 @@ def first_alarm(score: np.ndarray, threshold: float = 0.5, persistence: int = 3)
     Persistence suppresses single-step blips so the alarm time is meaningful as a
     "the tool would have paged you here" moment.
     """
+    if persistence < 1:
+        raise ValueError(f"persistence must be >= 1, got {persistence!r}.")
     if score.size == 0:
         return None
     hot = score >= threshold

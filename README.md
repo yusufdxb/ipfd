@@ -1,20 +1,29 @@
 # IPFD — Isaac Policy Failure Debugger
 
+[![CI](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml/badge.svg)](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)](pyproject.toml)
+[![Latest release](https://img.shields.io/github/v/release/yusufdxb/ipfd)](https://github.com/yusufdxb/ipfd/releases/latest)
+
 **Find the exact moment a manipulation policy became unrecoverable — and whether any internal signal knew before the failure was visible.**
 
-IPFD is a small, headless debugging utility for robot-policy rollouts in
-[Isaac Lab](https://isaac-sim.github.io/IsaacLab/). Scope is deliberately narrow:
-**Franka Emika Panda, single-object pick-and-place.** One sharp tool that does one
-thing well — no benchmark suite, no Kit extension, no ML in the detectors.
+> **Supported:** Isaac Lab **4.5.22** · Python **3.10 / 3.11** · the analysis layer runs on **CPU with no Isaac Lab** — you can try it in 30 seconds before wiring up a GPU.
+
+IPFD is a small, headless debugging tool for robot-policy rollouts in
+[Isaac Lab](https://isaac-sim.github.io/IsaacLab/). The scope is narrow on purpose:
+one robot (**Franka Emika Panda**), one task (**single-object pick-and-place**), one
+job (**find the moment the policy was already doomed**). No benchmark suite, no Kit
+extension, and no ML quietly hiding inside the detectors. One sharp tool instead of a
+whole Swiss-army drawer.
 
 ---
 
 ## The problem
 
 You train a manipulation policy. It reports, say, 85% success. The other 15% of
-episodes end with the cube on the floor. An average-success number tells you *that*
-those episodes failed. It cannot tell you the two things you actually need in order
-to debug them:
+episodes end with the cube on the floor while the success metric politely declines to
+explain why. That average tells you *that* those episodes failed. It cannot tell you
+the two things you actually need in order to debug them:
 
 1. **When did the episode become irrecoverable** — the point after which no
    controller, however good, could still reach the goal?
@@ -36,6 +45,10 @@ the Point of No Return (red) lands at the injected doom, just before observable
 failure (grey):
 
 ![IPFD timeline on a trained policy](examples/figures/learned_teleport.png)
+
+*The title line ("SILENT FAILURE | seed=0") is IPFD's auto-generated verdict for this
+real trained-policy run — a failed episode collected with seed 0 — not the synthetic
+quick-start example (which is a separate figure with a policy-entropy panel).*
 
 ---
 
@@ -101,10 +114,10 @@ with a CUDA GPU. The analysis-layer claims run in CI with no GPU.
 
 | Claim | Evidence |
 |---|---|
-| The analysis layer is pure NumPy, tested, and byte-reproducible. | 31 tests pass, `ruff` clean; `test_report_reproducible`. CI runs lint + tests + a headless example on Python 3.10/3.11. |
+| The analysis layer is pure NumPy, tested, and byte-reproducible. | `pytest` passes, `ruff` clean; `test_report_reproducible`. CI runs lint + tests + a headless example on Python 3.10/3.11. |
 | IPFD attaches to a **real** Isaac Lab rollout (import, env, reset/step, obs structure, `build_report`). | [`scripts/verify_isaac_runtime.py`](scripts/verify_isaac_runtime.py) → `IPFD_RUNTIME_SMOKE: overall PASS`. |
 | The env-isolated probe **never perturbs the primary**. | Measured `max env-0 pose delta = 0.00e+00 m` across probe resets — on the scripted policy ([`verify_pnor_grasped.py`](scripts/verify_pnor_grasped.py), 51 resets) and the trained policy ([`verify_learned_policy.py`](scripts/verify_learned_policy.py), 8–28 resets). |
-| On a **genuinely competent trained policy**, PoNR localizes an irrecoverable failure. | Official NVIDIA-published `rsl_rl` Lift-Cube checkpoint (100% lift, mean 0.585 m, measured by [`eval_checkpoint.py`](scripts/eval_checkpoint.py)). Teleporting the cube out of reach → recovery verdicts flip → **PoNR at the injected doom, +0.72 s before the alarm's actionable window**. |
+| On a **genuinely competent trained policy**, PoNR localizes an irrecoverable failure. | Official NVIDIA-published `rsl_rl` Lift-Cube checkpoint (100% lift, mean 0.585 m, measured by [`eval_checkpoint.py`](scripts/eval_checkpoint.py)). Teleporting the cube out of reach makes recovery verdicts flip, with **PoNR at the injected doom**. The detector alarm fires earlier at the grasp transition, so this validates PoNR localization, not trained-policy fault prediction. |
 | A **recoverable** failure correctly yields **no PoNR**. | A gripper slip drops the cube within reach; the competent policy re-grasps it in the probe, so recovery stays true and IPFD reports no Point of No Return. ![no-PoNR timeline](examples/figures/learned_slip.png) |
 | The **packaged library API is the exact code that produced these results.** | [`verify_learned_policy.py`](scripts/verify_learned_policy.py) drives `ipfd.adapters.isaac_lab.collect_rollout` end-to-end; results reproduce bit-for-bit. |
 
@@ -120,9 +133,9 @@ with a CUDA GPU. The analysis-layer claims run in CI with no GPU.
 
 - **Phase-aware detector calibration**, so the imminence alarm localizes the fault
   rather than task transitions.
-- A **rendered rollout GIF** from an actual run (needs a rendered viewport;
-  headless offscreen capture in the current setup produced empty frames — not shipped
-  rather than faked).
+- A **rendered rollout GIF** from a real run. Headless offscreen capture currently
+  produces flawlessly empty frames, so for now you get honest plots instead of a
+  fake GIF.
 - Tasks beyond Franka single-object pick-and-place.
 
 ---
@@ -131,8 +144,8 @@ with a CUDA GPU. The analysis-layer claims run in CI with no GPU.
 
 ```bash
 pip install -e ".[dev]"            # analysis layer only
-pytest                             # 31 tests, all pure-NumPy
-python examples/run_synthetic.py   # prints two reports, writes plots + JSON to examples/figures/
+pytest                             # pure-NumPy analysis tests
+python3 examples/run_synthetic.py  # prints two reports, writes plots + JSON to examples/figures/
 ```
 
 ```python
@@ -153,7 +166,7 @@ the env-isolated recovery probe, and writes the timeline figure:
 
 ```bash
 OMNI_KIT_ACCEPT_EULA=YES \
-  python scripts/verify_learned_policy.py --headless --use_pretrained \
+  python3 scripts/verify_learned_policy.py --headless --use_pretrained \
          --probe --failure teleport --save_plot timeline.png
 ```
 
@@ -163,7 +176,7 @@ the recoverable case, which correctly reports **no** PoNR. To sanity-check runti
 compatibility only:
 
 ```bash
-OMNI_KIT_ACCEPT_EULA=YES python scripts/verify_isaac_runtime.py --headless
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless
 ```
 
 The `scripts/verify_pnor_*.py` chain is the underlying evidence trail; see
@@ -188,7 +201,22 @@ Fixed seeds throughout; synthetic rollouts and reports are byte-reproducible
 Python 3.10 and 3.11 with no GPU. The GPU experiments print machine-readable status
 blocks (`IPFD_RUNTIME_SMOKE`, `IPFD_LEARNED_STATUS`, `DUAL_PROBE_STATUS`).
 
+## External validation
+
+The results above were produced on a single setup (Isaac Lab 4.5.22, one GPU). If
+you run IPFD, **independent reports are the most useful contribution** — they turn a
+one-machine result into a validated tool.
+
+- Follow the [validation checklist](docs/VALIDATION.md) — clone, install, run the
+  CPU synthetic path, and (optionally) the GPU learned-policy demo. Every step emits
+  a deterministic, copy-pasteable evidence block.
+- Share the result in a **[Tested on my machine](../../discussions)** discussion
+  (OS, Python, Isaac Lab version, GPU, whether it worked, whether PoNR matched).
+- Hit a version or platform mismatch? Open a
+  [compatibility report](../../issues/new?template=compatibility_report.yml). The
+  tested matrix is Isaac Lab 4.5.22 on Python 3.10/3.11; other versions are unverified.
+
 ## License
 
-MIT. `src/ipfd/oracles/pick_lift_sm.py` is vendored from Isaac Lab under BSD-3-Clause;
-see [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE). `src/ipfd/oracles/pick_lift_sm.py` is vendored from
+Isaac Lab under BSD-3-Clause; see [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).

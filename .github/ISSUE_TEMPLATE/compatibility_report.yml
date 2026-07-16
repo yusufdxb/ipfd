@@ -1,0 +1,84 @@
+name: Compatibility report
+description: IPFD did not work (or worked differently) on an Isaac Lab version, OS, or GPU outside the tested matrix.
+labels: ["compatibility", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The tested matrix is **Isaac Lab 4.5.22, Python 3.10/3.11, Linux, single CUDA GPU**.
+        Anything outside it is unverified — this report is what widens the matrix.
+        You do not need to understand IPFD's internals: run the
+        [validation checklist](https://github.com/yusufdxb/ipfd/blob/main/docs/VALIDATION.md)
+        and paste the values below. See the
+        [compatibility guide](https://github.com/yusufdxb/ipfd/blob/main/docs/COMPATIBILITY.md).
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "Ubuntu 22.04 / Windows 11 / ..."
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: Output of `python --version`.
+      placeholder: "Python 3.11.9"
+    validations:
+      required: true
+  - type: input
+    id: isaac
+    attributes:
+      label: Isaac Lab version
+      description: Leave blank if you only ran the CPU analysis layer.
+      placeholder: "4.5.22 / 4.5.0 / 5.0 / not installed"
+    validations:
+      required: false
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU
+      description: Output of `nvidia-smi --query-gpu=name --format=csv,noheader`. Blank if CPU-only.
+      placeholder: "NVIDIA RTX ..."
+    validations:
+      required: false
+  - type: dropdown
+    id: first-failing-step
+    attributes:
+      label: Which step first failed?
+      description: These map onto IPFD's code boundaries and make triage immediate.
+      options:
+        - "import (import ipfd)"
+        - "AppLauncher (Isaac Lab app launch)"
+        - "env creation (gym.make / parse_env_cfg)"
+        - "reset_to (state save/restore)"
+        - "probe (recovery probe / PoNR)"
+        - "analysis (detectors / metrics / report / viz)"
+        - "install / packaging"
+        - "tests (pytest)"
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What was the outcome?
+      options:
+        - "Crashed / error"
+        - "Ran, but PoNR did not match (teleport should be YES, slip should be NO)"
+        - "Ran, but output looked wrong"
+        - "Ran correctly (reporting a new working configuration)"
+    validations:
+      required: true
+  - type: textarea
+    id: status-blocks
+    attributes:
+      label: Machine-readable status block(s) and/or traceback
+      description: "Copy everything between the ==== lines: IPFD_RUNTIME_SMOKE / IPFD_LEARNED_STATUS / DUAL_PROBE_STATUS. For a crash, paste the full traceback."
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else (optional)
+      description: Timeline screenshot, install notes, workarounds you tried.

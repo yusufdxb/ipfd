@@ -34,7 +34,21 @@ import os
 import sys
 import traceback
 
-from isaaclab.app import AppLauncher
+try:
+    from isaaclab.app import AppLauncher
+except ModuleNotFoundError as exc:
+    # Only handle the *absence* of Isaac Lab itself. A ModuleNotFoundError raised
+    # from deeper inside a broken install (a missing sub-dependency) is a real
+    # error and must surface, not be masked behind the friendly message.
+    if exc.name != "isaaclab":
+        raise
+    print(
+        "Isaac Lab was not found.\n\n"
+        "This verification requires Isaac Lab 4.5.22.\n\n"
+        "See the README installation section.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 parser = argparse.ArgumentParser(description="IPFD Isaac Lab runtime smoke test")
 parser.add_argument("--env_id", default="Isaac-Lift-Cube-Franka-v0",

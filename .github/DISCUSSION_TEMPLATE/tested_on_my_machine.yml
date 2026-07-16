@@ -1,0 +1,86 @@
+title: "[Tested] <OS> / Isaac Lab <version> / <GPU>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing IPFD. You do **not** need to understand the internals —
+        run the [validation checklist](https://github.com/yusufdxb/ipfd/blob/main/docs/VALIDATION.md)
+        and paste the values below. CPU-only reports (steps 1–4, no GPU) are welcome.
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "Ubuntu 22.04 / Windows 11 / ..."
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: Output of `python --version`.
+      placeholder: "Python 3.11.9"
+    validations:
+      required: true
+  - type: input
+    id: isaac
+    attributes:
+      label: Isaac Lab version
+      description: Leave blank if you only ran the CPU analysis layer.
+      placeholder: "4.5.22 / not installed"
+    validations:
+      required: false
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU
+      description: Output of `nvidia-smi --query-gpu=name --format=csv,noheader`. Blank if CPU-only.
+      placeholder: "NVIDIA RTX ..."
+    validations:
+      required: false
+  - type: dropdown
+    id: worked
+    attributes:
+      label: Did it run end to end?
+      options:
+        - "Yes — clean"
+        - "Yes — with warnings"
+        - "No — it errored"
+    validations:
+      required: true
+  - type: dropdown
+    id: ponr
+    attributes:
+      label: Did PoNR match the expected result? (teleport → YES, slip → NO)
+      options:
+        - "Matched both"
+        - "Matched teleport only"
+        - "Matched slip only"
+        - "Neither"
+        - "Did not run the GPU demo"
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Demo runtime (wall-clock seconds)
+      placeholder: "e.g. 95"
+    validations:
+      required: false
+  - type: textarea
+    id: status-blocks
+    attributes:
+      label: Machine-readable status block(s)
+      description: "Copy everything between the ==== lines: IPFD_RUNTIME_SMOKE / IPFD_LEARNED_STATUS / DUAL_PROBE_STATUS. For the CPU path, paste the two report summaries from run_synthetic.py."
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors or full log (optional)
+      render: shell
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Timeline screenshot (optional)
+      description: Drag-and-drop the PNG IPFD wrote (timeline.png / examples/figures/*.png).

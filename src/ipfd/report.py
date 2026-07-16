@@ -11,6 +11,8 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 
+import numpy as np
+
 from . import detectors, metrics
 from .ponr import point_of_no_return
 from .types import Rollout
@@ -58,7 +60,10 @@ class FailureDebugReport:
         return asdict(self)
 
     def to_json(self, path: str | None = None, indent: int = 2) -> str:
-        s = json.dumps(self.to_dict(), indent=indent)
+        try:
+            s = json.dumps(self.to_dict(), indent=indent, default=_json_default, allow_nan=False)
+        except ValueError as exc:
+            raise ValueError(f"report JSON must contain only finite numeric values: {exc}") from exc
         if path:
             with open(path, "w") as f:
                 f.write(s)
@@ -93,6 +98,16 @@ def _fmt_s(x: float | None) -> str:
 
 def _fmt_num(x: float | None) -> str:
     return "n/a" if x is None else f"{x:.4f}"
+
+
+def _json_default(o: object) -> object:
+    if isinstance(o, np.integer):
+        return int(o)
+    if isinstance(o, np.floating):
+        return float(o)
+    if isinstance(o, np.ndarray):
+        return o.tolist()
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 
 
 def _verdict(r: FailureDebugReport) -> str:

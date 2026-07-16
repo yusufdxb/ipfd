@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ipfd"
-version = "1.0.0"
+version = "1.0.1"
 description = "Isaac Policy Failure Debugger: expose the moment a policy is doomed before it visibly fails."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Yusuf Guenena" }]
 dependencies = [
     "numpy>=1.24",

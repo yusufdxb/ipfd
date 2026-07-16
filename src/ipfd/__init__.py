@@ -17,11 +17,12 @@ The public surface is intentionally small:
 from __future__ import annotations
 
 from .ponr import point_of_no_return
+from .replay import load_rollout, save_rollout
 from .report import AnalysisConfig, FailureDebugReport, build_report
 from .types import Rollout
 from .viz import plot_timeline
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = [
     "Rollout",
@@ -30,5 +31,7 @@ __all__ = [
     "build_report",
     "plot_timeline",
     "point_of_no_return",
+    "save_rollout",
+    "load_rollout",
     "__version__",
 ]

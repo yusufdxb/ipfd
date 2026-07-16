@@ -15,8 +15,8 @@ authors:
 repository-code: "https://github.com/yusufdxb/ipfd"
 url: "https://github.com/yusufdxb/ipfd"
 license: MIT
-version: 1.0.0
-date-released: "2026-07-12"
+version: 1.0.1
+date-released: "2026-07-13"
 keywords:
   - robot-learning
   - isaac-lab

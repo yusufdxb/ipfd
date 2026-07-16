@@ -16,7 +16,7 @@ OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python scripts/<name>.py --hea
 
 | Script | What it establishes |
 |---|---|
-| `verify_isaac_runtime.py` | The adapter drives a live Franka env end-to-end; prints a machine-readable `IPFD_RUNTIME_COMPATIBILITY` block. |
+| `verify_isaac_runtime.py` | The adapter drives a live Franka env end-to-end; prints a machine-readable `IPFD_RUNTIME_SMOKE` block. |
 | `verify_state_fidelity.py` | Single-step `save → reset_to` round trip is bit-exact. `STATE_RESTORE_FIDELITY: PASS`. |
 | `verify_probe_transparency.py` | Root-causes post-grasp corruption to the PhysX contact cache. `root_cause: CONTACT_STATE_NOT_RESTORED`. |
 | `verify_pnor_decoupled.py` | A single `reset_to` poisons a `num_envs=1` sim even across `env.reset()`. `reset_to_poisons_env: YES`. |

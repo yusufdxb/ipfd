@@ -26,9 +26,10 @@ def plot_timeline(rollout: Rollout, report: FailureDebugReport, path: str) -> st
     """Render the failure-debug timeline for ``rollout`` to ``path`` (PNG)."""
     signals = getattr(report, "signals", {})
     t = rollout.time_s()
+    obs_idx = 1 if rollout.observations.shape[1] > 1 else 0
 
     panels: list[tuple[str, np.ndarray]] = [
-        ("obs[1] (object-in-workspace)", rollout.observations[:, 1]),
+        (f"obs[{obs_idx}]", rollout.observations[:, obs_idx]),
         ("action L2 norm", np.linalg.norm(rollout.actions, axis=1)),
     ]
     if rollout.entropy is not None:
