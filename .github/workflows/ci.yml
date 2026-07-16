@@ -42,7 +42,7 @@ jobs:
           python -m build
       - name: Version consistency (pyproject == ipfd.__version__)
         run: |
-          pip install -e . --no-deps
+          pip install -e .  # deps needed: `import ipfd` pulls numpy at import time
           PYPROJECT=$(python -c "import tomllib,pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'])")
           RUNTIME=$(python -c "import ipfd; print(ipfd.__version__)")
           echo "pyproject=$PYPROJECT runtime=$RUNTIME"
