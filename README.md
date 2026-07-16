@@ -86,6 +86,11 @@ uses **environment isolation**, in a **decoupled two-pass**:
 - **env 1 (PROBE)** receives origin-shifted snapshots of the primary and runs the
   recovery oracle for a fixed budget; its verdicts become `recovery_success[t]`.
 
+To run IPFD on your own task, implement the recovery oracle: see
+[**Bring your own recovery oracle**](docs/ORACLE_CONTRACT.md) for the callable
+signatures, the exact meaning of `recovery_success[t]`, fixed-budget semantics,
+and one copy-adaptable example.
+
 The analysis layer — detectors, PoNR, metrics, report, plotting — is **pure
 NumPy/Matplotlib** and never imports a simulator. It runs in CI with no GPU. Only
 `ipfd.adapters.isaac_lab` and `ipfd.oracles.*` touch Isaac Lab, and they are lazily
