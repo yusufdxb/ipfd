@@ -15,17 +15,24 @@ changed.
 - Validation-only generated assets during the run, removed after hashing:
   - `.ipfd_live_validation_tmp/` for transient command transcripts and saved rollout hashing.
   - `.pretrained_checkpoints/.../checkpoint.pt` from Isaac Lab's official checkpoint helper.
+- Committed replay fixture binding:
+  - [`tests/fixtures/manifest.json`](../tests/fixtures/manifest.json) records the shipped fixture hashes below.
+  - The fresh live rollout used for validation is a separate capture and is intentionally not the same file as the committed fixture archive.
+  - `learned_teleport_rollout.npz`: `4a228a8d00a48dba8f51aa9ec4f884f483d1aba64de701b29a2dac8a6777c106`
+  - `learned_teleport_report.json`: `00ccaee9cf3cfd59807da65623eea3574e770719ece09793fd010f9ad2504aa6`
+  - `learned_slip_rollout.npz`: `d6e21c652643c102ca7de4b4249541f6c1e10ee98574c1407803389128864506`
+  - `learned_slip_report.json`: `27348b0bbac2a48f157efba8a9e79c76586683b0d69549099f30e36aacfe7867`
 
 ## Runtime environment
 
 - Host Python:
-  - Executable: `/usr/bin/python3`
+  - Executable: `python3`
   - Version: `3.10.12`
   - Active virtual environment: none (`VIRTUAL_ENV=None`, `CONDA_PREFIX=None`)
 - Isaac Python:
-  - Executable: `~/Sim/isaac-sim-venv/bin/python`
+  - Executable: Isaac Lab runtime venv python
   - Version: `3.12.13`
-  - Prefix: `~/Sim/isaac-sim-venv`
+  - Prefix: Isaac Lab runtime venv
   - Active virtual environment variable: none (`VIRTUAL_ENV=None`)
 - Packages:
   - `isaaclab`: `4.5.22`
@@ -40,9 +47,9 @@ changed.
   - `torch.cuda.is_available()`: `True`
   - Torch CUDA: `12.8`
   - Device count: `1`
-  - GPU: `NVIDIA (Blackwell) consumer GPU`
+  - GPU: consumer Blackwell NVIDIA GPU
   - Driver: `570.211.01`
-  - GPU memory: `12227 MiB`
+  - GPU memory: `~12 GiB`
   - Compute capability: `12.0`
 
 ## Isaac tasks and assets

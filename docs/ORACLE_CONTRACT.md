@@ -46,11 +46,11 @@ permanently doomed, or if no probe ran). Because probing is strided
 Each probe restores the saved state into the isolated probe env and steps the
 controller up to `probe_budget` times:
 
-- **First success wins** — the probe returns `True` the first step the predicate
+- **First success wins**: the probe returns `True` the first step the predicate
   holds.
-- **Early termination fails** — if the probe env emits `done` before success, the
+- **Early termination fails**: if the probe env emits `done` before success, the
   probe returns `False`.
-- **Budget exhaustion fails** — if the budget runs out with no success, `False`.
+- **Budget exhaustion fails**: if the budget runs out with no success, `False`.
 
 The budget is part of the oracle definition: PoNR is only meaningful *for that
 budget*. State it when you report results.
@@ -108,7 +108,7 @@ t_ponr = point_of_no_return(rollout.recovery_success)   # int or None
 ```
 
 Running the probe requires a live Isaac Lab GPU env, so this example is
-**GPU-gated** — the analysis half of IPFD (detectors, PoNR, metrics, report) is
+**GPU-gated**: the analysis half of IPFD (detectors, PoNR, metrics, report) is
 pure NumPy and runs anywhere on a `Rollout` you already have. See
 [`REPRODUCE.md`](REPRODUCE.md) for the GPU-free replay path.
 

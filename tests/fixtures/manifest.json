@@ -1,0 +1,13 @@
+{
+  "schema": "ipfd.replay_fixtures.v1",
+  "fixtures": {
+    "learned_slip": {
+      "report_json_sha256": "27348b0bbac2a48f157efba8a9e79c76586683b0d69549099f30e36aacfe7867",
+      "rollout_npz_sha256": "d6e21c652643c102ca7de4b4249541f6c1e10ee98574c1407803389128864506"
+    },
+    "learned_teleport": {
+      "report_json_sha256": "00ccaee9cf3cfd59807da65623eea3574e770719ece09793fd010f9ad2504aa6",
+      "rollout_npz_sha256": "4a228a8d00a48dba8f51aa9ec4f884f483d1aba64de701b29a2dac8a6777c106"
+    }
+  }
+}
