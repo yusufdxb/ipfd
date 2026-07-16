@@ -123,3 +123,60 @@ def test_collect_rollout_rejects_single_env_probe():
             object_height=lambda e, i: 0.0, rest_height=0.0,
             recovery_policy=_policy,
         )
+
+
+def test_collect_rollout_rejects_same_primary_and_probe_env():
+    class _Env:
+        class unwrapped:
+            num_envs = 2
+
+    def _policy(obs):
+        return np.zeros((2, 8))
+
+    import pytest
+
+    with pytest.raises(ValueError, match="primary_env.*probe_env.*distinct"):
+        collect_rollout(
+            _Env(), _policy,
+            object_height=lambda e, i: 0.0, rest_height=0.0,
+            recovery_policy=_policy,
+            primary_env=0, probe_env=0,
+        )
+
+
+def test_collect_rollout_rejects_probe_env_out_of_range():
+    class _Env:
+        class unwrapped:
+            num_envs = 2
+
+    def _policy(obs):
+        return np.zeros((2, 8))
+
+    import pytest
+
+    with pytest.raises(ValueError, match="probe_env.*range"):
+        collect_rollout(
+            _Env(), _policy,
+            object_height=lambda e, i: 0.0, rest_height=0.0,
+            recovery_policy=_policy,
+            primary_env=0, probe_env=2,
+        )
+
+
+def test_collect_rollout_rejects_zero_probe_stride():
+    class _Env:
+        class unwrapped:
+            num_envs = 2
+
+    def _policy(obs):
+        return np.zeros((2, 8))
+
+    import pytest
+
+    with pytest.raises(ValueError, match="probe_stride.*>= 1"):
+        collect_rollout(
+            _Env(), _policy,
+            object_height=lambda e, i: 0.0, rest_height=0.0,
+            recovery_policy=_policy,
+            probe_stride=0,
+        )

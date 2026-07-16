@@ -295,13 +295,24 @@ def collect_rollout(
     """
     unwrapped = getattr(env, "unwrapped", env)
     n_envs = int(getattr(unwrapped, "num_envs", 1))
-    if recovery_policy is not None and n_envs < 2:
-        raise ValueError(
-            "The recovery probe requires num_envs >= 2 (environment isolation): "
-            "env 0 is the pristine primary and env 1 is the probe cell. A single-env "
-            "reset_to probe poisons the sim (see verify_pnor_decoupled.py). Create the "
-            "env with num_envs>=2, or omit recovery_policy to skip PoNR."
-        )
+    if recovery_policy is not None:
+        if n_envs < 2:
+            raise ValueError(
+                "The recovery probe requires num_envs >= 2 (environment isolation): "
+                "env 0 is the pristine primary and env 1 is the probe cell. A single-env "
+                "reset_to probe poisons the sim (see verify_pnor_decoupled.py). Create the "
+                "env with num_envs>=2, or omit recovery_policy to skip PoNR."
+            )
+        if primary_env == probe_env:
+            raise ValueError(
+                f"primary_env and probe_env must be distinct for environment isolation, got {primary_env}."
+            )
+        if not (0 <= primary_env < n_envs):
+            raise ValueError(f"primary_env {primary_env} out of range [0, {n_envs}).")
+        if not (0 <= probe_env < n_envs):
+            raise ValueError(f"probe_env {probe_env} out of range [0, {n_envs}).")
+        if probe_stride < 1:
+            raise ValueError(f"probe_stride must be >= 1, got {probe_stride!r}.")
 
     _require_isaac_lab()
 

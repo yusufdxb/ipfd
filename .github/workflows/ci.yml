@@ -26,3 +26,43 @@ jobs:
         run: pytest
       - name: Smoke-run the example (headless)
         run: python examples/run_synthetic.py
+
+  package:
+    # Verify IPFD builds, is metadata-valid, and installs+imports cleanly from the
+    # built wheel with NO source tree on the path -- the "pip install ipfd" contract.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+      - name: Version consistency (pyproject == ipfd.__version__)
+        run: |
+          pip install -e .  # deps needed: `import ipfd` pulls numpy at import time
+          PYPROJECT=$(python -c "import tomllib,pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'])")
+          RUNTIME=$(python -c "import ipfd; print(ipfd.__version__)")
+          echo "pyproject=$PYPROJECT runtime=$RUNTIME"
+          test "$PYPROJECT" = "$RUNTIME" || { echo "::error::version drift: pyproject $PYPROJECT != ipfd.__version__ $RUNTIME"; exit 1; }
+      - name: Validate distribution metadata
+        run: twine check dist/*
+      - name: Install the wheel into a clean venv and exercise it (no GPU, no source tree)
+        run: |
+          python -m venv /tmp/ipfd-clean
+          /tmp/ipfd-clean/bin/pip install --upgrade pip
+          /tmp/ipfd-clean/bin/pip install dist/*.whl
+          cp tests/fixtures/learned_teleport_rollout.npz /tmp/ipfd-clean/
+          cd /tmp/ipfd-clean
+          ./bin/python - <<'PY'
+          from ipfd import build_report, save_rollout, load_rollout
+          from ipfd.adapters.synthetic import make_silent_failure_rollout
+          r = make_silent_failure_rollout(seed=0)
+          save_rollout(r, "rt.npz")
+          assert build_report(load_rollout("rt.npz")).to_json() == build_report(r).to_json()
+          real = build_report(load_rollout("learned_teleport_rollout.npz"))
+          assert real.t_ponr == 56 and real.t_failure == 57, (real.t_ponr, real.t_failure)
+          print("installed-wheel end-to-end OK; PoNR", real.t_ponr, "reproduced with no GPU")
+          PY

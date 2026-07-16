@@ -1,7 +1,10 @@
 import json
 
+import pytest
+
 from ipfd import build_report
 from ipfd.adapters.synthetic import make_silent_failure_rollout, make_success_rollout
+from ipfd.types import Rollout
 
 
 def test_report_exposes_silent_collapse():
@@ -41,3 +44,14 @@ def test_report_reproducible():
     a = build_report(make_silent_failure_rollout(seed=7)).to_dict()
     b = build_report(make_silent_failure_rollout(seed=7)).to_dict()
     assert a == b
+
+
+def test_report_json_rejects_nonfinite_meta():
+    r = Rollout(
+        observations=[[0.0], [0.0]],
+        actions=[[0.0], [0.0]],
+        success=True,
+        meta={"bad": float("nan")},
+    )
+    with pytest.raises(ValueError, match="JSON.*finite"):
+        build_report(r).to_json()

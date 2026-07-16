@@ -33,9 +33,9 @@ before you write code.
 git clone https://github.com/yusufdxb/ipfd
 cd ipfd
 pip install -e ".[dev]"     # analysis layer only; no GPU or Isaac Lab needed
-pytest                      # 31 tests, all pure-NumPy
+pytest                      # pure-NumPy analysis tests
 ruff check src tests
-python examples/run_synthetic.py
+python3 examples/run_synthetic.py
 ```
 
 Isaac Lab is intentionally **not** a declared dependency. You only need it to run the

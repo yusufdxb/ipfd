@@ -18,7 +18,7 @@ digraph IPFD {
     label="GPU  ·  Isaac Lab   produces the Rollout";
     fontsize=13; fontcolor="#4a4a4a"; color="#c7bfb2"; style="rounded"; bgcolor="#f2ede4";
     policy [label="Policy under test"];
-    env0   [label="env 0  ·  PRIMARY\nnever reset_to", fillcolor="#eef4f0", color="#9db8ab"];
+    env0   [label="env 0  ·  PRIMARY\nnever reset_to\nmeasured max pose Δ = 0.00 m", fillcolor="#eef4f0", color="#9db8ab"];
     states [label="saved sim states\nget_state, every stride"];
     env1   [label="env 1  ·  PROBE\noffset + reset_to (this env only)", fillcolor="#fbeee6", color="#d8a883"];
     oracle [label="recovery oracle\nrun for a fixed budget"];
@@ -59,10 +59,4 @@ digraph IPFD {
   recov   -> rollout;
   rollout -> detect;
   rollout -> ponr;
-
-  // primary-integrity annotation
-  integ [label="primary integrity: env 0 is never reset_to  ·  measured max pose delta = 0.00e+00 m",
-         shape=plaintext, style="", fontcolor="#9d7a1d", fontsize=10];
-  { rank=same; rollout; integ; }
-  rollout -> integ [style=invis];
 }

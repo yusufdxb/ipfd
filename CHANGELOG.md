@@ -9,6 +9,30 @@ All notable changes to IPFD are documented here. The format follows
 
 _Nothing yet._
 
+## [1.0.1] - 2026-07-13
+
+A hardening and adoption release. No new features, no algorithm or API changes: valid
+inputs behave exactly as in 1.0.0, and the report JSON schema is unchanged.
+
+### Added
+- **Input validation on `Rollout`**: fail-fast `ValueError`s (naming the field, the
+  offending value, and what was expected) for empty rollouts, NaN/Inf in
+  `observations` / `actions` / `recovery_success`, `dt <= 0`, and non-integer /
+  boolean / float `t_failure`. Previously these produced silent NaN cascades or a
+  silently mis-cast recovery array.
+- **Detector-weight key validation**: `failure_imminence_score` now raises on unknown
+  weight keys (listing the unknown and the valid keys) instead of silently ignoring them.
+- **Isaac runtime smoke UX**: `verify_isaac_runtime.py` detects a missing Isaac Lab and
+  exits cleanly with a pointer to the install docs, instead of a raw `ModuleNotFoundError`.
+- Regression tests for every new validation.
+- **Adoption docs**: `docs/VALIDATION.md`, `docs/TESTED_ON_MY_MACHINE.md`,
+  `docs/COMPATIBILITY.md`; a "Tested on my machine" discussion template and a
+  compatibility-report issue template; README badge row and an External validation section.
+
+### Changed
+- `LICENSE` is now pure MIT (so GitHub classifies the repo as MIT); the vendored
+  Isaac Lab BSD-3-Clause notice moved to `THIRD_PARTY_LICENSES.md`.
+
 ## [1.0.0] - 2026-07-12
 
 First public release. The core architecture, the recovery-probe method, and the
@@ -30,7 +54,7 @@ schema are now stable under semantic versioning.
   PoNR localizes an injected irrecoverable failure; a recoverable slip correctly
   yields no PoNR.
 - `scripts/verify_*.py` evidence chain, each emitting a machine-readable status block.
-- CI on Python 3.10 / 3.11: lint, 31 tests, and a headless example smoke-run, all
+- CI on Python 3.10 / 3.11: lint, tests, and a headless example smoke-run, all
   with no GPU.
 - Project governance: issue and pull-request templates, `CONTRIBUTING.md`,
   `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CITATION.cff`, `ROADMAP.md`, and `RELEASE.md`.
@@ -43,5 +67,6 @@ schema are now stable under semantic versioning.
   the probe a cold PhysX contact state.
 - The Isaac Lab adapter is validated against Isaac Lab 4.5.22 only.
 
-[Unreleased]: https://github.com/yusufdxb/ipfd/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/yusufdxb/ipfd/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/yusufdxb/ipfd/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/yusufdxb/ipfd/releases/tag/v1.0.0

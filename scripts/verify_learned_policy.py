@@ -65,6 +65,9 @@ parser.add_argument("--probe_stride", type=int, default=8)
 parser.add_argument("--probe_budget", type=int, default=90)
 parser.add_argument("--seed", type=int, default=0)
 parser.add_argument("--save_plot", default="", help="If set, write the IPFD timeline figure here.")
+parser.add_argument("--save_rollout", default="",
+                    help="If set, persist the collected Rollout arrays to this .npz "
+                         "(a GPU-free replay fixture; see ipfd.replay.load_rollout).")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True
@@ -192,6 +195,12 @@ def main() -> None:
         plot_timeline(rollout, report, args.save_plot)
         report.to_json(args.save_plot.rsplit(".", 1)[0] + ".json")
         log(f"wrote timeline figure -> {args.save_plot}")
+
+    if args.save_rollout:
+        from ipfd.replay import save_rollout
+        save_rollout(rollout, args.save_rollout)
+        log(f"wrote replay fixture -> {args.save_rollout} "
+            f"(reload with ipfd.replay.load_rollout, no GPU)")
 
     env.close()
     simulation_app.close()
