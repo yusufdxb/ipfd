@@ -25,7 +25,7 @@ A determinism check (same checkpoint probed twice -> same verdict) guards the
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_decoupled.py --headless
+    /path/to/isaac-lab/python scripts/verify_pnor_decoupled.py --headless
 
 RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, negative:
 

@@ -50,7 +50,7 @@ ARCHITECTURE (the fix for the residual gap is architectural, not a threshold):
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_grasped.py --headless
+    /path/to/isaac-lab/python scripts/verify_pnor_grasped.py --headless
 """
 
 from __future__ import annotations

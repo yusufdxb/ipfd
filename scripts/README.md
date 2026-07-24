@@ -11,7 +11,7 @@ one-line index.
 Run pattern (all scripts):
 
 ```bash
-OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python scripts/<name>.py --headless
+OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python scripts/<name>.py --headless
 ```
 
 | Script | What it establishes |

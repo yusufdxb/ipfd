@@ -8,7 +8,7 @@ Success = the cube is held above (settled rest height + margin) at the end of th
 episode horizon, measured per parallel env.
 
 Run:
-    OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python \\
+    OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python \\
         scripts/eval_checkpoint.py --headless --checkpoint <model_*.pt>
 """
 

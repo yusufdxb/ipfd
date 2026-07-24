@@ -22,7 +22,7 @@ alongside the measured max-abs-diff so the numbers speak for themselves.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_state_fidelity.py --headless
+    /path/to/isaac-lab/python scripts/verify_state_fidelity.py --headless
 """
 
 from __future__ import annotations

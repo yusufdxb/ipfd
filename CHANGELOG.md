@@ -7,7 +7,23 @@ All notable changes to IPFD are documented here. The format follows
 
 ## [Unreleased]
 
-_Nothing yet._
+### Added
+- A warn-once runtime guard names the tested Isaac Lab 4.5.22 target when a
+  different installed version enters the adapter. The warning never blocks a run.
+- Regression coverage for NumPy-backed report metadata, degenerate detector input,
+  detector weights, single-feature visualization, and Isaac Lab version checks.
+
+### Fixed
+- `action_variance_score` now rejects wrong-rank and non-numeric object arrays with
+  a clear shape or numeric-contract `ValueError`.
+- Report JSON conversion now handles every NumPy scalar type supported by JSON,
+  including `np.bool_`, as well as arrays.
+- The learned-policy demo states its real prerequisites, runs the compatibility
+  preflight first, and no longer contains author-specific interpreter paths.
+- README and contributor troubleshooting now cover ROS-injected pytest plugins.
+
+### Changed
+- CI now declares read-only repository-content permissions explicitly.
 
 ## [1.0.1] - 2026-07-13
 

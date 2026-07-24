@@ -75,7 +75,7 @@ changed.
 Command:
 
 ```bash
-PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python \
+PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python \
   scripts/verify_isaac_runtime.py --headless --env_id Isaac-Lift-Cube-Franka-v0 \
   --steps 16 --seed 0
 ```
@@ -108,7 +108,7 @@ Validated:
 Command:
 
 ```bash
-PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python \
+PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python \
   scripts/verify_pnor_grasped.py --headless
 ```
 
@@ -148,7 +148,7 @@ Validated:
 Command:
 
 ```bash
-PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python \
+PYTHONUNBUFFERED=1 OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python \
   scripts/verify_learned_policy.py --headless --use_pretrained --probe \
   --failure teleport --save_rollout .ipfd_live_validation_tmp/learned_teleport_rollout.npz
 ```

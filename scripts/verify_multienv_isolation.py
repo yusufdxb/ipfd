@@ -22,7 +22,7 @@ This script measures exactly that, with num_envs=2:
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_multienv_isolation.py --headless
+    /path/to/isaac-lab/python scripts/verify_multienv_isolation.py --headless
 """
 
 from __future__ import annotations

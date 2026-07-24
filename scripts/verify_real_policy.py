@@ -27,7 +27,7 @@ action-variance detector and the recovery-probe PoNR are exercised here.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_real_policy.py --headless
+    /path/to/isaac-lab/python scripts/verify_real_policy.py --headless
     # add --diagnose to run the scripted policy uninterrupted (sanity check)
 
 RESULT (2026-07-04, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, not the hoped-for one:

@@ -18,7 +18,7 @@ trained policy, with the env-isolated recovery probe and measured PoNR -- see
 Run (real Isaac Lab install + GPU required):
 
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_isaac_runtime.py --headless
+    /path/to/isaac-lab/python scripts/verify_isaac_runtime.py --headless
 
 The final block printed is machine-readable (IPFD_RUNTIME_SMOKE).
 """

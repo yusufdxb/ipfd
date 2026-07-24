@@ -23,7 +23,7 @@ True->False flip localises PoNR at the injected doom -- NOT at step 0.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_isolated.py --headless
+    /path/to/isaac-lab/python scripts/verify_pnor_isolated.py --headless
     # add --debug_step T to trace a single nominal probe verbosely
 
 RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU):

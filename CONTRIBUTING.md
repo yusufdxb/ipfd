@@ -38,6 +38,10 @@ ruff check src tests
 python3 examples/run_synthetic.py
 ```
 
+If tests fail during collection in a ROS-sourced shell, run
+`env -u PYTHONPATH pytest`. ROS can inject its `launch_testing` pytest plugin
+through `PYTHONPATH`, along with dependencies that are unrelated to IPFD.
+
 Isaac Lab is intentionally **not** a declared dependency. You only need it to run the
 `scripts/verify_*.py` GPU experiments, and you install it yourself following the
 [Isaac Lab docs](https://isaac-sim.github.io/IsaacLab/).

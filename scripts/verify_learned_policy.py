@@ -32,7 +32,7 @@ construction: if a detector has no signal (e.g. a state-independent action std
 makes entropy constant), the report shows it flat rather than hiding it.
 
 Run:
-    OMNI_KIT_ACCEPT_EULA=YES ~/Sim/isaac-sim-venv/bin/python \\
+    OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-lab/python \\
         scripts/verify_learned_policy.py --headless --checkpoint <model_*.pt> --probe
 """
 

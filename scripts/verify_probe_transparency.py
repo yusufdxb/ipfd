@@ -28,7 +28,7 @@ Two conditions: probe injected PRE-CONTACT vs POST-GRASP. Prints a machine block
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_probe_transparency.py --headless
+    /path/to/isaac-lab/python scripts/verify_probe_transparency.py --headless
 """
 
 from __future__ import annotations

@@ -153,6 +153,9 @@ pytest                             # pure-NumPy analysis tests
 python3 examples/run_synthetic.py  # prints two reports, writes plots + JSON to examples/figures/
 ```
 
+If the shell has sourced ROS, run `env -u PYTHONPATH pytest` to prevent ROS from
+injecting its `launch_testing` plugin into this project's test collection.
+
 ```python
 from ipfd import build_report, plot_timeline
 from ipfd.adapters.synthetic import make_silent_failure_rollout
@@ -163,11 +166,21 @@ print(report.summary())
 plot_timeline(rollout, report, "timeline.png")
 ```
 
-## 60-second demo: on a real trained policy (with Isaac Lab)
+## One-command demo (with Isaac Lab)
 
-One command. It fetches NVIDIA's official published Lift-Cube checkpoint, rolls it
-out through the packaged `collect_rollout`, injects an irrecoverable failure, runs
-the env-isolated recovery probe, and writes the timeline figure:
+Prerequisites: Isaac Lab 4.5.22, a CUDA GPU, and an Isaac Lab Python environment.
+The first learned-policy run downloads NVIDIA's published Lift-Cube checkpoint,
+so it can take several minutes.
+
+Run the compatibility preflight before the full demo:
+
+```bash
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless
+```
+
+The learned-policy command rolls the checkpoint through the packaged
+`collect_rollout`, injects an irrecoverable failure, runs the env-isolated recovery
+probe, and writes the timeline figure:
 
 ```bash
 OMNI_KIT_ACCEPT_EULA=YES \
@@ -177,12 +190,7 @@ OMNI_KIT_ACCEPT_EULA=YES \
 
 Expected (measured): `ponr_detected: YES`, PoNR at step 56 (1.12 s), observable
 failure at step 57, `primary_integrity_max_delta_m: 0.0`. Swap `--failure slip` for
-the recoverable case, which correctly reports **no** PoNR. To sanity-check runtime
-compatibility only:
-
-```bash
-OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless
-```
+the recoverable case, which correctly reports **no** PoNR.
 
 The `scripts/verify_pnor_*.py` chain is the underlying evidence trail; see
 [`scripts/README.md`](scripts/README.md) for the index.
