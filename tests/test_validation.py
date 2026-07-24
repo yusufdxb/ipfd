@@ -186,6 +186,12 @@ def test_known_detector_weights_still_accepted():
     assert s.shape == (r.T,)
 
 
+def test_nonfinite_detector_weight_rejected():
+    r = Rollout(observations=_obs(), actions=_act(), success=False)
+    with pytest.raises(ValueError, match=r"detector weight 'drift'.*finite"):
+        detectors.failure_imminence_score(r, weights={"drift": np.nan})
+
+
 def test_first_alarm_rejects_nonpositive_persistence():
     with pytest.raises(ValueError, match="persistence.*>= 1"):
         detectors.first_alarm(np.zeros(5), threshold=0.5, persistence=0)

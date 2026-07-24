@@ -101,12 +101,10 @@ def _fmt_num(x: float | None) -> str:
 
 
 def _json_default(o: object) -> object:
-    if isinstance(o, np.integer):
-        return int(o)
-    if isinstance(o, np.floating):
-        return float(o)
     if isinstance(o, np.ndarray):
         return o.tolist()
+    if isinstance(o, np.generic):
+        return o.item()
     raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 
 

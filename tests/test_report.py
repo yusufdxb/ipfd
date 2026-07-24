@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 import pytest
 
 from ipfd import build_report
@@ -38,6 +39,27 @@ def test_report_json_roundtrips():
     assert d["t_ponr"] == rep.t_ponr
     assert d["success"] == rep.success
     assert set(["time_to_failure_s", "false_continuity_rate", "drift_at_collapse"]).issubset(d)
+
+
+def test_report_json_serializes_numpy_seed_and_meta_values():
+    r = make_silent_failure_rollout(seed=2)
+    r.seed = np.int64(2)
+    r.meta.update(
+        {
+            "array": np.arange(3),
+            "count": np.int32(4),
+            "score": np.float32(0.5),
+            "enabled": np.bool_(True),
+        }
+    )
+
+    payload = json.loads(build_report(r).to_json())
+
+    assert payload["seed"] == 2
+    assert payload["meta"]["array"] == [0, 1, 2]
+    assert payload["meta"]["count"] == 4
+    assert payload["meta"]["score"] == pytest.approx(0.5)
+    assert payload["meta"]["enabled"] is True
 
 
 def test_report_reproducible():

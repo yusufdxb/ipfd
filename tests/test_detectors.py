@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from ipfd import detectors
 from ipfd.adapters.synthetic import make_silent_failure_rollout, make_success_rollout
@@ -11,6 +12,17 @@ def test_action_variance_score_range_and_spike():
     assert np.all((s >= 0) & (s <= 1))
     # thrash near observable failure must score higher than the calm early phase
     assert s[150:160].mean() > s[:80].mean() + 0.2
+
+
+def test_action_variance_score_rejects_1d_input_with_shape_error():
+    with pytest.raises(ValueError, match=r"2-D array.*\(T, act_dim\)"):
+        detectors.action_variance_score(np.zeros(10))
+
+
+def test_action_variance_score_rejects_nonnumeric_object_array_clearly():
+    actions = np.full((10, 2), object(), dtype=object)
+    with pytest.raises(ValueError, match=r"numeric values.*float64"):
+        detectors.action_variance_score(actions)
 
 
 def test_entropy_collapse_fires_in_doom_window():

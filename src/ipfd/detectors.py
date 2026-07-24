@@ -85,13 +85,24 @@ def action_variance_score(
     Returns:
         ``(T,)`` score in ``[0, 1]``.
     """
-    actions = np.asarray(actions, dtype=np.float64)
+    try:
+        actions = np.asarray(actions)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "actions must be a numeric 2-D array with shape (T, act_dim)."
+        ) from exc
     if actions.ndim != 2:
         raise ValueError(f"actions must be a 2-D array with shape (T, act_dim), got {actions.shape}.")
     if actions.shape[0] == 0:
         raise ValueError("actions has zero timesteps (T=0); expected at least one timestep.")
     if actions.shape[1] == 0:
         raise ValueError("actions has zero action dimensions (act_dim=0); expected at least one action dimension.")
+    try:
+        actions = actions.astype(np.float64, copy=False)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"actions must contain only numeric values convertible to float64, got dtype {actions.dtype}."
+        ) from exc
     if not np.isfinite(actions).all():
         bad = tuple(int(i) for i in np.argwhere(~np.isfinite(actions))[0])
         raise ValueError(f"actions contains a non-finite value at index {list(bad)}.")

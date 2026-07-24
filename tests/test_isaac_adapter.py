@@ -9,15 +9,70 @@ that used to live, untested, in scripts/. They run here with no GPU.
 
 from __future__ import annotations
 
+import sys
+import warnings
+from types import ModuleType
+
 import numpy as np
 
+import ipfd.adapters.isaac_lab as isaac_adapter
 from ipfd.adapters.isaac_lab import (
+    TESTED_ISAAC_LAB_VERSION,
     _deep_clone,
+    _require_isaac_lab,
     collect_rollout,
     forward_fill_recovery,
     offset_root_positions,
     slice_state,
 )
+
+
+def _mock_isaac_lab(monkeypatch, version):
+    module = ModuleType("isaaclab")
+    monkeypatch.setitem(sys.modules, "isaaclab", module)
+    monkeypatch.setattr(isaac_adapter, "_isaac_lab_version_checked", False)
+    if version is None:
+        def missing_version(_name):
+            raise isaac_adapter.metadata.PackageNotFoundError
+
+        monkeypatch.setattr(isaac_adapter.metadata, "version", missing_version)
+    else:
+        monkeypatch.setattr(isaac_adapter.metadata, "version", lambda _name: version)
+    return module
+
+
+def test_matching_isaac_lab_version_does_not_warn(monkeypatch):
+    _mock_isaac_lab(monkeypatch, TESTED_ISAAC_LAB_VERSION)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        _require_isaac_lab()
+
+    assert caught == []
+
+
+def test_mismatched_isaac_lab_version_warns_exactly_once(monkeypatch):
+    installed = "5.0.0"
+    _mock_isaac_lab(monkeypatch, installed)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        _require_isaac_lab()
+        _require_isaac_lab()
+
+    assert len(caught) == 1
+    assert TESTED_ISAAC_LAB_VERSION in str(caught[0].message)
+    assert installed in str(caught[0].message)
+
+
+def test_missing_isaac_lab_version_metadata_is_import_safe(monkeypatch):
+    _mock_isaac_lab(monkeypatch, None)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        _require_isaac_lab()
+
+    assert caught == []
 
 
 def _fake_state() -> dict:

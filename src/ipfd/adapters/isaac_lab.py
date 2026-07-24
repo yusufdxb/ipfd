@@ -35,13 +35,18 @@ Reference pattern (Isaac Lab manager-based env):
 
 from __future__ import annotations
 
+import warnings
+from importlib import metadata
 from typing import Any, Protocol
 
 import numpy as np
 
 from ..types import Rollout
 
+TESTED_ISAAC_LAB_VERSION = "4.5.22"
+
 __all__ = [
+    "TESTED_ISAAC_LAB_VERSION",
     "Policy",
     "collect_rollout",
     "slice_state",
@@ -50,6 +55,8 @@ __all__ = [
     "probe_recovery_isolated",
     "evaluate_recovery_isolated",
 ]
+
+_isaac_lab_version_checked = False
 
 
 class Policy(Protocol):
@@ -67,13 +74,39 @@ class Policy(Protocol):
 
 def _require_isaac_lab() -> None:
     try:
-        import isaaclab  # noqa: F401
+        import isaaclab
     except Exception as exc:  # pragma: no cover - environment dependent
         raise ImportError(
             "The Isaac Lab adapter requires a working Isaac Lab install and a GPU. "
             "Install Isaac Lab and run this outside CI. The analysis layer "
             "(ipfd.build_report / plot_timeline) does not need it."
         ) from exc
+    _warn_if_untested_isaac_lab_version(isaaclab)
+
+
+def _warn_if_untested_isaac_lab_version(isaaclab_module: Any) -> None:
+    """Warn once when the installed Isaac Lab version is outside the tested target."""
+    global _isaac_lab_version_checked
+    if _isaac_lab_version_checked:
+        return
+
+    try:
+        installed_version = metadata.version("isaaclab")
+    except metadata.PackageNotFoundError:
+        installed_version = getattr(isaaclab_module, "__version__", None)
+
+    if installed_version is None:
+        return
+
+    _isaac_lab_version_checked = True
+    if installed_version != TESTED_ISAAC_LAB_VERSION:
+        warnings.warn(
+            f"IPFD's recovery probe is tested on Isaac Lab {TESTED_ISAAC_LAB_VERSION}, "
+            f"but {installed_version} is installed. Continuing without blocking; "
+            "recovery-probe results are unverified on this version.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
 
 # --- Pure state helpers (no simulator; unit-tested in CI) ---------------------
