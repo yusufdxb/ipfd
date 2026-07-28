@@ -1,6 +1,10 @@
-import torch
+import pytest
 
 from ipfd.oracles.rsl_rl_policy import _load_checkpoint_compat
+
+# torch is an Isaac-Lab-side dependency and is deliberately not declared in
+# [dev], so CI installs the analysis layer without it. Skip rather than fail.
+torch = pytest.importorskip("torch")
 
 
 class _FakeActor:

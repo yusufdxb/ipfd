@@ -14,6 +14,7 @@ import warnings
 from types import ModuleType
 
 import numpy as np
+import pytest
 
 import ipfd.adapters.isaac_lab as isaac_adapter
 from ipfd.adapters.isaac_lab import (
@@ -301,7 +302,9 @@ def test_physical_recovery_check_fails_closed_outside_grasp():
 
 
 def test_probe_resets_policy_and_recovery_state(monkeypatch):
-    import torch
+    # probe_recovery_isolated imports torch internally, so this one test cannot
+    # run on the torch-free analysis-layer install that CI uses.
+    torch = pytest.importorskip("torch")
 
     class _Scene(dict):
         env_origins = torch.zeros((2, 3))
