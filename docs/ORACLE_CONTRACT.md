@@ -16,23 +16,27 @@ still be reached within a fixed budget?* In the packaged Isaac Lab adapter
 | Piece | Signature | Role |
 |-------|-----------|------|
 | **Recovery controller** | `recovery_policy(obs) -> actions` (batched, all envs) | Drives the probe env for `probe_budget` steps trying to recover. |
-| **Success predicate** | `object_height(env, env_idx) -> float`, plus `rest_height` and `lift_threshold` | Recovery succeeds the first step `object_height(env, probe_env) - rest_height > lift_threshold`. |
+| **Success predicate** | A caller-supplied `recovery_check(env, env_idx, rest_height, lift_threshold) -> bool`; height-only is a legacy fallback | Recovery succeeds only when the supplied predicate says the task is physically recoverable. The default height-only predicate is retained for compatibility but must not be used for out-of-reach or airborne disturbances. |
 
-The adapter combines them into the internal test
-`recovered(env, i) = (object_height(env, i) - rest_height) > lift_threshold` and
-runs the isolated probe (`probe_recovery_isolated`).
+The adapter uses the caller-supplied physical recovery predicate as
+`recovered(env, i)`. If no predicate is supplied, the legacy fallback is
+`(object_height(env, i) - rest_height) > lift_threshold`; this fallback is not
+safe for teleport or airborne-object experiments because height is not proof of
+grasp, reachability, or task success. Production experiments must provide a
+predicate that includes task success or equivalent grasp/reachability evidence.
 
 ## Exact meaning of `recovery_success[t]`
 
 `Rollout.recovery_success` is a `(T,)` boolean array.
 
-- `recovery_success[t] == True`  → from the state saved at step `t`, the recovery
-  controller reached the goal within the budget. **Read this as "not *provably*
-  irrecoverable at `t`," not "provably recoverable."** A better controller or a
-  longer budget can only turn a `False` into `True`, never the reverse, so the
-  array is a *sound upper bound* on recoverability.
-- `recovery_success[t] == False` → the controller failed to recover within the
-  budget from step `t`.
+- `recovery_success[t] == True` means the supplied controller and physical
+  predicate established recovery from step `t`.
+- `recovery_success[t] == False` means only that this controller failed within
+  this budget. It is not proof that no controller can recover.
+
+A stronger controller can move the measured PoNR later. When `True` verdicts are
+physically sound, the oracle-relative PoNR timestep is a lower bound on the
+optimal-control PoNR timestep.
 
 **PoNR = the last `True` → `False` flip.** `point_of_no_return` returns the index
 just after the last recoverable step (`None` if the task never becomes
@@ -58,9 +62,11 @@ budget*. State it when you report results.
 ## Isolation requirement
 
 The probe uses **environment isolation** and needs `num_envs >= 2`: env 0 is the
-pristine primary (recorded, never `reset_to`), env 1 is the probe cell. A
-single-env `reset_to` probe corrupts the PhysX contact cache after a grasp and
-the corruption survives `env.reset()` (see `scripts/verify_pnor_decoupled.py`).
+primary whose rollout is recorded before probing (and never `reset_to`), while
+env 1 is the probe cell. A
+historical single-env probe changed the later trajectory after evolved,
+contact-rich state. The experiment did not isolate the missing simulator or task
+state (see `scripts/isaaclab_reset_to_contact_mre.py`).
 `collect_rollout` raises if you pass a `recovery_policy` with `num_envs < 2`.
 
 ## A conforming oracle for a new pick-and-place variant
@@ -71,7 +77,7 @@ predicate**; nothing else moves.
 
 ```python
 import torch
-from ipfd.adapters.isaac_lab import collect_rollout
+from ipfd.adapters.isaac_lab import collect_rollout, make_pick_lift_recovery_check
 
 # 1. Success predicate: height of YOUR object in a given env (origin-corrected).
 #    root_pos_w is a warp array; wp.to_torch gives an (num_envs, 3) tensor.
@@ -92,15 +98,22 @@ def recovery_policy(obs):
     return my_recovery_controller(obs["policy"])   # -> (num_envs, act_dim) tensor
 
 # 3. Run IPFD. env must be a manager-based RL env with num_envs >= 2.
+recovery_check = make_pick_lift_recovery_check(
+    workspace_radius=0.85,
+    max_ee_distance=0.15,
+    sustain_steps=8,
+)
 rollout = collect_rollout(
     env,
     policy=my_task_policy,           # the policy under test (drives env 0)
     object_height=object_height,
     rest_height=REST_HEIGHT,
     lift_threshold=LIFT_THRESHOLD,
+    recovery_check=recovery_check,
     recovery_policy=recovery_policy, # omit to skip PoNR entirely
     probe_budget=90,                 # fixed recovery budget (steps)
     probe_stride=8,                  # probe every 8th step
+    probe_repeats=3,                 # raw repeated verdicts per checkpoint
 )
 
 from ipfd import point_of_no_return

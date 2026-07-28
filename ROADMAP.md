@@ -1,9 +1,9 @@
 # Roadmap
 
-IPFD is a stable, deliberately narrow tool. Its 1.0 surface, a pure-NumPy analysis
-layer plus a verified env-isolated recovery probe for Franka single-object
-pick-and-place, is complete and supported. This roadmap describes the direction we
-intend to grow in, without compromising that stability.
+IPFD is a deliberately narrow tool. Its 1.0 CPU analysis surface is stable. The
+Franka learned-policy recovery evidence is under physical-predicate revalidation,
+so simulator results remain explicitly provisional. This roadmap describes the
+direction of the project without presenting planned work as shipped evidence.
 
 Priorities are ordered by how much they help a new Isaac Lab user, not by novelty.
 Tracked work lives in [GitHub issues and milestones](https://github.com/yusufdxb/ipfd/milestones);
@@ -27,9 +27,9 @@ your own recovery oracle, so PoNR can be computed for your policy without readin
 adapter source.
 
 ### Broaden simulator-version support
-The recovery probe is validated against Isaac Lab 4.5.22. We want to understand which
-parts of the adapter are version-specific and support additional Isaac Lab versions,
-with a clear runtime signal when a version is untested.
+The recovery probe was exercised against one local runtime whose `isaaclab`
+distribution reported 4.5.22. We want to identify version-specific behavior and
+support additional runtimes with a clear warning when a version is untested.
 
 ### Strengthen the safety net
 Extend automated coverage of the GPU path via recorded-rollout fixtures that replay

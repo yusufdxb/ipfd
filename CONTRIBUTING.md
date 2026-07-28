@@ -10,7 +10,7 @@ IPFD is split into two layers with very different dependencies:
 
 - **Analysis layer** (`src/ipfd/detectors.py`, `ponr.py`, `metrics.py`, `report.py`,
   `viz.py`, `types.py`): pure NumPy and Matplotlib. No simulator, no torch, no GPU.
-  This is what runs in CI on Python 3.10 and 3.11 with no hardware, and what makes
+  This is what runs in CI on Python 3.10, 3.11, and 3.12 with no hardware, and what makes
   IPFD reproducible.
 - **Adapter / oracle layer** (`src/ipfd/adapters/isaac_lab.py`, `src/ipfd/oracles/*`):
   the only code allowed to import Isaac Lab, and it must do so **lazily** (inside the
@@ -48,8 +48,8 @@ Isaac Lab is intentionally **not** a declared dependency. You only need it to ru
 
 ## Before you open a PR
 
-1. `ruff check src tests` is clean.
-2. `pytest` passes; state the count in the PR.
+1. `ruff check src tests scripts examples` is clean.
+2. `mypy` and `pytest --cov=ipfd --cov-branch` pass.
 3. New analysis-layer behavior has a test. Synthetic rollouts and reports are
    byte-reproducible (see `test_report_reproducible`); keep them that way.
 4. If you touch the Isaac Lab path, run the relevant `scripts/verify_*.py` on a GPU

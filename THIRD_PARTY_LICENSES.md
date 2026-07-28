@@ -3,7 +3,7 @@
 IPFD is licensed under the MIT License (see [`LICENSE`](LICENSE)). It vendors one
 third-party component, which retains its original license.
 
-## Isaac Lab — `src/ipfd/oracles/pick_lift_sm.py`
+## Isaac Lab: `src/ipfd/oracles/pick_lift_sm.py`
 
 `src/ipfd/oracles/pick_lift_sm.py` is reproduced verbatim from Isaac Lab
 (`scripts/environments/state_machine/lift_cube_sm.py`) and remains under its

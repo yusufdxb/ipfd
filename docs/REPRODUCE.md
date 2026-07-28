@@ -1,103 +1,129 @@
-# Reproducing IPFD's published claims
+# Reproducing IPFD
 
-This page lets an independent lab verify **every major IPFD claim** with **no author
-interaction** and **deterministic** expected output. Parts A and B need **no GPU and
-no Isaac Lab** and reproduce the exact published numbers from recorded real rollouts.
-Part C (optional) re-derives those rollouts from scratch on a GPU.
+This guide separates deterministic CPU compatibility checks from live simulator
+evidence. The CPU path proves that recorded arrays still produce the same analysis.
+It cannot prove that the historical recovery predicate was physically correct.
 
-Exact environment for the committed live-validation evidence:
-Isaac Lab **4.5.22**, `isaacsim` **6.0.0.0**, task `Isaac-Lift-Cube-Franka-v0`,
-NVIDIA's official published `rsl_rl` checkpoint, single CUDA GPU. The analysis
-layer that produces the report is pure NumPy and version-tolerant (Python 3.10 /
-3.11).
+The historical live-validation fingerprint was the locally installed `isaaclab`
+distribution 4.5.22, `isaacsim` 6.0.0.0, task
+`Isaac-Lift-Cube-Franka-v0`, and NVIDIA's published `rsl_rl` checkpoint on one
+CUDA GPU. That fingerprint is provenance, not a generally installable environment
+specification.
 
----
-
-## Part A: Deterministic, GPU-free (the core claim)
+## Part A: deterministic CPU compatibility
 
 ```bash
-git clone https://github.com/yusufdxb/ipfd && cd ipfd
+git clone https://github.com/yusufdxb/ipfd
+cd ipfd
 pip install -e ".[dev]"
 pytest tests/test_replay_fixture.py -v
 ```
 
-`tests/fixtures/*_rollout.npz` are **real rollouts** captured from a live Isaac Lab
-session (arrays only: observations, actions, entropy, embeddings, recovery-probe
-outcomes). The committed fixture hashes are recorded in
-[`tests/fixtures/manifest.json`](tests/fixtures/manifest.json). The test reloads
-them with `ipfd.replay.load_rollout` - no simulator - re-runs the full analysis,
-and asserts the report is **byte-for-byte** identical to the frozen golden JSON in
-`tests/fixtures/`.
+The archives in `tests/fixtures/` contain recorded observations, actions,
+detector signals, and historical recovery verdicts. Their hashes are recorded in
+[`tests/fixtures/manifest.json`](../tests/fixtures/manifest.json). The test reloads
+them without a simulator and asserts that generated reports match the frozen JSON
+byte-for-byte.
 
-**Expected:** `7 passed`. This alone reproduces the two headline results below.
+The historical fixture values are:
 
-You can also reproduce them by hand:
-
-```bash
-python3 - <<'PY'
-from ipfd import build_report
-from ipfd.replay import load_rollout
-for case in ("learned_teleport", "learned_slip"):
-    r = build_report(load_rollout(f"tests/fixtures/{case}_rollout.npz"))
-    print(case, "PoNR=", r.t_ponr, "t_failure=", r.t_failure,
-          "ponr_lead_s=", r.ponr_lead_time_s,
-          "integrity=", r.meta["primary_integrity_max_delta"])
-PY
+```text
+learned_teleport: PoNR=56, t_failure=57, alarm-to-PoNR lead=0.72 s
+learned_slip:     PoNR=None, t_failure=219
 ```
 
-**Expected output (exact):**
+These values are compatibility targets only. The fixtures used a height-only
+recovery predicate and are not current proof of physical recoverability.
 
-```
-learned_teleport PoNR= 56 t_failure= 57 ponr_lead_s= 0.72 integrity= 0.0
-learned_slip PoNR= None t_failure= 219 ponr_lead_s= None integrity= 0.0
-```
-
-## Part B: The installed package (`pip install`)
+## Part B: built-package contract
 
 ```bash
 python3 -m pip install build
 python3 -m build
-python3 -m venv /tmp/ipfd-check && /tmp/ipfd-check/bin/pip install dist/*.whl
-cp tests/fixtures/learned_teleport_rollout.npz /tmp/ipfd-check/ && cd /tmp/ipfd-check
-./bin/python -c "from ipfd import build_report; from ipfd.replay import load_rollout; \
-print(build_report(load_rollout('learned_teleport_rollout.npz')).t_ponr)"
+python3 -m venv /tmp/ipfd-check
+/tmp/ipfd-check/bin/pip install dist/*.whl
+cp tests/fixtures/learned_teleport_rollout.npz /tmp/ipfd-check/
+cd /tmp/ipfd-check
+./bin/ipfd analyze learned_teleport_rollout.npz --report report.json --plot timeline.png
+./bin/ipfd-demo --json demo.json
+./bin/pip check
 ```
 
-**Expected:** `56`, reproduced from the built wheel with the source tree off the path.
+This proves that the wheel contains the advertised library and console commands.
+CI repeats the same check outside the source tree and also installs the source
+distribution.
 
-## Part C: Optional, re-derive the rollouts on a GPU
+## Part C: live GPU revalidation
 
-Requires Isaac Lab 4.5.22 + a CUDA GPU. This regenerates the rollout arrays from
-scratch and confirms they still produce the shipped fixtures' numbers.
+Use a clean tagged checkout so every artifact can identify exact source. The
+`artifacts/` directory is ignored by Git. Run the runtime smoke first:
 
 ```bash
-# Re-run the driver; --save_rollout writes a fresh .npz you can diff against the fixture.
-OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_learned_policy.py \
-    --headless --use_pretrained --probe --failure teleport \
-    --save_rollout /tmp/fresh_teleport.npz
-#   -> expect: ponr_detected: YES ,  primary_integrity_max_delta_m: 0.0
-python3 -c "from ipfd import build_report; from ipfd.replay import load_rollout; \
-print(build_report(load_rollout('/tmp/fresh_teleport.npz')).t_ponr)"   # -> 56
-
-# The standalone Isaac Lab reset_to / contact-state finding (no IPFD imports):
-OMNI_KIT_ACCEPT_EULA=YES python3 scripts/isaaclab_reset_to_contact_mre.py --headless
-#   -> expect: "RESULT: BUG REPRODUCED" with an exact state round-trip (~0) but a
-#      growing trajectory gap, showing scene.get_state() omits contact/solver state.
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless
 ```
 
----
+Evaluate the exact checkpoint first, then collect both the irrecoverable case and
+the recoverable negative control for at least five distinct seeds. Each run uses
+at least three repeated probes per checkpoint and writes raw verdicts:
 
-## Claims → checks
+```bash
+CHECKPOINT=/path/to/model.pt
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/eval_checkpoint.py \
+  --headless --checkpoint "$CHECKPOINT" --num_envs 64 --sustain_steps 10 \
+  --json artifacts/competence.json
 
-| Published claim | Check | Deterministic expected output |
-|---|---|---|
-| Analysis layer runs with no GPU / no Isaac Lab | `pip install -e ".[dev]"; pytest` | test suite passes |
-| Recorded rollout → report is stable byte-for-byte | `pytest tests/test_replay_fixture.py` | `7 passed` |
-| Irrecoverable teleport localizes at PoNR **step 56**, +0.72 s alarm-before-PoNR lead | Part A hand-run | `learned_teleport PoNR= 56 ... ponr_lead_s= 0.72` |
-| Env-isolated probe never perturbs the primary rollout | Part A hand-run | `integrity= 0.0` (both cases) |
-| Recoverable slip yields **no** PoNR (negative control) | Part A hand-run | `learned_slip PoNR= None` |
-| `pip install` reproduces the result end-to-end | Part B | `56` |
-| `scene.reset_to(get_state())` omits contact/solver state | Part C MRE | `RESULT: BUG REPRODUCED` |
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_learned_policy.py \
+  --headless --checkpoint "$CHECKPOINT" --probe --probe_repeats 3 \
+  --failure teleport --seed 0 \
+  --save_rollout artifacts/teleport-seed0.npz \
+  --json artifacts/teleport-seed0.json
 
-No step needs the author. If any deterministic output above differs on your machine,
-that is a reportable finding: open an issue with your platform and the diff.
+OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_learned_policy.py \
+  --headless --checkpoint "$CHECKPOINT" --probe --probe_repeats 3 \
+  --failure slip --seed 0 \
+  --save_rollout artifacts/slip-seed0.npz \
+  --json artifacts/slip-seed0.json
+```
+
+Repeat for seeds 1 through 4, then combine the run records:
+
+```bash
+python3 scripts/aggregate_recovery_runs.py artifacts/*-seed*.json \
+  --output artifacts/multiseed.json
+```
+
+Build the actionability artifact from uniquely hashed saved rollouts and a
+reviewed manifest:
+
+```bash
+python3 scripts/build_actionability_evidence.py \
+  artifacts/actionability-manifest.json \
+  --output artifacts/actionability.json
+```
+
+The standalone replay-equivalence reproducer tests a narrower simulator property:
+
+```bash
+OMNI_KIT_ACCEPT_EULA=YES \
+  python3 scripts/isaaclab_reset_to_contact_mre.py --headless
+```
+
+`REPLAY DIVERGENCE REPRODUCED` means exposed scene state round-tripped while the
+continued trajectory diverged. It does not identify which unexposed simulator or
+task state caused the difference.
+
+## Proof boundary
+
+| Check | What it proves |
+|---|---|
+| Replay fixture tests | Historical arrays remain analysis-compatible. |
+| Wheel and sdist smoke tests | Published package artifacts contain working APIs and commands. |
+| Runtime smoke | IPFD attaches to the tested live environment. |
+| Repeated physical recovery runs | Recovery outcomes under the configured oracle, with raw repetitions. |
+| Multi-seed evidence gate | Required positive and negative controls meet the declared thresholds. |
+| Replay-equivalence reproducer | Exposed state restoration is insufficient for trajectory replay in the observed condition. |
+
+See [REVALIDATION.md](REVALIDATION.md) and [EVIDENCE_GATE.md](EVIDENCE_GATE.md)
+before promoting a learned-policy result to verified, and
+[GPU_REPRODUCIBILITY.md](GPU_REPRODUCIBILITY.md) for what a live run must record
+and what installing the package does not recreate.
