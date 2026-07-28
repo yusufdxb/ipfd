@@ -105,6 +105,23 @@ def test_inf_recovery_success_rejected():
     assert "recovery_success" in str(ei.value)
 
 
+def test_fractional_recovery_success_rejected():
+    rec = np.ones(10)
+    rec[5] = 0.5
+    with pytest.raises(ValueError, match="booleans or integer 0/1"):
+        Rollout(observations=_obs(), actions=_act(), success=False, recovery_success=rec)
+
+
+def test_success_must_be_boolean():
+    with pytest.raises(ValueError, match="success must be a boolean"):
+        Rollout(observations=_obs(), actions=_act(), success=1)
+
+
+def test_seed_must_be_integer():
+    with pytest.raises(ValueError, match="seed must be an integer"):
+        Rollout(observations=_obs(), actions=_act(), success=False, seed=1.5)
+
+
 # --- Rollout: dt ------------------------------------------------------------
 
 
@@ -195,3 +212,14 @@ def test_nonfinite_detector_weight_rejected():
 def test_first_alarm_rejects_nonpositive_persistence():
     with pytest.raises(ValueError, match="persistence.*>= 1"):
         detectors.first_alarm(np.zeros(5), threshold=0.5, persistence=0)
+
+
+def test_first_alarm_rejects_nan_threshold():
+    with pytest.raises(ValueError, match="threshold.*finite"):
+        detectors.first_alarm(np.zeros(5), threshold=np.nan)
+
+
+def test_negative_detector_weight_rejected():
+    r = Rollout(observations=_obs(), actions=_act(), success=False)
+    with pytest.raises(ValueError, match=r"detector weight 'drift'.*\[0, 1\]"):
+        detectors.failure_imminence_score(r, weights={"drift": -0.1})

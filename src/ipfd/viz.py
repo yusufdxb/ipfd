@@ -51,8 +51,9 @@ def plot_timeline(rollout: Rollout, report: FailureDebugReport, path: str) -> st
         _mark(ax, report.t_alarm, rollout.dt, "#ff7f0e", "alarm")
         _mark(ax, report.t_failure, rollout.dt, "#7f7f7f", "failure")
 
+    config = signals.get("config")
     axes[-1].axhline(
-        signals.get("config").alarm_threshold if signals.get("config") else 0.5,
+        getattr(config, "alarm_threshold", 0.5),
         ls=":", color="k", lw=1, alpha=0.6,
     )
     axes[-1].set_xlabel("time (s)")

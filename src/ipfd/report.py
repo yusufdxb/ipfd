@@ -31,6 +31,28 @@ class AnalysisConfig:
     alarm_persistence: int = 3
     weights: dict[str, float] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        for name in ("baseline_window", "drift_ref_window", "alarm_persistence"):
+            value = getattr(self, name)
+            if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
+                raise ValueError(f"{name} must be a positive integer, got {value!r}.")
+            if value < 1:
+                raise ValueError(f"{name} must be >= 1, got {value!r}.")
+            setattr(self, name, int(value))
+        if self.drift_metric not in {"cosine", "l2"}:
+            raise ValueError("drift_metric must be 'cosine' or 'l2'.")
+        if isinstance(self.alarm_threshold, (bool, np.bool_)):
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].")
+        try:
+            self.alarm_threshold = float(self.alarm_threshold)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].") from exc
+        if not np.isfinite(self.alarm_threshold) or not 0 <= self.alarm_threshold <= 1:
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].")
+        if not isinstance(self.weights, dict):
+            raise ValueError("weights must be a dictionary of detector names to weights.")
+        self.weights = dict(self.weights)
+
 
 @dataclass
 class FailureDebugReport:
@@ -65,7 +87,7 @@ class FailureDebugReport:
         except ValueError as exc:
             raise ValueError(f"report JSON must contain only finite numeric values: {exc}") from exc
         if path:
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(s)
         return s
 
