@@ -1,25 +1,21 @@
 """Isaac Lab adapter: collect a Franka pick-and-place rollout with a recovery probe.
 
-STATUS: **runtime-verified on Isaac Lab 4.5.22** (env ``Isaac-Lift-Cube-Franka-IK-Abs-v0``,
-a CUDA GPU) via the ``scripts/verify_pnor_*.py`` evidence chain. The recovery
-probe here uses **environment isolation**, which is the design those scripts
-proved correct:
+STATUS: **runtime-exercised with a local ``isaaclab`` 4.5.22 distribution**.
+Learned-policy recovery semantics are under revalidation. Historical experiments
+established these narrow observations:
 
-  * Single-step ``reset_to`` is bit-exact (``verify_state_fidelity.py``), but
-    probing *in the primary env* corrupts the rollout after a grasp because the
-    PhysX contact-manifold / solver warm-start cache is not part of
-    ``scene.get_state()`` (``verify_probe_transparency.py``:
-    ``root_cause: CONTACT_STATE_NOT_RESTORED``).
-  * A single ``reset_to`` on a ``num_envs == 1`` sim poisons it *even across
-    ``env.reset()``* (``verify_pnor_decoupled.py``: ``reset_to_poisons_env: YES``).
-  * BUT per-env ``reset_to`` is **local**: churning env 1 leaves env 0
-    bit-identical (``verify_multienv_isolation.py``: ``isolation_viable: YES``).
+  * Exposed scene state round-tripped exactly in a one-step check, while a
+    trajectory replay after evolved, contact-rich state diverged. The missing
+    simulator or task state was not isolated.
+  * In-place probing changed the continuation of the primary rollout.
+  * In the measured two-environment setup, ``reset_to(..., env_ids=[1])`` did not
+    change env 0's object pose at the reset boundary.
 
-So the recovery probe **requires ``num_envs >= 2``**: env 0 is the PRIMARY and is
-never ``reset_to``; env 1 (``probe_env``) receives origin-shifted snapshots of the
-primary and diverges freely. ``verify_pnor_grasped.py`` demonstrates the full
-mechanic end-to-end with ``overall_status: VERIFIED`` and a live primary-integrity
-assertion (max env-0 pose delta ``0.00e+00`` across 51 probe ``reset_to`` calls).
+The recovery probe therefore **requires ``num_envs >= 2``**: env 0 is recorded
+before probing and is never restored; env 1 receives origin-shifted snapshots.
+The reset-boundary check only measures whether resetting env 1 immediately
+changes env 0's object pose. It does not claim that env 0 stays static while the
+vectorized simulator advances all environments during a probe.
 
 The pure, simulator-free pieces of that mechanic (``slice_state``,
 ``offset_root_positions``, ``forward_fill_recovery``) live here and are unit-tested
@@ -35,6 +31,7 @@ Reference pattern (Isaac Lab manager-based env):
 
 from __future__ import annotations
 
+import os
 import warnings
 from importlib import metadata
 from typing import Any, Protocol
@@ -43,10 +40,13 @@ import numpy as np
 
 from ..types import Rollout
 
+# This fingerprints the locally validated distribution. It is not a claim that
+# the same version is available from every public Isaac Lab installation path.
 TESTED_ISAAC_LAB_VERSION = "4.5.22"
 
 __all__ = [
     "TESTED_ISAAC_LAB_VERSION",
+    "configure_asset_root",
     "Policy",
     "collect_rollout",
     "slice_state",
@@ -54,9 +54,38 @@ __all__ = [
     "forward_fill_recovery",
     "probe_recovery_isolated",
     "evaluate_recovery_isolated",
+    "PhysicalRecoveryCheck",
+    "make_pick_lift_recovery_check",
 ]
 
 _isaac_lab_version_checked = False
+
+
+def configure_asset_root(root: str | None) -> None:
+    """Override Isaac asset URLs before task registration.
+
+    Isaac Lab and Isaac Sim can be installed at different release levels. The
+    public IPFD validation target uses the Isaac 4.5 asset tree, so callers can
+    set this before importing ``isaaclab_tasks`` when their runtime defaults to
+    another asset channel.
+    """
+    if not root:
+        return
+    import isaaclab.utils.assets as assets
+
+    root = root.rstrip("/")
+    assets.NUCLEUS_ASSET_ROOT_DIR = root
+    assets.NVIDIA_NUCLEUS_DIR = f"{root}/NVIDIA"
+    assets.ISAAC_NUCLEUS_DIR = f"{root}/Isaac"
+    assets.ISAACLAB_NUCLEUS_DIR = f"{root}/Isaac/IsaacLab"
+
+    # Robot configs may have captured the module-level URL before task
+    # registration. Update the Franka configs used by the shipped Lift task.
+    import isaaclab_assets.robots.franka as franka
+
+    panda_path = f"{assets.ISAACLAB_NUCLEUS_DIR}/Robots/FrankaEmika/panda_instanceable.usd"
+    franka.FRANKA_PANDA_CFG.spawn.usd_path = panda_path
+    franka.FRANKA_PANDA_HIGH_PD_CFG.spawn.usd_path = panda_path
 
 
 class Policy(Protocol):
@@ -90,6 +119,7 @@ def _warn_if_untested_isaac_lab_version(isaaclab_module: Any) -> None:
     if _isaac_lab_version_checked:
         return
 
+    installed_version: str | None
     try:
         installed_version = metadata.version("isaaclab")
     except metadata.PackageNotFoundError:
@@ -99,9 +129,10 @@ def _warn_if_untested_isaac_lab_version(isaaclab_module: Any) -> None:
         return
 
     _isaac_lab_version_checked = True
-    if installed_version != TESTED_ISAAC_LAB_VERSION:
+    expected = os.getenv("IPFD_EXPECTED_ISAAC_LAB_VERSION", TESTED_ISAAC_LAB_VERSION)
+    if installed_version != expected:
         warnings.warn(
-            f"IPFD's recovery probe is tested on Isaac Lab {TESTED_ISAAC_LAB_VERSION}, "
+            f"IPFD expected Isaac Lab {expected}, "
             f"but {installed_version} is installed. Continuing without blocking; "
             "recovery-probe results are unverified on this version.",
             RuntimeWarning,
@@ -183,6 +214,152 @@ def forward_fill_recovery(verdicts: dict[int, bool], length: int) -> np.ndarray:
     return rec
 
 
+class PhysicalRecoveryCheck:
+    """Conservative pick/lift recovery predicate.
+
+    Height alone is insufficient: an airborne or teleported object can cross a
+    lift threshold without being grasped.  This predicate requires the object to
+    be above the table, inside a reachable workspace, and (when available) close
+    to the end effector with a closed gripper.  The condition must hold for
+    ``sustain_steps`` consecutive simulator steps.  Missing required signals are
+    treated as unknown and therefore return ``False`` rather than claiming
+    recovery.
+    """
+
+    def __init__(
+        self,
+        *,
+        object_name: str = "object",
+        robot_name: str = "robot",
+        ee_body_name: str = "panda_hand",
+        ee_body_index: int | None = None,
+        workspace_radius: float = 0.85,
+        max_ee_distance: float = 0.15,
+        gripper_joint_indices: tuple[int, int] = (-2, -1),
+        gripper_close_threshold: float = 0.07,
+        sustain_steps: int = 8,
+    ):
+        if not object_name or not robot_name or not ee_body_name:
+            raise ValueError("object_name, robot_name, and ee_body_name must be non-empty")
+        if isinstance(sustain_steps, bool) or not isinstance(sustain_steps, int) or sustain_steps < 1:
+            raise ValueError("sustain_steps must be an integer >= 1")
+        if ee_body_index is not None and (
+            isinstance(ee_body_index, bool) or not isinstance(ee_body_index, int) or ee_body_index < 0
+        ):
+            raise ValueError("ee_body_index must be a non-negative integer or None")
+        if len(gripper_joint_indices) != 2 or not all(
+            isinstance(index, int) and not isinstance(index, bool)
+            for index in gripper_joint_indices
+        ):
+            raise ValueError("gripper_joint_indices must contain exactly two integer indices")
+        numeric = {
+            "workspace_radius": workspace_radius,
+            "max_ee_distance": max_ee_distance,
+            "gripper_close_threshold": gripper_close_threshold,
+        }
+        for name, value in numeric.items():
+            try:
+                numeric_value = float(value)
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"{name} must be finite and > 0") from exc
+            if isinstance(value, bool) or not np.isfinite(numeric_value) or numeric_value <= 0:
+                raise ValueError(f"{name} must be finite and > 0")
+        self.object_name = object_name
+        self.robot_name = robot_name
+        self.ee_body_name = ee_body_name
+        self.ee_body_index = ee_body_index
+        self.workspace_radius = float(workspace_radius)
+        self.max_ee_distance = float(max_ee_distance)
+        self.gripper_joint_indices = tuple(gripper_joint_indices)
+        self.gripper_close_threshold = float(gripper_close_threshold)
+        self.sustain_steps = int(sustain_steps)
+        self._counts: dict[int, int] = {}
+        self._resolved_ee_body_index: int | None = ee_body_index
+
+    def reset(self, env_idx: int) -> None:
+        self._counts.pop(int(env_idx), None)
+
+    @staticmethod
+    def _tensor(value: Any) -> Any:
+        if hasattr(value, "detach"):
+            return value.detach()
+        try:
+            import warp as wp
+
+            return wp.to_torch(value).detach()
+        except (ImportError, RuntimeError, TypeError):
+            return np.asarray(value)
+
+    @staticmethod
+    def _numpy(value: Any) -> np.ndarray:
+        if hasattr(value, "detach"):
+            value = value.detach()
+        if hasattr(value, "cpu"):
+            value = value.cpu()
+        return np.asarray(value, dtype=float)
+
+    def _resolve_ee_index(self, robot: Any) -> int | None:
+        if self._resolved_ee_body_index is not None:
+            return self._resolved_ee_body_index
+        if not hasattr(robot, "find_bodies"):
+            return None
+        indices, _names = robot.find_bodies(self.ee_body_name, preserve_order=True)
+        if len(indices) != 1:
+            return None
+        self._resolved_ee_body_index = int(indices[0])
+        return self._resolved_ee_body_index
+
+    def __call__(self, env: Any, env_idx: int, rest_height: float,
+                 lift_threshold: float) -> bool:
+        try:
+            scene = env.unwrapped.scene
+            object_entity = scene[self.object_name]
+            robot_entity = scene[self.robot_name]
+            obj_pos = self._tensor(object_entity.data.root_pos_w)[env_idx, :3]
+            origins = getattr(scene, "env_origins", None)
+            if origins is not None:
+                origin = self._tensor(origins)[env_idx]
+                obj_pos = obj_pos - origin
+            z = float(obj_pos[2].item() if hasattr(obj_pos[2], "item") else obj_pos[2])
+            if z - float(rest_height) <= float(lift_threshold):
+                self.reset(env_idx)
+                return False
+            # Reject obvious teleport/debris states outside the robot workspace.
+            if float(np.linalg.norm(self._numpy(obj_pos[:2]))) > self.workspace_radius:
+                self.reset(env_idx)
+                return False
+            robot_data = robot_entity.data
+            ee_index = self._resolve_ee_index(robot_entity)
+            if ee_index is None or not hasattr(robot_data, "body_pos_w"):
+                self.reset(env_idx)
+                return False
+            ee = self._tensor(robot_data.body_pos_w)[env_idx, ee_index, :3]
+            if origins is not None:
+                ee = ee - origin
+            if float(np.linalg.norm(self._numpy(ee - obj_pos))) > self.max_ee_distance:
+                self.reset(env_idx)
+                return False
+            if not hasattr(robot_data, "joint_pos"):
+                self.reset(env_idx)
+                return False
+            joints = self._numpy(self._tensor(robot_data.joint_pos)[env_idx])
+            fingers = joints[list(self.gripper_joint_indices)]
+            width = float(np.abs(fingers).sum())
+            if width >= self.gripper_close_threshold:
+                self.reset(env_idx)
+                return False
+        except (AttributeError, KeyError, IndexError, RuntimeError, TypeError, ValueError):
+            self.reset(env_idx)
+            return False
+        self._counts[env_idx] = self._counts.get(env_idx, 0) + 1
+        return self._counts[env_idx] >= self.sustain_steps
+
+
+def make_pick_lift_recovery_check(**kwargs: Any) -> PhysicalRecoveryCheck:
+    """Return the conservative default recovery contract for pick-and-lift."""
+    return PhysicalRecoveryCheck(**kwargs)
+
+
 # --- Simulator touchpoints (thin; require a live Isaac Lab GPU env) -----------
 
 
@@ -205,25 +382,29 @@ def probe_recovery_isolated(
     primary_env: int = 0,
     probe_env: int = 1,
     budget: int = 90,
-    locality: dict[str, float] | None = None,
+    locality: dict[str, Any] | None = None,
+    reset_recovered: Any | None = None,
 ) -> bool:  # pragma: no cover - requires live sim
-    """One env-isolated recovery probe (the VERIFIED mechanic).
+    """One env-isolated recovery probe.
 
     Origin-shift ``saved_state`` into ``probe_env``, ``reset_to`` **only** that env,
     run the batched ``recovery_policy`` there for ``budget`` steps, and report
-    whether ``recovered(env, probe_env)`` ever became true. The primary env is never
-    restored, so its rollout is untouched.
+    whether ``recovered(env, probe_env)`` ever became true. Primary rollout data
+    was recorded before this pass; the primary environment itself still advances
+    during the batched recovery rollout.
 
     Args:
         recovery_policy: Batched callable ``policy(obs) -> actions`` (all envs).
         recovered: ``callable(env, probe_env) -> bool`` success test (e.g. a lift).
         locality: If given (a ``{"max", "n"}`` dict), the probe records the primary
-            object pose before and after ``reset_to`` and accumulates the max delta;
-            a correct isolation keeps it at ~0. Requires ``num_envs >= 2``.
+            object pose immediately before and after ``reset_to`` and accumulates
+            the max reset-boundary delta. Requires ``num_envs >= 2``.
     """
     import torch
     import warp as wp
 
+    if isinstance(budget, bool) or not isinstance(budget, int) or budget < 1:
+        raise ValueError(f"budget must be an integer >= 1, got {budget!r}")
     scene = env.unwrapped.scene
     delta = (scene.env_origins[probe_env] - scene.env_origins[primary_env]).detach()
     state_probe = offset_root_positions(saved_state, delta)
@@ -234,13 +415,23 @@ def probe_recovery_isolated(
     )
     env_ids = torch.tensor([probe_env], device=env.unwrapped.device, dtype=torch.long)
     scene.reset_to(state_probe, env_ids)
+    if reset_recovered is not None:
+        reset_recovered(probe_env)
     if locality is not None:
         pose_after = wp.to_torch(scene["object"].data.root_pose_w)[primary_env].detach()
         locality["max"] = max(locality["max"], float((pose_after - pose_before).abs().max().item()))
         locality["n"] = locality.get("n", 0) + 1
 
     if hasattr(env.unwrapped, "episode_length_buf"):
-        env.unwrapped.episode_length_buf[:] = 0  # avoid a timeout auto-reset mid-probe
+        env.unwrapped.episode_length_buf[probe_env] = 0  # avoid a timeout auto-reset mid-probe
+
+    if hasattr(recovery_policy, "reset"):
+        reset_mask = torch.ones(
+            int(env.unwrapped.num_envs),
+            device=env.unwrapped.device,
+            dtype=torch.bool,
+        )
+        recovery_policy.reset(reset_mask)
 
     obs = env.get_observations()
     for _ in range(budget):
@@ -250,6 +441,8 @@ def probe_recovery_isolated(
             return True
         if bool(dones[probe_env].item()):
             return False
+        if hasattr(recovery_policy, "reset"):
+            recovery_policy.reset(dones)
     return False
 
 
@@ -262,20 +455,51 @@ def evaluate_recovery_isolated(
     primary_env: int = 0,
     probe_env: int = 1,
     budget: int = 90,
-) -> tuple[dict[int, bool], dict[str, float]]:  # pragma: no cover - requires live sim
+    repeats: int = 1,
+    min_false_fraction: float = 0.8,
+    reset_recovered: Any | None = None,
+) -> tuple[dict[int, bool], dict[str, Any]]:  # pragma: no cover - requires live sim
     """Evaluate recovery from each saved checkpoint via env isolation (Pass 2).
 
     Returns ``(verdicts, locality)``: ``verdicts[step]`` is whether recovery
     succeeded from the state saved at ``step``, and ``locality`` reports the live
     primary-integrity assertion (``max`` env-0 pose delta, ``n`` resets).
     """
-    locality = {"max": 0.0, "n": 0}
+    if isinstance(repeats, bool) or not isinstance(repeats, int) or repeats < 1:
+        raise ValueError("repeats must be an integer >= 1")
+    if isinstance(min_false_fraction, bool):
+        raise ValueError("min_false_fraction must be in [0.5, 1.0]")
+    try:
+        min_false_fraction = float(min_false_fraction)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("min_false_fraction must be in [0.5, 1.0]") from exc
+    if not np.isfinite(min_false_fraction) or not (
+        0.5 <= min_false_fraction <= 1.0
+    ):
+        raise ValueError("min_false_fraction must be in [0.5, 1.0]")
+    locality: dict[str, Any] = {"max": 0.0, "n": 0}
     verdicts: dict[int, bool] = {}
+    false_fractions: list[float] = []
+    raw_samples: dict[str, list[bool]] = {}
+    false_fraction_by_step: dict[str, float] = {}
     for step, state in sorted(states.items()):
-        verdicts[step] = probe_recovery_isolated(
-            env, state, recovery_policy, recovered=recovered,
-            primary_env=primary_env, probe_env=probe_env, budget=budget, locality=locality,
-        )
+        samples = [
+            probe_recovery_isolated(
+                env, state, recovery_policy, recovered=recovered,
+                primary_env=primary_env, probe_env=probe_env, budget=budget, locality=locality,
+                reset_recovered=reset_recovered,
+            )
+            for _ in range(repeats)
+        ]
+        false_fraction = sum(not sample for sample in samples) / repeats
+        false_fractions.append(false_fraction)
+        raw_samples[str(step)] = samples
+        false_fraction_by_step[str(step)] = false_fraction
+        verdicts[step] = false_fraction < min_false_fraction
+    locality["probe_repeats"] = repeats
+    locality["max_false_fraction"] = max(false_fractions, default=0.0)
+    locality["raw_probe_verdicts"] = raw_samples
+    locality["false_fraction_by_step"] = false_fraction_by_step
     return verdicts, locality
 
 
@@ -286,12 +510,15 @@ def collect_rollout(
     object_height: Any,
     rest_height: float,
     lift_threshold: float = 0.06,
+    recovery_check: Any | None = None,
     recovery_policy: Any | None = None,
     primary_env: int = 0,
     probe_env: int = 1,
     max_steps: int = 220,
     probe_stride: int = 8,
     probe_budget: int = 90,
+    probe_repeats: int = 3,
+    probe_min_false_fraction: float = 0.8,
     on_step: Any | None = None,
     obs_key: str = "policy",
     seed: int | None = None,
@@ -299,13 +526,14 @@ def collect_rollout(
 ) -> Rollout:  # pragma: no cover - requires live sim
     """Roll out a batched ``policy`` in ``primary_env`` and build a :class:`Rollout`.
 
-    The packaged implementation of the env-isolated recovery-probe design verified
+    The packaged implementation of the env-isolated recovery-probe design exercised
     end-to-end on a trained rsl_rl policy in ``scripts/verify_learned_policy.py``
-    (Isaac Lab 4.5.22). It is a **decoupled two-pass**: record the primary rollout in
-    ``primary_env`` (never ``reset_to``), then, if ``recovery_policy`` is given,
+    (local ``isaaclab`` distribution 4.5.22). It is a **decoupled two-pass**: record the primary rollout in
+    ``primary_env`` before probing (and never ``reset_to`` it), then, if
+    ``recovery_policy`` is given,
     evaluate recovery from the saved checkpoints in ``probe_env`` via
-    :func:`evaluate_recovery_isolated`. The single-env interleaved probe -- proven to
-    corrupt the primary after a grasp -- is gone.
+    :func:`evaluate_recovery_isolated`. The single-env interleaved design that
+    changed the historical continuation is not used.
 
     Args:
         env: Isaac Lab manager-based RL env, wrapped so ``get_observations()`` and
@@ -317,6 +545,9 @@ def collect_rollout(
         object_height: ``callable(env, env_idx) -> float`` for the tracked object.
         rest_height: Settled resting height of the object [m] (caller-measured).
         lift_threshold: Rise above ``rest_height`` [m] counted as a lift / recovery.
+        recovery_check: Optional ``callable(env, env_idx, rest_height, lift_threshold)``
+            returning a physically meaningful recovery verdict. If omitted, the
+            legacy height-only check is used for backwards compatibility.
         recovery_policy: Batched recovery oracle for the probe; ``None`` skips PoNR.
         on_step: Optional ``callable(step, env, actions)`` invoked after the policy
             acts and before ``env.step`` -- the hook a caller uses to inject a fault
@@ -328,12 +559,26 @@ def collect_rollout(
     """
     unwrapped = getattr(env, "unwrapped", env)
     n_envs = int(getattr(unwrapped, "num_envs", 1))
+    for name, int_value in (("max_steps", max_steps), ("probe_budget", probe_budget)):
+        if isinstance(int_value, bool) or not isinstance(int_value, int) or int_value < 1:
+            raise ValueError(f"{name} must be an integer >= 1, got {int_value!r}.")
+    for name, float_value in (("rest_height", rest_height), ("lift_threshold", lift_threshold)):
+        try:
+            numeric_value = float(float_value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{name} must be finite, got {float_value!r}.") from exc
+        if isinstance(float_value, bool) or not np.isfinite(numeric_value):
+            raise ValueError(f"{name} must be finite, got {float_value!r}.")
+    rest_height = float(rest_height)
+    lift_threshold = float(lift_threshold)
+    if lift_threshold <= 0:
+        raise ValueError(f"lift_threshold must be > 0, got {lift_threshold!r}.")
     if recovery_policy is not None:
         if n_envs < 2:
             raise ValueError(
-                "The recovery probe requires num_envs >= 2 (environment isolation): "
-                "env 0 is the pristine primary and env 1 is the probe cell. A single-env "
-                "reset_to probe poisons the sim (see verify_pnor_decoupled.py). Create the "
+                "The recovery probe requires num_envs >= 2 (environment separation): "
+                "env 0 is recorded before probing and env 1 is the probe cell. Historical "
+                "single-env continuations diverged after reset_to. Create the "
                 "env with num_envs>=2, or omit recovery_policy to skip PoNR."
             )
         if primary_env == probe_env:
@@ -346,6 +591,22 @@ def collect_rollout(
             raise ValueError(f"probe_env {probe_env} out of range [0, {n_envs}).")
         if probe_stride < 1:
             raise ValueError(f"probe_stride must be >= 1, got {probe_stride!r}.")
+        if (
+            isinstance(probe_repeats, bool)
+            or not isinstance(probe_repeats, int)
+            or probe_repeats < 1
+        ):
+            raise ValueError(f"probe_repeats must be an integer >= 1, got {probe_repeats!r}.")
+        if isinstance(probe_min_false_fraction, bool):
+            raise ValueError("probe_min_false_fraction must be in [0.5, 1.0].")
+        try:
+            probe_min_false_fraction = float(probe_min_false_fraction)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("probe_min_false_fraction must be in [0.5, 1.0].") from exc
+        if not np.isfinite(probe_min_false_fraction) or not (
+            0.5 <= probe_min_false_fraction <= 1.0
+        ):
+            raise ValueError("probe_min_false_fraction must be in [0.5, 1.0].")
 
     _require_isaac_lab()
 
@@ -392,26 +653,43 @@ def collect_rollout(
             t_failure = T - 1
 
     recovery = None
-    locality = {"max": 0.0, "n": 0}
+    locality: dict[str, Any] = {"max": 0.0, "n": 0}
     if recovery_policy is not None and states:
         env.reset()  # clean base before probing; probe reset_to overrides probe_env
 
         def recovered(e: Any, i: int) -> bool:
+            if recovery_check is not None:
+                return bool(recovery_check(e, i, rest_height, lift_threshold))
             return (object_height(e, i) - rest_height) > lift_threshold
 
         verdicts, locality = evaluate_recovery_isolated(
             env, states, recovery_policy, recovered=recovered,
             primary_env=primary_env, probe_env=probe_env, budget=probe_budget,
+            repeats=probe_repeats, min_false_fraction=probe_min_false_fraction,
+            reset_recovered=getattr(recovery_check, "reset", None),
         )
         recovery = forward_fill_recovery(verdicts, T)
 
-    full_meta = {
+    full_meta: dict[str, Any] = {
         "source": "isaac_lab",
         "robot": "franka",
         "task": "pick_place",
         "probe": "env_isolated" if recovery_policy is not None else "none",
+        "reset_boundary_primary_pose_delta_m": locality["max"],
+        # Historical fixtures use this name. It is an alias for the narrower
+        # reset-boundary measurement, not an end-to-end integrity proof.
         "primary_integrity_max_delta": locality["max"],
         "probe_resets": locality["n"],
+        "probe_stride": probe_stride,
+        "probe_budget": probe_budget,
+        "probe_repeats": probe_repeats,
+        "probe_min_false_fraction": probe_min_false_fraction,
+        "probe_max_false_fraction": locality.get("max_false_fraction", 0.0),
+        "raw_probe_verdicts": locality.get("raw_probe_verdicts", {}),
+        "probe_false_fraction_by_step": locality.get("false_fraction_by_step", {}),
+        "rest_height": rest_height,
+        "lift_threshold": lift_threshold,
+        "recovery_predicate": "custom" if recovery_check is not None else "height_only_legacy",
     }
     if meta:
         full_meta.update(meta)

@@ -1,12 +1,4 @@
-"""Pivotal test: does reset_to(env_ids=[k]) poison OTHER envs?
-
-verify_pnor_decoupled.py confirmed a single reset_to() permanently corrupts the
-sim and the corruption survives env.reset() (reset_to_poisons_env: YES). Isaac
-Lab runs ONE global SimulationContext per process, so a truly separate sim
-instance per probe is not available in-process. The only light isolation is a
-VECTORISED env: keep the primary rollout in env 0 and farm recovery probes to
-envs 1..N-1, resetting ONLY their env_ids. That works iff per-env reset_to is
-LOCAL -- i.e. resetting env 1 does not disturb env 0.
+"""Historical check of cross-cell effects from ``reset_to(env_ids=[k])``.
 
 This script measures exactly that, with num_envs=2:
 
@@ -17,8 +9,10 @@ This script measures exactly that, with num_envs=2:
     reset_to(S, env_ids=[1]) -- churning env 1 through contact-rich restores.
     Record env 0's max lift. If env 0 still lifts ~like CONTROL, per-env reset_to
     is local and probe isolation via a multi-env pool is viable. If env 0's lift
-    collapses, reset_to poisons globally and probe-based PoNR is not achievable in
-    this Isaac Lab version without a subprocess per probe.
+    collapses, the vectorized-cell approach is not adequate in this setup.
+
+The experiment compares outcome and immediate pose measurements. It does not
+identify a specific simulator subsystem or prove full trajectory independence.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
@@ -128,7 +122,7 @@ def main() -> None:
         dt = env_cfg.sim.dt * env_cfg.decimation
         log(f"env={args.env_id} num_envs={n} dt={dt:.4f}")
 
-        # CONTROL first (no reset_to anywhere -> no global poison carried in).
+        # CONTROL first, before any reset_to call.
         lift_ctrl, _ = run_phase(env, dt, dev, n, seed=0, probe_env1=False)
         log(f"CONTROL   env-lift [m] = {np.array2string(lift_ctrl, precision=3)} "
             f"(env0={lift_ctrl[0]:+.3f})")
