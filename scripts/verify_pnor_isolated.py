@@ -1,72 +1,19 @@
-"""Meaningful PoNR under a real policy via ENV-ISOLATED recovery probing.
+"""Historical environment-isolated recovery-probe experiment.
 
-Chain of evidence:
-  * verify_state_fidelity.py     -> single-step reset_to is bit-exact.
-  * verify_probe_transparency.py -> in-loop probing corrupts the primary after a
-                                    grasp (PhysX contact state not restored).
-  * verify_pnor_decoupled.py     -> a single reset_to poisons a num_envs=1 sim
-                                    even across env.reset() (reset_to_poisons_env).
-  * verify_multienv_isolation.py -> BUT per-env reset_to is LOCAL: resetting env 1
-                                    leaves env 0 bit-identical. => isolate probes.
+The 2026-07-05 run recorded one primary environment and restored checkpoints
+into separate vectorized probe environments. It observed a True-to-False
+recovery transition near an injected, grasped-region displacement. It also
+observed noisy pre-grasp verdicts and exposed-state fidelity only at the
+immediate reset boundary.
 
-This harness uses that isolation. With num_envs = 1 + P:
-  PASS 1 (record): drive the primary pick-lift and record env 0's rollout +
-    per-step checkpoints. env 0 is NEVER reset_to, so its rollout is pristine.
-    The cube is displaced out of reach at a KNOWN step for the perturbed case.
-  PASS 2 (probe): for a strided set of steps t, reset_to env 0's checkpoint S_t
-    INTO a probe env, run a fresh pick-lift there for a budget, and read that
-    probe env's lift. recovery_success[t] = did the probe env recover? env 0 is
-    untouched throughout.
-
-If reachable checkpoints recover (True) and out-of-reach ones do not (False), the
-True->False flip localises PoNR at the injected doom -- NOT at step 0.
+This script does not establish the missing simulator or task state responsible
+for continuation divergence. Its historical output is not current release
+evidence: it predates the repeated physical recovery predicate and the
+fail-closed evidence schema. Use ``verify_learned_policy.py`` for revalidation.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_isolated.py --headless
-    # add --debug_step T to trace a single nominal probe verbosely
-
-RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU):
-
-  Env isolation SOLVES the corruption/poison problem that blocked every earlier
-  attempt:
-    * The primary rollout in env 0 is PRISTINE and lifts (nominal zmax 0.341,
-      success=True) -- it is never reset_to, so it is never poisoned.
-    * Per-env reset_to is local (verify_multienv_isolation.py): env 0 stays
-      bit-identical while env 1 is churned through reset_to.
-    * get_state() poses are ABSOLUTE, so a checkpoint must be origin-shifted into
-      the probe env's cell (else the two arms collide).
-    * The recovery oracle CONTINUES the primary policy (restored SM progress)
-      rather than restarting from REST (which would drop a held cube).
-
-  MEANINGFUL PoNR ACHIEVED with --auto_doom (grasped-region injection). Run
-  verbatim:
-    nominal:  T=150 z0=0.021 zmax=0.341 success=True; lift onset step 123.
-    auto_doom: grasped-region doom placed at step 131 (onset+8).
-    perturbed@131: cube teleported out of reach AFTER it is grasped/lifted.
-      raw probe verdicts ... 126:T 127:T 128:T 129:T 130:T 131:T 132:T 133:T
-      134:T 135:T 136:T 137:T 138:F 139:F ... 149:F
-      PoNR=138, injected_doom=131 (near=True, tol=10),
-      PoNR lead over observable failure = +0.22s.
-    => IPFD_ISOLATED_PNOR_STATUS: meaningful_pnor_detected YES;
-       ponr_localizes_at_injected_doom YES; overall_status VERIFIED.
-
-  Why grasped-region works and pre-grasp does not: the continue-the-policy oracle
-  is reliable exactly where the primary is already grasped/lifted, so pre-doom
-  checkpoints recover (True) and post-doom checkpoints do not (False), giving a
-  clean True->False flip that point_of_no_return localises at the injected doom.
-  PRE-GRASP checkpoints remain noisy (see the scattered early verdicts, e.g. a
-  stray 70:T among F's): --debug_step 30 shows the probe SM stalls in
-  APPROACH_OBJECT because reset_to hands it a COLD PhysX contact/solver state (the
-  verify_probe_transparency.py limitation), derailing the scripted grasp's sub-cm
-  approach. So the meaningful-PoNR claim is bounded to failures the recovery
-  oracle can actually adjudicate -- honest and stated, not hidden.
-
-  Bottom line: IPFD's analysis layer, single-step restore, and env-isolated
-  probing are sound, and PoNR is MEANINGFUL under a real (scripted-competent)
-  policy for grasped-region failures. The one remaining limitation is recovery-
-  oracle robustness to a cold-contact restart during fine PRE-grasp manipulation
-  -- a controller/policy property, not an IPFD infrastructure gap.
+    /path/to/isaac-lab/python scripts/verify_pnor_isolated.py --headless
 """
 
 from __future__ import annotations
@@ -261,7 +208,7 @@ def main() -> None:
     status = {"state_restore_fidelity": "PASS (verify_state_fidelity.py)",
               "per_env_isolation": "PASS (verify_multienv_isolation.py)",
               "meaningful_pnor_detected": "NO", "recovery_oracle_non_degenerate": "NO",
-              "ponr_localizes_at_injected_doom": "NO", "overall_status": "PARTIALLY_VERIFIED"}
+              "ponr_localizes_at_injected_doom": "NO", "overall_status": "HISTORICAL_ONLY"}
     acc = {"any_true": False, "any_false": False, "meaningful_ponr": False, "ponr_near_doom": False}
     try:
         n = 1 + max(1, args.num_probe_envs)
@@ -322,8 +269,7 @@ def main() -> None:
         status["meaningful_pnor_detected"] = "YES" if acc["meaningful_ponr"] else "NO"
         status["recovery_oracle_non_degenerate"] = "YES" if (acc["any_true"] and acc["any_false"]) else "NO"
         status["ponr_localizes_at_injected_doom"] = "YES" if acc["ponr_near_doom"] else "NO"
-        core = acc["meaningful_ponr"] and acc["any_true"] and acc["any_false"] and acc["ponr_near_doom"]
-        status["overall_status"] = "VERIFIED" if core else "PARTIALLY_VERIFIED"
+        status["overall_status"] = "HISTORICAL_ONLY"
     except Exception:
         import traceback
         log("aborted with exception:")

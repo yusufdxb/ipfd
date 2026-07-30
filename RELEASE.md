@@ -24,35 +24,44 @@ and stable APIs over rapid expansion.
   to the API or report schema.
 
 No release, at any level, may contain a claim that has not been reproduced on the
-tagged commit. The GPU headline is re-run on `main` before every tag that touches the
-adapter or oracles.
+tagged commit. The GPU evidence gate must pass before any tag promotes a claim
+that depends on the adapter or oracles.
 
 ### What 1.0.0 means here
 
 1.0.0 is the first public release. It is a promise of API stability: the analysis-layer
 surface (`ipfd.__all__`) and the report JSON schema will not break without a major
-version bump. The project ships at 1.0 because the core architecture, the recovery-probe
-method, and the learned-policy validation are complete and verified, that is the
-substance a stable API rests on.
+version bump. The 1.0 stability promise covers the offline analysis API and
+report schema. Historical learned-policy fixtures remain deterministic regression
+inputs, but their recovery semantics are under revalidation and are not current
+release evidence.
 
-The Isaac Lab adapter is the lower-stability surface: it is validated against Isaac Lab
-4.5.22, and support for other versions may adjust it in minor releases. This boundary is
-stated in the README and the changelog so users know exactly what is covered by the
-stability guarantee.
+The Isaac Lab adapter is the lower-stability surface. A historical runtime smoke
+used a local Isaac Lab 4.5.22 distribution, and learned-policy semantics are under
+revalidation. Support for simulator versions may adjust in minor releases.
 
 ## Release checklist
 
-1. `ruff check src tests` clean; `pytest` green locally and in CI.
+1. `ruff check src tests scripts examples`, `mypy`, and coverage-gated `pytest`
+   are green locally and in CI.
 2. Bump `version` in `pyproject.toml` and `__version__` in `src/ipfd/__init__.py`
    (keep them identical).
 3. Move the `[Unreleased]` section of `CHANGELOG.md` under the new version with the
    date; update the compare links.
 4. Update `CITATION.cff` `version` and `date-released`.
-5. Re-run the GPU evidence chain if the adapter or oracles changed, and confirm the
-   figures in `examples/figures/` still match the README claims.
+5. If the adapter or oracles changed, regenerate all fail-closed GPU evidence
+   artifacts from the tagged commit. Do not promote learned-policy claims unless
+   the competence, multi-seed, and actionability gates pass.
+   Store the accepted artifacts as `release-evidence/competence.json`,
+   `release-evidence/multiseed.json`, and `release-evidence/actionability.json`.
+   Commit those artifacts without changing `src/`, `scripts/`, or
+   `pyproject.toml`. The release workflow requires the recorded source commit to
+   be an ancestor of the tag and rejects runtime-code changes after that commit.
 6. Tag: `git tag -a vX.Y.Z -m "vX.Y.Z"` and push the tag.
 7. Cut a GitHub Release from the tag, pasting the changelog section.
-8. (When published to PyPI) `python -m build && twine upload dist/*`.
+8. Confirm the clean-wheel and source-distribution smoke jobs passed.
+9. PyPI publication uses the tag-triggered trusted-publishing workflow. Do not
+   upload from a developer workstation.
 
 ## Deprecation policy
 

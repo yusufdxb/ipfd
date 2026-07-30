@@ -27,7 +27,9 @@ from :mod:`ipfd.oracles`, so the pure analysis layer stays GPU-free.
 
 from __future__ import annotations
 
+import hashlib
 import math
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -123,7 +125,78 @@ def load_learned_policy(env: Any, agent_cfg: dict, checkpoint_path: str, device:
     from rsl_rl.runners import OnPolicyRunner
 
     runner = OnPolicyRunner(env, agent_cfg, log_dir=None, device=device)
-    runner.load(checkpoint_path)
+    _load_checkpoint_compat(runner, checkpoint_path, device)
     policy_callable = runner.get_inference_policy(device=device)
     policy_module = runner.alg.get_policy()
     return LearnedPolicy(policy_callable, policy_module)
+
+
+def _load_checkpoint_compat(runner: Any, checkpoint_path: str, device: str) -> None:
+    """Load current and legacy Isaac Lab rsl_rl checkpoint layouts.
+
+    Isaac Lab's published Lift-Cube checkpoint historically used
+    ``model_state_dict`` with ``actor.*`` keys, while newer rsl_rl runners expect
+    ``actor_state_dict``. Keep the compatibility mapping in the packaged loader
+    so the public learned-policy path does not depend on a private script hack.
+    """
+    import torch
+
+    try:
+        payload = torch.load(checkpoint_path, weights_only=True, map_location=device)
+    except TypeError:
+        raise RuntimeError(
+            "This torch version cannot safely load checkpoints. Install torch >=2.0 "
+            "or convert the checkpoint to a tensor-only format."
+        ) from None
+    except Exception as exc:
+        raise RuntimeError(
+            "Checkpoint rejected by safe tensor-only loading. Refusing arbitrary "
+            "pickle execution; convert it with a trusted tool first."
+        ) from exc
+    if not isinstance(payload, dict):
+        raise TypeError("Checkpoint payload must be a dictionary.")
+
+    actor = runner.alg.get_policy()
+    current = payload.get("actor_state_dict")
+    if current is not None:
+        if not isinstance(current, dict):
+            raise TypeError("checkpoint actor_state_dict must be a dictionary")
+        actor.load_state_dict(current, strict=True)
+        print("Loaded current rsl_rl actor checkpoint through safe tensor-only loading.")
+        return
+
+    legacy = payload.get("model_state_dict")
+    if not isinstance(legacy, dict):
+        raise KeyError(
+            "Checkpoint has neither 'actor_state_dict' nor legacy 'model_state_dict': "
+            f"{sorted(payload)}"
+        )
+
+    mapped = {}
+    for target_key, target_value in actor.state_dict().items():
+        if target_key.startswith("mlp."):
+            source_key = f"actor.{target_key.removeprefix('mlp.')}"
+        elif target_key == "distribution.std_param":
+            source_key = "std"
+        else:
+            raise KeyError(f"No legacy checkpoint mapping for actor key: {target_key}")
+        if source_key not in legacy:
+            raise KeyError(f"Legacy checkpoint is missing actor key: {source_key}")
+        if legacy[source_key].shape != target_value.shape:
+            raise ValueError(
+                f"Shape mismatch for {source_key} -> {target_key}: "
+                f"checkpoint {tuple(legacy[source_key].shape)}, actor {tuple(target_value.shape)}"
+            )
+        mapped[target_key] = legacy[source_key]
+
+    actor.load_state_dict(mapped, strict=True)
+    print("Loaded published legacy rsl_rl checkpoint through strict actor-only mapping.")
+
+
+def checkpoint_sha256(path: str | Path) -> str:
+    """Return a SHA-256 digest for checkpoint provenance records."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

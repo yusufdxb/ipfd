@@ -1,9 +1,9 @@
 """Meaningful PoNR under a real policy via a DECOUPLED recovery probe.
 
-Root cause (see verify_probe_transparency.py): reset_to restores kinematics
-bit-exactly but NOT PhysX contact state, so probing *inside* a live rollout
-corrupts the primary once a grasp is established. The fix needs no second env:
-DECOUPLE probing from the primary.
+Historical observation (see verify_probe_transparency.py): exposed state
+round-tripped while a continuation after evolved post-grasp state diverged. The
+missing simulator or task state was not identified. This experiment decouples
+probing from the recorded primary.
 
   Pass 1 (record): run the primary policy once, uninterrupted. Save a full
     scene state S_t and record (obs, action, object height) at every step.
@@ -12,39 +12,31 @@ DECOUPLE probing from the primary.
 
   Pass 2 (evaluate): for a strided set of steps t, reset_to(S_t) and run a FRESH
     scripted pick-lift for a budget; recovery_success[t] = did it lift? These
-    passes DO leave a cold contact cache, but we never resume the primary, so
-    there is nothing left to corrupt. Each probe restores a fresh checkpoint
-    (kinematics bit-exact) and re-grasps from scratch, so its verdict is faithful.
+    passes may retain unexposed state, but we never resume the recorded primary.
+    This does not by itself prove that each recovery verdict is faithful.
 
 PoNR = first step after which recovery never again succeeds. With the cube
 displaced out of reach at a KNOWN step, recovery_success must flip True->False
 there, and IPFD's PoNR must land there -- NOT at step 0.
 
-A determinism check (same checkpoint probed twice -> same verdict) guards the
-"cold contact cache makes the verdict unfaithful" risk.
+A determinism check (same checkpoint probed twice -> same verdict) detects one
+class of instability, but cannot prove that the recovery verdict is faithful.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_decoupled.py --headless
+    /path/to/isaac-lab/python scripts/verify_pnor_decoupled.py --headless
 
-RESULT (2026-07-05, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, negative:
+HISTORICAL RESULT (2026-07-05, Isaac Lab 4.5.22):
 
-  The decoupling is necessary but NOT sufficient, because of a deeper, directly
-  confirmed Isaac Lab behaviour: ``reset_to_poisons_env: YES``. A fresh episode
-  lifts the cube (CONTROL zmax 0.341). After exactly ONE reset_to probe followed
-  by ``env.reset(seed=0)``, the SAME seed no longer lifts (POISON TEST zmax
-  0.045). So a single reset_to() permanently corrupts the PhysX sim and the
-  corruption SURVIVES env.reset(). Consequently pass-2 recovery probes poison the
-  shared env for each other, the re-recorded rollouts are degenerate, and the
-  recovery_success verdicts are invalid (recover T/F counts here are spurious).
+  A fresh episode lifted the cube. After one reset probe followed by
+  ``env.reset(seed=0)``, the same seed no longer lifted. This experiment
+  therefore rejected the resulting recovery verdicts:
   meaningful_pnor_detected = NO.
 
-  Conclusion: probe-based PoNR cannot share a single env instance in this Isaac
-  Lab version. A correct implementation needs env ISOLATION (a separate sim
-  instance per probe / a probe pool) or a reset_to that also restores PhysX
-  solver+contact state. Single-step state restore is still bit-exact
-  (verify_state_fidelity.py); the block is the persistent reset_to side effect,
-  measured here against ground truth.
+  The observation shows continuation divergence after restoration in this
+  setup. It does not identify a specific PhysX subsystem as the cause. The
+  script predates the current repeated physical-predicate evidence contract and
+  is retained as a historical negative experiment.
 """
 
 from __future__ import annotations
@@ -225,7 +217,7 @@ def main() -> None:
               "reset_to_poisons_env": "UNKNOWN",
               "meaningful_pnor_detected": "NO", "recovery_oracle_non_degenerate": "NO",
               "measurable_failure_lead_time": "NO", "probe_verdict_deterministic": "UNKNOWN",
-              "overall_status": "PARTIALLY_VERIFIED"}
+              "overall_status": "HISTORICAL_ONLY"}
     acc = {"any_true": False, "any_false": False, "meaningful_ponr": False,
            "ponr_near_doom": False, "lead_time": False}
     try:
@@ -262,8 +254,7 @@ def main() -> None:
         status["meaningful_pnor_detected"] = "YES" if acc["meaningful_ponr"] else "NO"
         status["recovery_oracle_non_degenerate"] = "YES" if (acc["any_true"] and acc["any_false"]) else "NO"
         status["measurable_failure_lead_time"] = "YES" if acc["lead_time"] else "NO"
-        core = acc["meaningful_ponr"] and acc["any_true"] and acc["any_false"] and acc["ponr_near_doom"]
-        status["overall_status"] = "VERIFIED" if core else "PARTIALLY_VERIFIED"
+        status["overall_status"] = "HISTORICAL_ONLY"
     except Exception:
         import traceback
         log("aborted with exception:")

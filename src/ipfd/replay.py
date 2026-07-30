@@ -1,11 +1,11 @@
 """Record a :class:`Rollout` to disk and replay it without a simulator.
 
-This is the seam that makes IPFD's central claim independently checkable. A
+A Rollout persists as plain NumPy arrays, so analysis reruns without a simulator. A
 :class:`Rollout` collected from a live Isaac Lab GPU session (the *only* part of
 the pipeline that needs a simulator) is a bag of plain NumPy arrays. Persist it
 once with :func:`save_rollout`, and anyone can reload it with :func:`load_rollout`
 and re-run the full analysis (:func:`ipfd.build_report`) on a CPU, in CI, offline,
-forever -- getting the byte-for-byte same report.
+forever, getting the byte-for-byte same report.
 
 Format: a single compressed ``.npz`` holding only NumPy arrays (so it stays small
 and portable) plus a short JSON sidecar string for the free-form ``meta`` dict.
@@ -21,6 +21,8 @@ absent from the archive when the rollout did not carry them.
 from __future__ import annotations
 
 import json
+import zipfile
+from pathlib import Path
 
 import numpy as np
 
@@ -29,9 +31,14 @@ from .types import Rollout
 __all__ = ["save_rollout", "load_rollout"]
 
 _NONE_INT = -1  # backward-compatible sentinel for archives without presence flags
+_MAX_ARCHIVE_MEMBERS = 16
+_MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
+_REQUIRED_ARRAYS = frozenset(
+    {"observations", "actions", "success", "t_failure", "dt", "seed", "meta_json"}
+)
 
 
-def save_rollout(rollout: Rollout, path: str) -> None:
+def save_rollout(rollout: Rollout, path: str | Path) -> None:
     """Write ``rollout`` to a compressed ``.npz`` (NumPy arrays only).
 
     Scalars are stored as 0-d arrays and ``meta`` as a JSON string, so the archive
@@ -55,12 +62,16 @@ def save_rollout(rollout: Rollout, path: str) -> None:
         arrays["embeddings"] = np.asarray(rollout.embeddings, dtype=np.float64)
     if rollout.recovery_success is not None:
         arrays["recovery_success"] = np.asarray(rollout.recovery_success, dtype=bool)
-    np.savez_compressed(path, **arrays)
+    np.savez_compressed(path, **arrays)  # type: ignore[arg-type]
 
 
-def load_rollout(path: str) -> Rollout:
+def load_rollout(path: str | Path) -> Rollout:
     """Load a :class:`Rollout` written by :func:`save_rollout`. No simulator needed."""
+    _validate_npz_container(path)
     with np.load(path, allow_pickle=False) as z:
+        missing = _REQUIRED_ARRAYS - set(z.files)
+        if missing:
+            raise ValueError(f"rollout archive is missing required arrays: {sorted(missing)}")
         t_failure = int(z["t_failure"])
         seed = int(z["seed"])
         has_t_failure = bool(z["has_t_failure"]) if "has_t_failure" in z else t_failure != _NONE_INT
@@ -76,6 +87,30 @@ def load_rollout(path: str) -> Rollout:
             dt=float(z["dt"]),
             seed=seed if has_seed else None,
             meta=json.loads(str(z["meta_json"])),
+        )
+
+
+def _validate_npz_container(path: str | Path) -> None:
+    """Reject malformed or resource-exhausting archives before NumPy expands them."""
+    try:
+        with zipfile.ZipFile(path) as archive:
+            members = archive.infolist()
+    except (OSError, zipfile.BadZipFile) as exc:
+        raise ValueError(f"rollout archive must be a valid .npz ZIP container: {exc}") from exc
+    if len(members) > _MAX_ARCHIVE_MEMBERS:
+        raise ValueError(
+            f"rollout archive has {len(members)} members; maximum is {_MAX_ARCHIVE_MEMBERS}"
+        )
+    names = [member.filename for member in members]
+    if len(names) != len(set(names)):
+        raise ValueError("rollout archive contains duplicate member names")
+    if any("/" in name or "\\" in name or not name.endswith(".npy") for name in names):
+        raise ValueError("rollout archive members must be top-level .npy arrays")
+    total_size = sum(member.file_size for member in members)
+    if total_size > _MAX_UNCOMPRESSED_BYTES:
+        raise ValueError(
+            "rollout archive expands beyond the 512 MiB safety limit "
+            f"({total_size} bytes)"
         )
 
 

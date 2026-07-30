@@ -18,7 +18,7 @@ trained policy, with the env-isolated recovery probe and measured PoNR -- see
 Run (real Isaac Lab install + GPU required):
 
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_isaac_runtime.py --headless
+    /path/to/isaac-lab/python scripts/verify_isaac_runtime.py --headless
 
 The final block printed is machine-readable (IPFD_RUNTIME_SMOKE).
 """
@@ -55,6 +55,11 @@ parser.add_argument("--env_id", default="Isaac-Lift-Cube-Franka-v0",
                     help="Franka single-object manipulation env (closest to pick-and-place).")
 parser.add_argument("--steps", type=int, default=16, help="Number of smoke steps to run.")
 parser.add_argument("--seed", type=int, default=0)
+parser.add_argument(
+    "--asset_root",
+    default=None,
+    help="Optional Isaac asset root, for example the Isaac 4.5 production tree.",
+)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True  # this is a validation run, never interactive
@@ -66,14 +71,16 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-import isaaclab_tasks  # noqa: F401  (registers the Isaac-* gym envs)
-from isaaclab_tasks.utils import parse_env_cfg
-
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_REPO, "src"))
+from ipfd.adapters import isaac_lab as ipfd_adapter
+
+ipfd_adapter.configure_asset_root(args.asset_root)
+
+import isaaclab_tasks  # noqa: F401  (registers the Isaac-* gym envs)
+from isaaclab_tasks.utils import parse_env_cfg
 from ipfd import build_report
 from ipfd.types import Rollout
-from ipfd.adapters import isaac_lab as ipfd_adapter
 
 RESULTS = {
     "isaac_lab_import": "PASS",  # reaching here means the import + AppLauncher worked
@@ -168,3 +175,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    raise SystemExit(0 if RESULTS["overall"] == "PASS" else 1)

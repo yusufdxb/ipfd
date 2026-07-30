@@ -3,7 +3,7 @@
 This is the top-level analysis entry point: given a :class:`Rollout`, it runs the
 detectors, locates the point of no return, computes the metric set, and packages
 everything into a serializable :class:`FailureDebugReport` plus a human-readable
-summary. Pure NumPy -- no simulator, no GPU.
+summary. Pure NumPy, no simulator, no GPU.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ __all__ = ["AnalysisConfig", "FailureDebugReport", "build_report"]
 
 @dataclass
 class AnalysisConfig:
-    """Tunable knobs for the analysis pass. Defaults are sane for ~60 Hz control."""
+    """Tunable knobs for the analysis pass. Defaults target ~60 Hz control."""
 
     baseline_window: int = 20
     drift_ref_window: int = 10
@@ -30,6 +30,28 @@ class AnalysisConfig:
     alarm_threshold: float = 0.5
     alarm_persistence: int = 3
     weights: dict[str, float] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for name in ("baseline_window", "drift_ref_window", "alarm_persistence"):
+            value = getattr(self, name)
+            if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
+                raise ValueError(f"{name} must be a positive integer, got {value!r}.")
+            if value < 1:
+                raise ValueError(f"{name} must be >= 1, got {value!r}.")
+            setattr(self, name, int(value))
+        if self.drift_metric not in {"cosine", "l2"}:
+            raise ValueError("drift_metric must be 'cosine' or 'l2'.")
+        if isinstance(self.alarm_threshold, (bool, np.bool_)):
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].")
+        try:
+            self.alarm_threshold = float(self.alarm_threshold)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].") from exc
+        if not np.isfinite(self.alarm_threshold) or not 0 <= self.alarm_threshold <= 1:
+            raise ValueError("alarm_threshold must be a finite number in [0, 1].")
+        if not isinstance(self.weights, dict):
+            raise ValueError("weights must be a dictionary of detector names to weights.")
+        self.weights = dict(self.weights)
 
 
 @dataclass
@@ -65,7 +87,7 @@ class FailureDebugReport:
         except ValueError as exc:
             raise ValueError(f"report JSON must contain only finite numeric values: {exc}") from exc
         if path:
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(s)
         return s
 
@@ -101,12 +123,10 @@ def _fmt_num(x: float | None) -> str:
 
 
 def _json_default(o: object) -> object:
-    if isinstance(o, np.integer):
-        return int(o)
-    if isinstance(o, np.floating):
-        return float(o)
     if isinstance(o, np.ndarray):
         return o.tolist()
+    if isinstance(o, np.generic):
+        return o.item()
     raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 
 
@@ -114,9 +134,9 @@ def _verdict(r: FailureDebugReport) -> str:
     if r.success:
         return "verdict            : nominal."
     if r.ponr_lead_time_s is not None and r.ponr_lead_time_s < 0:
-        return "verdict            : SILENT COLLAPSE -- alarm fired only AFTER the trajectory was doomed."
+        return "verdict            : SILENT COLLAPSE: alarm fired only AFTER the trajectory was doomed."
     if r.false_continuity_rate is not None and r.false_continuity_rate >= 0.5:
-        return "verdict            : SILENT COLLAPSE -- policy stayed confident through most of the doomed window."
+        return "verdict            : SILENT COLLAPSE: policy stayed confident through most of the doomed window."
     return "verdict            : failure caught with lead time."
 
 

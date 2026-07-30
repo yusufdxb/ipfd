@@ -1,18 +1,18 @@
-"""Root-cause: is an interleaved recovery probe TRANSPARENT to the primary rollout?
+"""Is an interleaved recovery probe transparent to the primary rollout?
 
 IPFD's in-loop PoNR needs one property: injecting a recovery probe (save state ->
 run a fresh scripted grasp+lift for K steps -> reset_to) must leave the primary
 env evolving EXACTLY as if no probe had happened. ``verify_state_fidelity.py``
-already proved a SINGLE-step reset_to is bit-exact; ``verify_real_policy.py``
-showed the full in-loop probe corrupts the primary. This script isolates WHY.
+measured a one-step exposed-state round trip; ``verify_real_policy.py`` showed the
+full in-loop probe changes the primary continuation. This script tests whether the
+divergence is correlated with evolved post-grasp state.
 
 Hypothesis
 ----------
-Single-step reset_to is bit-exact, but reset_to captures only KINEMATIC state
-(root/joint pose+velocity) -- NOT the PhysX solver's contact-manifold / warm-start
-cache. So restoring AFTER a probe has established a grasp is lossy, and the loss
-grows with contact. Prediction: a probe injected BEFORE the arm contacts the cube
-is transparent (A==B); a probe injected AFTER a grasp is not.
+One candidate explanation is unexposed contact or solver state. Other simulator,
+sensor, randomization, or task state can produce the same observation. Prediction:
+a probe injected before contact is transparent while a post-grasp probe is not.
+The experiment can establish that correlation, not identify the missing state.
 
 Method (single env, real physics)
 ---------------------------------
@@ -21,14 +21,13 @@ From a common saved state S0 reached at a chosen grasp stage:
   * Restore S0 + SM progress, then Branch B (probed): inject ONE probe
     (get_state -> fresh SM K steps -> reset_to), then run the SAME N steps.
   * Compare A vs B: per-step max-abs obs diff, divergence onset, final height gap.
-Also report the probe's own multi-step WRITE-BACK diff (entities just before the
-probe vs immediately after its reset_to) -- lossy write-back is the direct cause.
+Also report the probe's own multi-step write-back diff over exposed entities.
 
 Two conditions: probe injected PRE-CONTACT vs POST-GRASP. Prints a machine block.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_probe_transparency.py --headless
+    /path/to/isaac-lab/python scripts/verify_probe_transparency.py --headless
 """
 
 from __future__ import annotations
@@ -206,16 +205,18 @@ def main() -> None:
         pre_ok = RESULTS.get("pre_contact_transparent") == "YES"
         post_ok = RESULTS.get("post_grasp_transparent") == "YES"
         if pre_ok and not post_ok:
-            RESULTS["root_cause"] = "CONTACT_STATE_NOT_RESTORED"
-            NOTES.append("Pre-contact probe is transparent but post-grasp is not: reset_to does not "
-                         "restore PhysX contact/solver state, so in-loop probing after a grasp is lossy.")
+            RESULTS["root_cause"] = "UNEXPOSED_STATE_NOT_IDENTIFIED"
+            NOTES.append(
+                "Pre-contact replay was transparent but post-grasp replay was not. "
+                "The experiment does not identify which simulator or task state is missing."
+            )
         elif pre_ok and post_ok:
             RESULTS["root_cause"] = "PROBE_TRANSPARENT_LOOK_ELSEWHERE"
-            NOTES.append("Both probes are transparent: the real-rollout corruption is NOT the probe "
-                         "restore itself; re-examine the primary-loop integration in verify_real_policy.py.")
+            NOTES.append("Both probes preserve the measured continuation; re-examine "
+                         "the primary-loop integration in verify_real_policy.py.")
         else:
             RESULTS["root_cause"] = "PROBE_NOT_TRANSPARENT_EVEN_PRE_CONTACT"
-            NOTES.append("Even the pre-contact probe corrupts the primary: the loss is not grasp-specific.")
+            NOTES.append("Even the pre-contact continuation diverges; the effect is not grasp-specific.")
     except Exception:
         import traceback
         log("aborted with exception:")

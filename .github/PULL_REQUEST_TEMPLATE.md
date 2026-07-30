@@ -17,7 +17,7 @@ IPFD's core invariant is that the analysis layer (`detectors`, `ponr`, `metrics`
 
 ## Verification
 
-<!-- State what you ran and what you observed. "Looks right" is not verification. -->
+<!-- State what you ran and what you observed. State the command and its output. -->
 
 - [ ] `ruff check src tests` is clean.
 - [ ] `pytest` passes locally (state the count).

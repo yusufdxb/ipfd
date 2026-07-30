@@ -70,8 +70,8 @@ def false_continuity_rate(
 ) -> float | None:
     """Fraction of the doomed window in which the detector stayed *quiet*.
 
-    Over ``[t_ponr, t_failure)`` -- the interval where the task is already
-    irrecoverable -- this is the fraction of timesteps whose imminence score sits
+    Over ``[t_ponr, t_failure)``, the interval where the task is already
+    irrecoverable, this is the fraction of timesteps whose imminence score sits
     *below* ``threshold``. High false continuity means the policy sailed on looking
     confident and healthy while already doomed: the failure mode this tool targets.
 

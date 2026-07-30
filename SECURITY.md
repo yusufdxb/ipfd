@@ -4,20 +4,29 @@ IPFD is an offline research and debugging tool. It has no network surface, no se
 and no persistent service. The realistic risk surface is small, but two items are
 worth stating plainly.
 
-## Untrusted model checkpoints
+## Model checkpoints
 
-The Isaac Lab path (`scripts/verify_learned_policy.py`, `eval_checkpoint.py`, and the
-`rsl_rl` oracle) loads policy checkpoints. Loading a checkpoint from an untrusted
-source can execute arbitrary code, because that is how PyTorch checkpoint
-deserialization works, not a flaw specific to IPFD. Only load checkpoints you trust.
-The documented demo uses NVIDIA's official published Lift-Cube checkpoint.
+The Isaac Lab path loads policy checkpoints with PyTorch's restricted
+`weights_only=True` mode and maps actor tensors with strict key and shape checks.
+IPFD refuses checkpoint formats that require unrestricted pickle loading. This
+reduces deserialization risk, but checkpoints should still come from a trusted
+source and their SHA-256 should be recorded. The documented driver uses NVIDIA's
+published Lift-Cube checkpoint.
 
 ## The recovery probe writes simulator state
 
-The dual-environment probe restores saved sim state into a probe environment. It is
-verified to never perturb the primary environment (`max env-0 pose delta = 0.0`), but
-it is still code that manipulates simulator internals. Run it only against
+The dual-environment probe restores saved simulator state into a vectorized probe
+cell. Historical runs measured no immediate env-0 object-pose change across the
+env-1 reset boundary. This is not a full trajectory-isolation guarantee: all
+vectorized cells still advance during a recovery rollout. Run probes only against
 environments you control.
+
+## Rollout archives
+
+Rollouts load with NumPy pickle support disabled. IPFD also rejects malformed
+containers, archives with excessive member counts, and archives that declare
+more than 512 MiB of uncompressed array data. These limits reduce accidental or
+malicious resource exhaustion; treat third-party artifacts as untrusted inputs.
 
 ## Reporting a vulnerability
 
@@ -28,4 +37,4 @@ will credit you in the release notes unless you prefer otherwise.
 
 ## Supported versions
 
-IPFD is pre-1.0. Security fixes land on the latest release only.
+Security fixes land on the latest release only.

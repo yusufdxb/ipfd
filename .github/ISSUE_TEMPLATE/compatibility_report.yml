@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        The tested matrix is **Isaac Lab 4.5.22, Python 3.10/3.11, Linux, single CUDA GPU**.
-        Anything outside it is unverified — this report is what widens the matrix.
+        The historical simulator fingerprint is **Isaac Lab 4.5.22 on Linux with CUDA**.
+        Anything outside it is unverified; reports widen the tested matrix.
         You do not need to understand IPFD's internals: run the
         [validation checklist](https://github.com/yusufdxb/ipfd/blob/main/docs/VALIDATION.md)
         and paste the values below. See the
@@ -37,9 +37,9 @@ body:
   - type: input
     id: gpu
     attributes:
-      label: GPU
-      description: Output of `nvidia-smi --query-gpu=name --format=csv,noheader`. Blank if CPU-only.
-      placeholder: "NVIDIA RTX ..."
+      label: CUDA availability
+      description: State whether CUDA was available. Exact hardware model is optional.
+      placeholder: "available / unavailable; driver major version (optional)"
     validations:
       required: false
   - type: dropdown

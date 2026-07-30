@@ -1,56 +1,17 @@
-"""Dual-Environment Recovery Probe: measure PoNR WITHOUT disturbing the primary.
+"""Historical vectorized-cell grasped-region recovery experiment.
 
-This is the terminal step in the recovery-probe line of evidence:
+The primary rollout is recorded before probe evaluation. Checkpoints are then
+origin-shifted into a second vectorized cell. The script measures env 0's object
+pose immediately before and after each env 1 reset. It does not claim env 0 stays
+static while the batched simulator advances all cells.
 
-  * verify_state_fidelity.py     -> single-step reset_to is bit-exact.
-  * verify_probe_transparency.py -> IN-LOOP probing corrupts the primary after a
-                                    grasp (PhysX contact state not restored).
-  * verify_pnor_decoupled.py     -> a single reset_to poisons a num_envs=1 sim
-                                    even across env.reset() (global poison).
-  * verify_multienv_isolation.py -> BUT per-env reset_to is LOCAL: churning env 1
-                                    leaves env 0 bit-identical. => isolate probes.
-  * verify_pnor_isolated.py      -> env-isolated probing works; primary pristine;
-                                    residual gap: a PRE-GRASP failure needs the
-                                    continue-oracle to re-approach from a cold
-                                    PhysX contact state, which is unreliable.
-
-ARCHITECTURE (the fix for the residual gap is architectural, not a threshold):
-
-  Isaac Lab runs ONE SimulationContext per process, so two fully independent sim
-  INSTANCES are not available in-process. The dual-environment probe is therefore
-  a VECTORISED pool: env 0 is the PRIMARY and is NEVER reset_to or action-
-  corrupted by the probe; envs 1..P are PROBE cells that receive exported
-  snapshots and diverge freely. Per-env reset_to being local (proven above) is
-  what makes the two rollouts independent.
-
-    Primary env 0 ----(get_state, origin-shifted)----> Probe env 1
-        |                                                   |
-     pristine rollout                              recovery rollouts
-     (never restored)                              (reset_to + continue)
-        |                                                   |
-     recorded once                                    recoverable?
-
-  Failure model: a GRASPED-REGION gripper slip. The primary is driven to grasp
-  and lift the cube, then its gripper is forced OPEN for a short window so the
-  cube drops -- a failure that lands squarely in the region where the continue-
-  oracle is reliable (it restores a LIFT-state snapshot and keeps lifting). This
-  is NOT threshold/detector tuning: it places the injected doom inside the
-  oracle's supported domain instead of the cold-contact pre-grasp region.
-
-  Recovery oracle: for a strided set of primary checkpoints S_t, export S_t into
-  the probe env (origin-shifted, since get_state poses are absolute), restore the
-  primary's SM progress, and CONTINUE the policy for a budget. recovery[t] = did
-  the probe cell finish the lift? Checkpoints BEFORE the slip still hold the cube
-  -> recover (True). Checkpoints after the cube separates -> cannot re-grasp mid-
-  lift -> fail (False). The True->False flip localises the Point of No Return.
-
-  Primary integrity is asserted LIVE in this run: around EVERY reset_to(env 1)
-  the primary's cube pose is captured before/after; the max delta must be ~0,
-  demonstrating the probe write never touches env 0.
+The experiment predates the current repeated physical recovery predicate and
+fail-closed evidence schema. Its output is diagnostic historical data, not
+release evidence. Use ``verify_learned_policy.py`` for current revalidation.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_pnor_grasped.py --headless
+    /path/to/isaac-lab/python scripts/verify_pnor_grasped.py --headless
 """
 
 from __future__ import annotations
@@ -78,9 +39,18 @@ parser.add_argument("--probe_budget", type=int, default=140)
 parser.add_argument("--lift_thresh", type=float, default=0.04)
 parser.add_argument("--locality_tol", type=float, default=1e-6,
                     help="Max acceptable env0 pose delta across a probe reset_to [m].")
+parser.add_argument("--asset_root", default=None,
+                    help="Optional Isaac asset root, for example the Isaac 4.5 production tree. "
+                         "Needed when the runtime defaults to another asset channel.")
+parser.add_argument("--record_frames", default="",
+                    help="If set, write a PNG frame sequence of the primary rollout to this "
+                         "folder. Forces --enable_cameras, since offscreen capture needs the "
+                         "render pipeline.")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True
+if args.record_frames:
+    args.enable_cameras = True
 
 app_launcher = AppLauncher(args)
 simulation_app = app_launcher.app
@@ -90,20 +60,32 @@ import numpy as np  # noqa: E402
 import torch  # noqa: E402
 import warp as wp  # noqa: E402
 
-import isaaclab_tasks  # noqa: E402,F401
-from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
-
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(_HERE)
 sys.path.insert(0, os.path.join(_REPO, "src"))
+
+# Asset URLs must be overridden BEFORE task registration imports them.
+from ipfd.adapters.isaac_lab import configure_asset_root  # noqa: E402
+
+configure_asset_root(args.asset_root)
+
+import isaaclab_tasks  # noqa: E402,F401
+from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
+
 wp.init()
 from ipfd.oracles.pick_lift_sm import PickAndLiftSm, sm_action  # noqa: E402
 from ipfd import build_report  # noqa: E402
-from ipfd.adapters.isaac_lab import offset_root_positions, slice_state  # noqa: E402
+from ipfd.adapters.isaac_lab import (  # noqa: E402
+    attach_record_camera,
+    disable_debug_visualizers,
+    FrameRecorder,
+    offset_root_positions,
+    slice_state,
+)
 from ipfd.types import Rollout  # noqa: E402
 from ipfd.ponr import point_of_no_return  # noqa: E402
 
-PRIMARY_ENV = 0  # NEVER reset_to or action-corrupted by the probe
+PRIMARY_ENV = 0  # recorded before probes and never reset_to
 PROBE_ENV = 1    # receives exported snapshots; diverges freely
 GRIPPER_CH = 7   # action = [pos(3), quat(4), gripper(1)]; OPEN=+1, CLOSE=-1
 LIFT_STATE = 4   # PickSmState.LIFT_OBJECT (see ipfd.oracles.pick_lift_sm)
@@ -135,7 +117,7 @@ def probe_action(env, rsm, des_or) -> torch.Tensor:
     return a
 
 
-def record_primary(env, dt, dev, n, seed):
+def record_primary(env, dt, dev, n, seed, recorder=None):
     """Drive the primary pick-lift in env 0, inject a GRASPED-REGION gripper slip,
     and record the rollout + per-step checkpoints. env 0 is never reset_to."""
     des_or = torch.zeros((n, 4), device=dev)
@@ -161,6 +143,8 @@ def record_primary(env, dt, dev, n, seed):
             action[PRIMARY_ENV, GRIPPER_CH] = 1.0  # OPEN -> release the cube
 
         obs, _r, _term, _trunc, _i = env.step(action)
+        if recorder is not None:
+            recorder.capture(env)
         obs_list.append(obs["policy"][PRIMARY_ENV].detach().cpu().numpy().reshape(-1).astype(np.float64))
         act_list.append(action[PRIMARY_ENV].detach().cpu().numpy().reshape(-1).astype(np.float64))
         objz.append(obj_z(env, PRIMARY_ENV))
@@ -225,7 +209,7 @@ def main() -> None:
     st = {
         "second_environment_supported": "NO",
         "snapshot_transfer_supported": "NO",
-        "primary_rollout_corruption": "UNKNOWN",
+        "reset_boundary_primary_pose_stable": "UNKNOWN",
         "recovery_oracle_non_degenerate": "NO",
         "pnor_measurement_possible": "NO",
         "overall_status": "BLOCKED",
@@ -234,14 +218,24 @@ def main() -> None:
     try:
         n = 1 + max(1, args.num_probe_envs)
         env_cfg = parse_env_cfg(args.env_id, device=args.device, num_envs=n)
+        if args.record_frames:
+            attach_record_camera(env_cfg)
+            disable_debug_visualizers(env_cfg)
         env = gym.make(args.env_id, cfg=env_cfg)
         dev = env.unwrapped.device
         dt = env_cfg.sim.dt * env_cfg.decimation
         st["second_environment_supported"] = "YES"  # vectorised pool, env1 stepped independently
-        log(f"env={args.env_id} num_envs={n} (env0=primary pristine, env1=probe) dt={dt:.4f}")
+        log(f"env={args.env_id} num_envs={n} (env0=recorded, env1=probe) dt={dt:.4f}")
+
+        recorder = None
+        if args.record_frames:
+            env.reset()
+            recorder = FrameRecorder(args.record_frames)
+            recorder.aim(env)
+            log(f"recording primary-rollout frames -> {args.record_frames}")
 
         (obs_list, act_list, objz, states, sm_snaps, z0,
-         des_or, drop_step) = record_primary(env, dt, dev, n, seed=0)
+         des_or, drop_step) = record_primary(env, dt, dev, n, seed=0, recorder=recorder)
         T = len(states)
         zmax = float(np.max(objz))
         z_end = objz[-1]
@@ -276,8 +270,10 @@ def main() -> None:
             f"{loc['max']:.2e} m (tol {args.locality_tol})")
 
         # --- verdicts ---
-        primary_pristine = loc["max"] <= args.locality_tol
-        st["primary_rollout_corruption"] = "NO" if primary_pristine else "YES"
+        primary_boundary_stable = loc["max"] <= args.locality_tol
+        st["reset_boundary_primary_pose_stable"] = (
+            "YES" if primary_boundary_stable else "NO"
+        )
         st["recovery_oracle_non_degenerate"] = "YES" if (n_true > 0 and n_false > 0) else "NO"
 
         ponr_ok = (
@@ -290,14 +286,7 @@ def main() -> None:
             log(f"PoNR {ponr} vs injected slip {drop_step} (tol {args.probe_stride + args.drop_window}); "
                 f"PoNR lead over observable failure = {lead:+.2f}s")
 
-        all_yes = (
-            st["second_environment_supported"] == "YES"
-            and st["snapshot_transfer_supported"] == "YES"
-            and st["primary_rollout_corruption"] == "NO"
-            and st["recovery_oracle_non_degenerate"] == "YES"
-            and st["pnor_measurement_possible"] == "YES"
-        )
-        st["overall_status"] = "VERIFIED" if all_yes else "PARTIAL"
+        st["overall_status"] = "HISTORICAL_ONLY"
     except Exception:
         import traceback
         log("aborted with exception:")
@@ -311,7 +300,7 @@ def main() -> None:
         print("\n" + "=" * 55)
         print("DUAL_PROBE_STATUS:")
         for k in ("second_environment_supported", "snapshot_transfer_supported",
-                  "primary_rollout_corruption", "recovery_oracle_non_degenerate",
+                  "reset_boundary_primary_pose_stable", "recovery_oracle_non_degenerate",
                   "pnor_measurement_possible", "overall_status"):
             print(f"- {k}: {st[k]}")
         print("=" * 55, flush=True)

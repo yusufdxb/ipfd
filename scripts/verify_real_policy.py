@@ -27,10 +27,10 @@ action-variance detector and the recovery-probe PoNR are exercised here.
 
 Run:
     OMNI_KIT_ACCEPT_EULA=YES \\
-    ~/Sim/isaac-sim-venv/bin/python scripts/verify_real_policy.py --headless
+    /path/to/isaac-lab/python scripts/verify_real_policy.py --headless
     # add --diagnose to run the scripted policy uninterrupted (sanity check)
 
-RESULT (2026-07-04, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) -- honest, not the hoped-for one:
+HISTORICAL RESULT (2026-07-04, Isaac Lab 4.5.22):
 
   * ``--diagnose`` (scripted policy, NO probes): lifts the cube on every seed
     (+0.23..+0.41 m, reaches all SM states 0->4). The controller is competent.
@@ -38,18 +38,16 @@ RESULT (2026-07-04, Isaac Lab 4.5.22, an NVIDIA Blackwell-class consumer GPU) --
   * Full run (recovery probe interleaved in the SAME env): the nominal rollout
     FAILS to lift (z_end < z0) and PoNR is degenerate/spurious. Interleaving the
     contact-rich recovery probe (save state -> grasp+lift with a fresh SM ->
-    reset_to) reproducibly corrupts the primary rollout. THREE different probe
+    reset_to) reproducibly changes the primary continuation. THREE probe
     implementations (buffer-order fix, non-yanking first action, larger budget)
-    produced byte-identical degenerate output, so the failure is deterministic
-    and dominated by something the probe parameters do not control -- most likely
-    contact/solver state that ``get_state``/``reset_to`` do not capture after a
-    grasp (single-step restore is nonetheless bit-exact; see
-    ``verify_state_fidelity.py``).
+    produced byte-identical degenerate output. The measured exposed state
+    round-tripped at the immediate boundary, but the missing simulator or task
+    state responsible for later divergence was not identified.
 
-  Conclusion: with a real policy, IPFD's analysis + single-step state restore are
-  sound, but the recovery-probe PoNR does NOT yet yield a meaningful point of no
-  return in the loop. meaningful_pnor_detected = NO. This is an open limitation of
-  the recovery-probe design, not of the detectors or the analysis layer.
+  Conclusion: this in-loop probe design did not yield a valid PoNR result.
+  meaningful_pnor_detected = NO. The script predates the current repeated
+  physical-predicate evidence contract and is retained as a historical negative
+  experiment.
 """
 
 from __future__ import annotations
@@ -72,6 +70,7 @@ parser.add_argument("--probe_stride", type=int, default=25)
 parser.add_argument("--probe_budget", type=int, default=200, help="Steps a fresh SM gets to recover.")
 parser.add_argument("--lift_thresh", type=float, default=0.04, help="Object rise [m] counted as a lift.")
 parser.add_argument("--reach_push", type=float, default=1.2, help="Out-of-reach displacement [m] in +x.")
+parser.add_argument("--asset_root", default=None, help="Isaac asset root override for the validated asset channel.")
 parser.add_argument("--diagnose", action="store_true",
                     help="Run the scripted policy UNINTERRUPTED (no probes/perturb) and report max lift per seed.")
 AppLauncher.add_app_launcher_args(parser)
@@ -88,6 +87,9 @@ import warp as wp  # noqa: E402
 
 import isaaclab_tasks  # noqa: E402,F401
 from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
+from ipfd.adapters.isaac_lab import configure_asset_root  # noqa: E402
+
+configure_asset_root(args.asset_root)
 
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_REPO, "src"))
@@ -220,7 +222,7 @@ def main() -> None:
         "meaningful_pnor_detected": "NO",
         "recovery_oracle_non_degenerate": "NO",
         "measurable_failure_lead_time": "NO",
-        "overall_status": "PARTIALLY_VERIFIED",
+        "overall_status": "HISTORICAL_ONLY",
     }
     try:
         env_cfg = parse_env_cfg(args.env_id, device=args.device, num_envs=1)
@@ -289,8 +291,7 @@ def main() -> None:
         status["meaningful_pnor_detected"] = "YES" if any_meaningful_ponr else "NO"
         status["recovery_oracle_non_degenerate"] = "YES" if (any_recover_true and any_recover_false) else "NO"
         status["measurable_failure_lead_time"] = "YES" if any_lead_time else "NO"
-        core = (any_meaningful_ponr and any_recover_true and any_recover_false)
-        status["overall_status"] = "VERIFIED" if core else "PARTIALLY_VERIFIED"
+        status["overall_status"] = "HISTORICAL_ONLY"
 
     except Exception:
         import traceback

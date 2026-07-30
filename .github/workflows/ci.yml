@@ -5,15 +5,18 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install (analysis layer only, no GPU / no Isaac Lab)
@@ -21,19 +24,50 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
       - name: Lint
-        run: ruff check src tests
+        run: ruff check src tests scripts examples
+      # Runs on the 3.10 leg because [tool.mypy] targets python_version 3.10,
+      # the lowest version the package supports. Running a 3.10 target on the
+      # 3.12 leg pulls in numpy stubs that use PEP 695 `type` statements, which
+      # mypy rejects as syntax under a pre-3.12 target.
+      - name: Type-check the packaged library
+        if: matrix.python-version == '3.10'
+        run: mypy
       - name: Test
-        run: pytest
+        run: pytest --cov=ipfd --cov-branch --cov-report=term-missing
       - name: Smoke-run the example (headless)
         run: python examples/run_synthetic.py
+      - name: Run causal benchmark contract
+        run: |
+          python scripts/benchmark_actionability.py --seeds 0,1,2,3,4 --json /tmp/actionability.json
+          python - <<'PY'
+          import json
+          with open('/tmp/actionability.json', encoding='utf-8') as handle:
+              result = json.load(handle)
+          assert result['source'] == 'synthetic_contract'
+          assert result['n_cases'] >= 20
+          assert result['accuracy'] == 1.0
+          PY
+      - name: Run baseline comparison contract
+        run: |
+          python scripts/benchmark_comparison.py --seeds 0,1,2,3,4 --json /tmp/comparison.json >/dev/null
+          python - <<'PY'
+          import json
+          with open('/tmp/comparison.json', encoding='utf-8') as handle:
+              result = json.load(handle)
+          assert result['source'] == 'synthetic_contract'
+          assert result['n_cases'] == 25
+          assert result['ipfd']['precision'] == 1.0
+          assert result['ipfd']['recall'] == 1.0
+          assert result['ipfd']['false_alarm_rate'] < result['naive']['false_alarm_rate']
+          PY
 
   package:
     # Verify IPFD builds, is metadata-valid, and installs+imports cleanly from the
-    # built wheel with NO source tree on the path -- the "pip install ipfd" contract.
+    # built wheel with NO source tree on the path, the "pip install ipfd" contract.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.11"
       - name: Build sdist + wheel
@@ -66,3 +100,16 @@ jobs:
           assert real.t_ponr == 56 and real.t_failure == 57, (real.t_ponr, real.t_failure)
           print("installed-wheel end-to-end OK; PoNR", real.t_ponr, "reproduced with no GPU")
           PY
+          ./bin/ipfd analyze learned_teleport_rollout.npz --report report.json --plot timeline.png
+          ./bin/ipfd-demo --json demo.json
+          ./bin/ipfd-evidence-gate --help
+          ./bin/pip check
+          test -s report.json
+          test -s timeline.png
+          test -s demo.json
+      - name: Install and import the source distribution
+        run: |
+          python -m venv /tmp/ipfd-sdist
+          /tmp/ipfd-sdist/bin/pip install dist/*.tar.gz
+          cd /tmp
+          /tmp/ipfd-sdist/bin/python -c "import ipfd; print(ipfd.__version__)"
