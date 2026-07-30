@@ -1,9 +1,8 @@
 """Synthetic rollouts.
 
-These are *not* toys for their own sake: they let the analysis layer, tests, and
-example plots run with zero simulator dependency, and they let us bake in a
-ground-truth silent-failure structure so we can assert the detectors and metrics
-recover it.
+Synthetic rollouts let the analysis layer, tests, and example plots run with zero
+simulator dependency, and they carry a ground-truth silent-failure structure, so
+the detectors and metrics can be asserted against a known answer.
 
 ``make_silent_failure_rollout`` encodes the exact phenomenon IPFD exists to expose:
 at ``t_ponr`` the object is knocked out of the reachable workspace (recovery becomes
@@ -94,7 +93,7 @@ def make_success_rollout(
     emb_dim: int = 16,
     dt: float = 1.0 / 60.0,
 ) -> Rollout:
-    """A nominal successful rollout -- the negative control the detectors must not trip."""
+    """A nominal successful rollout, the negative control the detectors must not trip."""
     rng = np.random.default_rng(seed)
     obs = 0.02 * rng.standard_normal((T, obs_dim))
     obs[:, 0] += np.linspace(0.0, 0.5, T)

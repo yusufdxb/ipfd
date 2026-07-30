@@ -3,7 +3,7 @@
 This is the top-level analysis entry point: given a :class:`Rollout`, it runs the
 detectors, locates the point of no return, computes the metric set, and packages
 everything into a serializable :class:`FailureDebugReport` plus a human-readable
-summary. Pure NumPy -- no simulator, no GPU.
+summary. Pure NumPy, no simulator, no GPU.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ __all__ = ["AnalysisConfig", "FailureDebugReport", "build_report"]
 
 @dataclass
 class AnalysisConfig:
-    """Tunable knobs for the analysis pass. Defaults are sane for ~60 Hz control."""
+    """Tunable knobs for the analysis pass. Defaults target ~60 Hz control."""
 
     baseline_window: int = 20
     drift_ref_window: int = 10
@@ -134,9 +134,9 @@ def _verdict(r: FailureDebugReport) -> str:
     if r.success:
         return "verdict            : nominal."
     if r.ponr_lead_time_s is not None and r.ponr_lead_time_s < 0:
-        return "verdict            : SILENT COLLAPSE -- alarm fired only AFTER the trajectory was doomed."
+        return "verdict            : SILENT COLLAPSE: alarm fired only AFTER the trajectory was doomed."
     if r.false_continuity_rate is not None and r.false_continuity_rate >= 0.5:
-        return "verdict            : SILENT COLLAPSE -- policy stayed confident through most of the doomed window."
+        return "verdict            : SILENT COLLAPSE: policy stayed confident through most of the doomed window."
     return "verdict            : failure caught with lead time."
 
 

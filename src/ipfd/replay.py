@@ -1,11 +1,11 @@
 """Record a :class:`Rollout` to disk and replay it without a simulator.
 
-This is the seam that makes IPFD's central claim independently checkable. A
+A Rollout persists as plain NumPy arrays, so analysis reruns without a simulator. A
 :class:`Rollout` collected from a live Isaac Lab GPU session (the *only* part of
 the pipeline that needs a simulator) is a bag of plain NumPy arrays. Persist it
 once with :func:`save_rollout`, and anyone can reload it with :func:`load_rollout`
 and re-run the full analysis (:func:`ipfd.build_report`) on a CPU, in CI, offline,
-forever -- getting the byte-for-byte same report.
+forever, getting the byte-for-byte same report.
 
 Format: a single compressed ``.npz`` holding only NumPy arrays (so it stays small
 and portable) plus a short JSON sidecar string for the free-form ``meta`` dict.

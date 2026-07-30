@@ -1,10 +1,8 @@
 """Point of No Return (PoNR).
 
-The central concept of IPFD, and the one most often faked by naive tooling.
-
 Definition
 ----------
-The PoNR is the first timestep from which the task is *irrecoverable* -- i.e. no
+The PoNR is the first timestep from which the task is *irrecoverable*, meaning no
 subsequent state ever returns to recoverable. Crucially, "irrecoverable" cannot be
 read off a passive log: you only know a state was doomed by *trying to recover from
 it and failing*. So PoNR is defined operationally against a **recovery probe**:
@@ -21,8 +19,8 @@ We report PoNR under the recovery controller we actually ran. A stronger recover
 controller can push the measured timestep later. When positive recovery verdicts
 are physically sound, the oracle-relative timestep is therefore a lower bound on
 the optimal-control PoNR timestep. A failed attempt is not proof of physical
-irrecoverability. Real probes can be noisy, so repeated aggregation is conservative
-and exposes confidence rather than silently treating one false verdict as proof.
+irrecoverability. Real probes can be noisy, so repeated aggregation reports a confidence value
+alongside the verdict.
 """
 
 from __future__ import annotations

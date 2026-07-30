@@ -39,9 +39,18 @@ parser.add_argument("--probe_budget", type=int, default=140)
 parser.add_argument("--lift_thresh", type=float, default=0.04)
 parser.add_argument("--locality_tol", type=float, default=1e-6,
                     help="Max acceptable env0 pose delta across a probe reset_to [m].")
+parser.add_argument("--asset_root", default=None,
+                    help="Optional Isaac asset root, for example the Isaac 4.5 production tree. "
+                         "Needed when the runtime defaults to another asset channel.")
+parser.add_argument("--record_frames", default="",
+                    help="If set, write a PNG frame sequence of the primary rollout to this "
+                         "folder. Forces --enable_cameras, since offscreen capture needs the "
+                         "render pipeline.")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True
+if args.record_frames:
+    args.enable_cameras = True
 
 app_launcher = AppLauncher(args)
 simulation_app = app_launcher.app
@@ -51,16 +60,28 @@ import numpy as np  # noqa: E402
 import torch  # noqa: E402
 import warp as wp  # noqa: E402
 
-import isaaclab_tasks  # noqa: E402,F401
-from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
-
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(_HERE)
 sys.path.insert(0, os.path.join(_REPO, "src"))
+
+# Asset URLs must be overridden BEFORE task registration imports them.
+from ipfd.adapters.isaac_lab import configure_asset_root  # noqa: E402
+
+configure_asset_root(args.asset_root)
+
+import isaaclab_tasks  # noqa: E402,F401
+from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
+
 wp.init()
 from ipfd.oracles.pick_lift_sm import PickAndLiftSm, sm_action  # noqa: E402
 from ipfd import build_report  # noqa: E402
-from ipfd.adapters.isaac_lab import offset_root_positions, slice_state  # noqa: E402
+from ipfd.adapters.isaac_lab import (  # noqa: E402
+    attach_record_camera,
+    disable_debug_visualizers,
+    FrameRecorder,
+    offset_root_positions,
+    slice_state,
+)
 from ipfd.types import Rollout  # noqa: E402
 from ipfd.ponr import point_of_no_return  # noqa: E402
 
@@ -96,7 +117,7 @@ def probe_action(env, rsm, des_or) -> torch.Tensor:
     return a
 
 
-def record_primary(env, dt, dev, n, seed):
+def record_primary(env, dt, dev, n, seed, recorder=None):
     """Drive the primary pick-lift in env 0, inject a GRASPED-REGION gripper slip,
     and record the rollout + per-step checkpoints. env 0 is never reset_to."""
     des_or = torch.zeros((n, 4), device=dev)
@@ -122,6 +143,8 @@ def record_primary(env, dt, dev, n, seed):
             action[PRIMARY_ENV, GRIPPER_CH] = 1.0  # OPEN -> release the cube
 
         obs, _r, _term, _trunc, _i = env.step(action)
+        if recorder is not None:
+            recorder.capture(env)
         obs_list.append(obs["policy"][PRIMARY_ENV].detach().cpu().numpy().reshape(-1).astype(np.float64))
         act_list.append(action[PRIMARY_ENV].detach().cpu().numpy().reshape(-1).astype(np.float64))
         objz.append(obj_z(env, PRIMARY_ENV))
@@ -195,14 +218,24 @@ def main() -> None:
     try:
         n = 1 + max(1, args.num_probe_envs)
         env_cfg = parse_env_cfg(args.env_id, device=args.device, num_envs=n)
+        if args.record_frames:
+            attach_record_camera(env_cfg)
+            disable_debug_visualizers(env_cfg)
         env = gym.make(args.env_id, cfg=env_cfg)
         dev = env.unwrapped.device
         dt = env_cfg.sim.dt * env_cfg.decimation
         st["second_environment_supported"] = "YES"  # vectorised pool, env1 stepped independently
         log(f"env={args.env_id} num_envs={n} (env0=recorded, env1=probe) dt={dt:.4f}")
 
+        recorder = None
+        if args.record_frames:
+            env.reset()
+            recorder = FrameRecorder(args.record_frames)
+            recorder.aim(env)
+            log(f"recording primary-rollout frames -> {args.record_frames}")
+
         (obs_list, act_list, objz, states, sm_snaps, z0,
-         des_or, drop_step) = record_primary(env, dt, dev, n, seed=0)
+         des_or, drop_step) = record_primary(env, dt, dev, n, seed=0, recorder=recorder)
         T = len(states)
         zmax = float(np.max(objz))
         z_end = objz[-1]

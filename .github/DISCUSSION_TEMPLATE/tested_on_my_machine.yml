@@ -5,7 +5,7 @@ body:
       value: |
         Thanks for testing IPFD. You do **not** need to understand the internals;
         run the [validation checklist](https://github.com/yusufdxb/ipfd/blob/main/docs/VALIDATION.md)
-        and paste the values below. CPU-only reports (steps 1–4, no GPU) are welcome.
+        and paste the values below. CPU-only reports (steps 1 to 4, no GPU) are welcome.
   - type: input
     id: os
     attributes:

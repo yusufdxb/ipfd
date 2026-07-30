@@ -63,7 +63,7 @@ jobs:
 
   package:
     # Verify IPFD builds, is metadata-valid, and installs+imports cleanly from the
-    # built wheel with NO source tree on the path -- the "pip install ipfd" contract.
+    # built wheel with NO source tree on the path, the "pip install ipfd" contract.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5

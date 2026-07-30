@@ -78,9 +78,16 @@ parser.add_argument("--json", dest="json_path", default="",
                     help="Write an ipfd.recovery_run.v1 evidence artifact.")
 parser.add_argument("--allow_incomplete", action="store_true",
                     help="write incomplete diagnostics instead of exiting when lift is never reached")
+parser.add_argument("--record_frames", default="",
+                    help="If set, write a PNG frame sequence of the primary rollout to this "
+                         "folder. Requires offscreen rendering, so this forces "
+                         "--enable_cameras. Build a GIF or mp4 from the sequence with ffmpeg.")
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 args.headless = True
+# Offscreen capture returns empty frames unless the render pipeline is enabled.
+if args.record_frames:
+    args.enable_cameras = True
 
 app_launcher = AppLauncher(args)
 simulation_app = app_launcher.app
@@ -97,7 +104,12 @@ import warp as wp
 _REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_REPO, "src"))
 from ipfd import __version__, build_report, plot_timeline
-from ipfd.adapters.isaac_lab import configure_asset_root, make_pick_lift_recovery_check
+from ipfd.adapters.isaac_lab import (
+    attach_record_camera,
+    configure_asset_root,
+    FrameRecorder,
+    make_pick_lift_recovery_check,
+)
 from ipfd.oracles.rsl_rl_policy import checkpoint_sha256, load_learned_policy
 from ipfd.provenance import source_provenance
 
@@ -135,13 +147,15 @@ def teleport_out_of_reach(env, push: float) -> None:
     obj.write_root_pose_to_sim(pose, env_ids=torch.tensor([0], device=env.unwrapped.device))
 
 
-def make_on_step(env, z_rest):
+def make_on_step(env, z_rest, recorder=None):
     """Failure-injection hook for the library rollout: once the cube is genuinely
     lifted, either force the gripper open (recoverable slip) or teleport the cube
     out of reach (irrecoverable). Mirrors the previously verified standalone driver."""
     trig = {"on": False}
 
     def on_step(step, e, actions):
+        if recorder is not None:
+            recorder.capture(e)
         if not trig["on"] and obj_z(e, 0) > z_rest + args.lift_margin:
             trig["on"] = True
             trig["step"] = step
@@ -163,6 +177,12 @@ def main() -> None:
     env_cfg.seed = args.seed
     agent_cfg = load_cfg_from_registry(args.task, "rsl_rl_cfg_entry_point")
     agent_cfg = handle_deprecated_rsl_rl_cfg(agent_cfg, metadata.version("rsl-rl-lib"))
+
+    recorder = None
+    if args.record_frames:
+        # The headless viewport render product yields all-zero frames on the
+        # validated runtime, so capture from a Camera sensor in the scene.
+        attach_record_camera(env_cfg)
 
     env = gym.make(args.task, cfg=env_cfg)
     env = RslRlVecEnvWrapper(env)
@@ -193,9 +213,14 @@ def main() -> None:
     z_rest = rest_height(env, 0)
     log(f"settled object rest height (env0) = {z_rest:.3f} m")
 
+    if args.record_frames:
+        recorder = FrameRecorder(args.record_frames)
+        recorder.aim(env)
+        log(f"recording primary-rollout frames -> {args.record_frames}")
+
     # Drive the PACKAGED library API end-to-end (env-isolated probe + PoNR live here).
     env.reset()
-    failure_hook = make_on_step(env, z_rest)
+    failure_hook = make_on_step(env, z_rest, recorder)
     recovery_check = make_pick_lift_recovery_check(
         workspace_radius=0.75,
         max_ee_distance=0.15,

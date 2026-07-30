@@ -7,7 +7,7 @@ requires **no understanding of IPFD's internals.**
 
 ## How to report
 
-1. Run the [validation checklist](VALIDATION.md) (steps 1–4 are CPU-only; 5–7 need
+1. Run the [validation checklist](VALIDATION.md) (steps 1 to 4 are CPU-only; 5 to 7 need
    Isaac Lab + a GPU; do as many as you can).
 2. Open a new **Tested on my machine** discussion:
    [start here](https://github.com/yusufdxb/ipfd/discussions/new?category=tested-on-my-machine).
@@ -29,8 +29,8 @@ requires **no understanding of IPFD's internals.**
 
 ## CPU-only reports are welcome
 
-You do **not** need a GPU or Isaac Lab. A report that steps 1–4 passed on your OS
-and Python version is genuinely useful; it validates the analysis layer and the
+You do **not** need a GPU or Isaac Lab. A report that steps 1 to 4 passed on your OS
+and Python version is useful; it validates the analysis layer and the
 install path across environments.
 
 ## What happens next

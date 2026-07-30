@@ -14,5 +14,4 @@ Copyright (c) 2022-2026, The Isaac Lab Project Developers.
 SPDX-License-Identifier: BSD-3-Clause
 ```
 
-It is vendored so IPFD's recovery oracle is the proven upstream reference
-controller rather than a reimplementation. See that file's header for details.
+It is vendored so the recovery oracle matches the upstream implementation. See that file's header for details.

@@ -9,8 +9,8 @@ IPFD's historical GPU results were collected on **one** configuration:
 | OS | Linux (Ubuntu) |
 | GPU | single CUDA device |
 
-Anything outside this matrix is **unverified**, not unsupported, and a report on
-another configuration is exactly the evidence needed to widen the matrix.
+Anything outside this matrix is **unverified**, not unsupported. Reports on other
+configurations widen the tested matrix.
 
 ## When to file a compatibility report
 

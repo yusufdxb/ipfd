@@ -2,7 +2,7 @@
 
 A single stacked-panel figure per rollout: key observation feature, action norm,
 policy entropy, representation drift, and the combined imminence score. Three
-vertical markers tell the whole story at a glance -- point of no return (when it
+vertical markers mark point of no return (when it
 became doomed), detector alarm (when the tool noticed), and observable failure
 (when it finally looked broken). Matplotlib only; ``Agg`` backend for headless use.
 """

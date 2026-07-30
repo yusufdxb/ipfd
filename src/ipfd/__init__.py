@@ -1,4 +1,4 @@
-"""IPFD -- Isaac Policy Failure Debugger.
+"""IPFD: Isaac Policy Failure Debugger.
 
 Localize the oracle-relative transition after which a tested recovery controller
 no longer succeeds, and compare it with detector and visible-failure timing.

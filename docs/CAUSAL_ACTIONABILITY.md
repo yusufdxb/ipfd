@@ -38,8 +38,8 @@ python3 scripts/evaluate_actionability.py \
 
 The fixture's detector alarm occurs before the injected teleport at step 56, so
 the result is deliberately `pre_disturbance`, not an actionable warning. This is
-the honest negative control: IPFD localizes PoNR, but it does not pretend that an
-alarm caused by a task phase is a causal detector of the later fault.
+the negative control: an alarm caused by a task phase does not receive causal
+credit for the later fault.
 
 For a positive control, construct a rollout with an alarm after the disturbance
 and before the earliest possible PoNR. The same evaluator will classify it as

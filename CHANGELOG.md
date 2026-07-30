@@ -8,6 +8,11 @@ All notable changes to IPFD are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Frame recording for live rollouts (`attach_record_camera`, `FrameRecorder`, and
+  `--record_frames` on the learned-policy driver). Recording captures from a Camera
+  sensor in the scene, because the headless viewport render product returns all-zero
+  frames on the validated runtime and therefore produced black video through
+  gymnasium's `RecordVideo` wrapper.
 - A causal actionability evaluator that treats strided PoNR as an uncertainty
   interval and refuses to credit alarms that fired before a known disturbance.
 - A zero-code `ipfd analyze` command for replay archives, JSON reports, timeline
@@ -26,6 +31,10 @@ All notable changes to IPFD are documented here. The format follows
   detector weights, single-feature visualization, and Isaac Lab version checks.
 
 ### Fixed
+- `eval_checkpoint.py` now writes its competence artifact before the `finally`
+  block closes the simulation app. `simulation_app.close()` can hard-exit the
+  process, so a successful evaluation previously produced no JSON at all and the
+  release evidence gate could never receive a competence artifact.
 - The wheel's demo command no longer imports the repository-only `scripts`
   namespace.
 - PoNR, detector, rollout, archive, and analysis-configuration inputs now reject
@@ -56,6 +65,14 @@ All notable changes to IPFD are documented here. The format follows
 - README and contributor troubleshooting now cover ROS-injected pytest plugins.
 
 ### Changed
+- Public prose across the README, `CONTRIBUTING.md`, `ROADMAP.md`, `docs/`, issue
+  and discussion templates, and module docstrings was rewritten in plain
+  declarative technical English. Removed self-congratulatory framing, notes
+  describing artifacts that do not exist, and dash-as-conjunction constructions
+  (including two that reached user-visible `report.summary()` output).
+- The README leads with an evidence-status table. Claims that the release evidence
+  gate has not accepted are labeled `historical fixture only`, and the demonstrated
+  task is named exactly (`Isaac-Lift-Cube-Franka-v0`, a single-object lift).
 - CI now covers Python 3.10, 3.11, and 3.12 with lint, typing, branch coverage,
   wheel/sdist builds, installed-command smoke tests, and immutable action pins.
 - Release publishing is fail-closed on clean, commit-linked GPU evidence and uses

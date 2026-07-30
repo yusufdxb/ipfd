@@ -179,6 +179,9 @@ def main() -> None:
             "mean_lift": float(ml.mean()),
             "max_lift": float(ml.max()),
         })
+        # Write before the finally block: simulation_app.close() can hard-exit
+        # the process, so anything after it is not guaranteed to run.
+        write_result()
     except Exception as exc:
         result.update({"error_type": type(exc).__name__, "error": str(exc)})
         print(f"EVAL_ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
@@ -188,7 +191,6 @@ def main() -> None:
         if env is not None:
             env.close()
         simulation_app.close()
-    write_result()
 
 
 if __name__ == "__main__":

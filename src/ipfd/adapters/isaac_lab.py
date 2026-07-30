@@ -56,6 +56,10 @@ __all__ = [
     "evaluate_recovery_isolated",
     "PhysicalRecoveryCheck",
     "make_pick_lift_recovery_check",
+    "RECORD_CAMERA_NAME",
+    "attach_record_camera",
+    "disable_debug_visualizers",
+    "FrameRecorder",
 ]
 
 _isaac_lab_version_checked = False
@@ -93,8 +97,8 @@ class Policy(Protocol):
 
     Called on the wrapped env's observation and returns a batched action tensor
     (one row per env). It may optionally expose per-env ``last_entropy`` and
-    ``last_embedding`` attributes -- the side channels IPFD's detectors instrument;
-    absent means that detector is disabled -- and a ``reset(dones)`` method.
+    ``last_embedding`` attributes (the side channels IPFD's detectors instrument;
+    absent means that detector is disabled) and a ``reset(dones)`` method.
     """
 
     def __call__(self, obs: Any) -> Any:
@@ -550,7 +554,7 @@ def collect_rollout(
             legacy height-only check is used for backwards compatibility.
         recovery_policy: Batched recovery oracle for the probe; ``None`` skips PoNR.
         on_step: Optional ``callable(step, env, actions)`` invoked after the policy
-            acts and before ``env.step`` -- the hook a caller uses to inject a fault
+            acts and before ``env.step``, the hook a caller uses to inject a fault
             (edit ``actions`` in place, or write the sim). The recorded action is the
             policy's *pre-injection* action, so the detectors see the true policy.
 
@@ -706,3 +710,124 @@ def collect_rollout(
         seed=seed,
         meta=full_meta,
     )
+
+
+# ---------------------------------------------------------------------------
+# Frame recording (requires live sim)
+#
+# The viewport render product returns all-zero frames under headless offscreen
+# rendering on the validated runtime: env.render() yields a correctly shaped
+# uint8 array whose every pixel is 0, so gymnasium's RecordVideo wrapper writes
+# a black video. An explicit Camera sensor owns its own render product and does
+# return real pixels, so recording goes through the scene instead of the
+# viewport. Recording still requires the app to be launched with
+# ``enable_cameras=True``.
+# ---------------------------------------------------------------------------
+
+RECORD_CAMERA_NAME = "ipfd_record_cam"
+
+
+def disable_debug_visualizers(env_cfg: Any) -> None:
+    """Turn off marker overlays (goal-pose arrows, frame axes) before ``gym.make``.
+
+    The Lift task draws command and frame visualizers into the scene. They are
+    useful when debugging interactively and are clutter in a recording.
+    """
+    for group_name in ("commands", "scene"):
+        group = getattr(env_cfg, group_name, None)
+        if group is None:
+            continue
+        for attr in dir(group):
+            if attr.startswith("_"):
+                continue
+            term: Any = getattr(group, attr, None)
+            if term is not None and hasattr(term, "debug_vis"):
+                term.debug_vis = False
+
+
+def attach_record_camera(
+    env_cfg: Any,
+    *,
+    width: int = 1280,
+    height: int = 720,
+    name: str = RECORD_CAMERA_NAME,
+) -> None:
+    """Add an RGB Camera sensor to ``env_cfg``'s scene. Call before ``gym.make``.
+
+    requires live sim (imports Isaac Lab).
+    """
+    import isaaclab.sim as sim_utils
+    from isaaclab.sensors import CameraCfg
+
+    setattr(
+        env_cfg.scene,
+        name,
+        CameraCfg(
+            prim_path="{ENV_REGEX_NS}/" + name,
+            update_period=0.0,
+            width=width,
+            height=height,
+            data_types=["rgb"],
+            spawn=sim_utils.PinholeCameraCfg(
+                focal_length=24.0,
+                focus_distance=400.0,
+                horizontal_aperture=20.955,
+                clipping_range=(0.05, 20.0),
+            ),
+            # Aimed explicitly after reset via set_world_poses_from_view.
+            offset=CameraCfg.OffsetCfg(pos=(0.0, 0.0, 0.0), convention="world"),
+        ),
+    )
+
+
+class FrameRecorder:
+    """Stream RGB frames from the record camera to a PNG sequence.
+
+    Frames are written as they are captured rather than accumulated, because a
+    few hundred 720p frames held in memory is hundreds of megabytes.
+
+    requires live sim.
+    """
+
+    def __init__(
+        self,
+        outdir: str,
+        *,
+        env_index: int = 0,
+        name: str = RECORD_CAMERA_NAME,
+        eye: tuple[float, float, float] = (1.3, 0.9, 0.75),
+        target: tuple[float, float, float] = (0.45, 0.0, 0.15),
+    ) -> None:
+        self.outdir = outdir
+        self.env_index = env_index
+        self.name = name
+        self.eye = eye
+        self.target = target
+        self.count = 0
+        os.makedirs(outdir, exist_ok=True)
+
+    def aim(self, env: Any) -> None:
+        """Point the camera using eye/target, which avoids hand-built quaternions."""
+        import torch
+
+        scene = env.unwrapped.scene
+        cam = scene[self.name]
+        origins = scene.env_origins
+        eyes = origins + torch.tensor(self.eye, device=origins.device)
+        targets = origins + torch.tensor(self.target, device=origins.device)
+        cam.set_world_poses_from_view(eyes, targets)
+
+    def capture(self, env: Any) -> bool:
+        """Write one frame. Returns False when the camera produced no pixels yet."""
+        import imageio.v3 as iio
+
+        cam = env.unwrapped.scene[self.name]
+        rgb = cam.data.output.get("rgb") if hasattr(cam.data.output, "get") else None
+        if rgb is None:
+            return False
+        arr = rgb[self.env_index, ..., :3].detach().cpu().numpy().astype(np.uint8)
+        if not arr.size:
+            return False
+        iio.imwrite(os.path.join(self.outdir, f"frame_{self.count:05d}.png"), arr)
+        self.count += 1
+        return True

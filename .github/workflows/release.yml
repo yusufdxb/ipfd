@@ -2,8 +2,8 @@ name: release
 
 # Minimal tag-triggered release build. Push an annotated tag like `vX.Y.Z` (which
 # MUST equal the pyproject / ipfd.__version__ version) and this builds the sdist +
-# wheel, validates them, stores them as a workflow artifact, and -- once you have
-# opted in -- publishes to PyPI via trusted publishing (OIDC; no API token stored).
+# wheel, validates them, stores them as a workflow artifact, and (once you have
+# opted in) publishes to PyPI via trusted publishing (OIDC; no API token stored).
 #
 # To enable PyPI publishing:
 #   1. On PyPI, add this repo as a Trusted Publisher for the project `ipfd`
