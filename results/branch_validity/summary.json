@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "scientific_object": "counterfactual_branch_decision_fidelity",
+  "cohorts": [
+    {
+      "source": {
+        "label": "clean_three_seed",
+        "sha256": "86189ab525c394d24d6e1b8b26427850ad5822bae9bd3789074e4c4985b9cad2",
+        "input_schema_version": 2,
+        "input_classification": "GENERALLY_INVALID"
+      },
+      "result": "FALSIFIED_UNIVERSAL_DECISION_FIDELITY",
+      "overall": {
+        "comparisons": 120,
+        "agreements": 107,
+        "disagreements": 13,
+        "agreement_rate": 0.8916666666666667,
+        "wilson_95": [
+          0.8234463978470835,
+          0.9355885884582656
+        ],
+        "false_recoverable": 1,
+        "false_unrecoverable": 12
+      },
+      "by_continuation": {
+        "exact_action": {
+          "comparisons": 60,
+          "agreements": 50,
+          "disagreements": 10,
+          "agreement_rate": 0.8333333333333334,
+          "wilson_95": [
+            0.7196838683638547,
+            0.9068682302080855
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 10
+        },
+        "policy": {
+          "comparisons": 60,
+          "agreements": 57,
+          "disagreements": 3,
+          "agreement_rate": 0.95,
+          "wilson_95": [
+            0.8629948352365148,
+            0.9828504978356042
+          ],
+          "false_recoverable": 1,
+          "false_unrecoverable": 2
+        }
+      },
+      "by_phase": {
+        "lifted": {
+          "comparisons": 24,
+          "agreements": 16,
+          "disagreements": 8,
+          "agreement_rate": 0.6666666666666666,
+          "wilson_95": [
+            0.46706316838131745,
+            0.8202780967270223
+          ],
+          "false_recoverable": 1,
+          "false_unrecoverable": 7
+        },
+        "mid_contact": {
+          "comparisons": 36,
+          "agreements": 31,
+          "disagreements": 5,
+          "agreement_rate": 0.8611111111111112,
+          "wilson_95": [
+            0.7134046961064381,
+            0.9391818499086716
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 5
+        },
+        "post_contact": {
+          "comparisons": 36,
+          "agreements": 36,
+          "disagreements": 0,
+          "agreement_rate": 1.0,
+          "wilson_95": [
+            0.9035813714055363,
+            1.0
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 0
+        },
+        "pre_manipulation": {
+          "comparisons": 24,
+          "agreements": 24,
+          "disagreements": 0,
+          "agreement_rate": 1.0,
+          "wilson_95": [
+            0.8620237953250198,
+            1.0
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 0
+        }
+      },
+      "by_seed": {
+        "0": {
+          "comparisons": 40,
+          "agreements": 39,
+          "disagreements": 1,
+          "agreement_rate": 0.975,
+          "wilson_95": [
+            0.8711863103652591,
+            0.9955731684973186
+          ],
+          "false_recoverable": 1,
+          "false_unrecoverable": 0
+        },
+        "1": {
+          "comparisons": 40,
+          "agreements": 32,
+          "disagreements": 8,
+          "agreement_rate": 0.8,
+          "wilson_95": [
+            0.6524269365360051,
+            0.8950001027456229
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 8
+        },
+        "2": {
+          "comparisons": 40,
+          "agreements": 36,
+          "disagreements": 4,
+          "agreement_rate": 0.9,
+          "wilson_95": [
+            0.7694822477247771,
+            0.9604204713173936
+          ],
+          "false_recoverable": 0,
+          "false_unrecoverable": 4
+        }
+      },
+      "by_phase_and_continuation": {
+        "lifted": {
+          "exact_action": {
+            "comparisons": 12,
+            "agreements": 6,
+            "disagreements": 6,
+            "agreement_rate": 0.5,
+            "wilson_95": [
+              0.2537815976337061,
+              0.7462184023662939
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 6
+          },
+          "policy": {
+            "comparisons": 12,
+            "agreements": 10,
+            "disagreements": 2,
+            "agreement_rate": 0.8333333333333334,
+            "wilson_95": [
+              0.5519691377470267,
+              0.9530348578161462
+            ],
+            "false_recoverable": 1,
+            "false_unrecoverable": 1
+          }
+        },
+        "mid_contact": {
+          "exact_action": {
+            "comparisons": 18,
+            "agreements": 14,
+            "disagreements": 4,
+            "agreement_rate": 0.7777777777777778,
+            "wilson_95": [
+              0.5478541568378738,
+              0.909990718913983
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 4
+          },
+          "policy": {
+            "comparisons": 18,
+            "agreements": 17,
+            "disagreements": 1,
+            "agreement_rate": 0.9444444444444444,
+            "wilson_95": [
+              0.7424269921812742,
+              0.9901248090216969
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 1
+          }
+        },
+        "post_contact": {
+          "exact_action": {
+            "comparisons": 18,
+            "agreements": 18,
+            "disagreements": 0,
+            "agreement_rate": 1.0,
+            "wilson_95": [
+              0.8241207763533425,
+              1.0
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 0
+          },
+          "policy": {
+            "comparisons": 18,
+            "agreements": 18,
+            "disagreements": 0,
+            "agreement_rate": 1.0,
+            "wilson_95": [
+              0.8241207763533425,
+              1.0
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 0
+          }
+        },
+        "pre_manipulation": {
+          "exact_action": {
+            "comparisons": 12,
+            "agreements": 12,
+            "disagreements": 0,
+            "agreement_rate": 1.0,
+            "wilson_95": [
+              0.7575059933447593,
+              1.0
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 0
+          },
+          "policy": {
+            "comparisons": 12,
+            "agreements": 12,
+            "disagreements": 0,
+            "agreement_rate": 1.0,
+            "wilson_95": [
+              0.7575059933447593,
+              1.0
+            ],
+            "false_recoverable": 0,
+            "false_unrecoverable": 0
+          }
+        }
+      },
+      "trajectory_checks": {
+        "exact_action_comparisons": 60,
+        "exact_action_material_divergences": 56,
+        "maximum_exact_action_object_pose_error_m": 0.9902276694774628,
+        "full_restore_immediate_observation_checks": 120,
+        "full_restore_immediate_observation_exact": 120
+      },
+      "mismatch_examples": [
+        {
+          "seed": 0,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_onset",
+          "phase": "lifted",
+          "continuation": "policy",
+          "decision_match": false,
+          "reference_success": false,
+          "candidate_success": true,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.5964743047952652,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "teleport",
+          "checkpoint": "contact_onset",
+          "phase": "mid_contact",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.6657278799871165,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "teleport",
+          "checkpoint": "mid_contact",
+          "phase": "mid_contact",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.7054286629950184,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "contact_onset",
+          "phase": "mid_contact",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.6657278799871165,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_mid",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.9902276694774628,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_onset",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.7857689633965492,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_post",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.79617640376091,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "mid_contact",
+          "phase": "mid_contact",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.7054286629950184,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 1,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "mid_contact",
+          "phase": "mid_contact",
+          "continuation": "policy",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.7054239557762685,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 2,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_mid",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.21060055121779442,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 2,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_onset",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.25420118030160666,
+          "immediate_obs_max_abs": 0.0
+        },
+        {
+          "seed": 2,
+          "repeat": 0,
+          "disturbance": "gripper_interrupt",
+          "checkpoint": "gripper_post",
+          "phase": "lifted",
+          "continuation": "exact_action",
+          "decision_match": false,
+          "reference_success": true,
+          "candidate_success": false,
+          "first_material_divergence_step": 1,
+          "object_pose_max_abs_30": 0.676209366414696,
+          "immediate_obs_max_abs": 0.0
+        }
+      ],
+      "validity_gate": {
+        "maximum_disagreement_rate": 0.05,
+        "confidence": 0.95,
+        "cells": [
+          {
+            "phase": "lifted",
+            "continuation": "exact_action",
+            "comparisons": 12,
+            "disagreements": 6,
+            "disagreement_rate": 0.5,
+            "one_sided_upper_bound": 0.7144651456224745,
+            "passes": false
+          },
+          {
+            "phase": "lifted",
+            "continuation": "policy",
+            "comparisons": 12,
+            "disagreements": 2,
+            "disagreement_rate": 0.16666666666666666,
+            "one_sided_upper_bound": 0.39920691041554013,
+            "passes": false
+          },
+          {
+            "phase": "mid_contact",
+            "continuation": "exact_action",
+            "comparisons": 18,
+            "disagreements": 4,
+            "disagreement_rate": 0.2222222222222222,
+            "one_sided_upper_bound": 0.4131213666822684,
+            "passes": false
+          },
+          {
+            "phase": "mid_contact",
+            "continuation": "policy",
+            "comparisons": 18,
+            "disagreements": 1,
+            "disagreement_rate": 0.05555555555555555,
+            "one_sided_upper_bound": 0.2147668838638885,
+            "passes": false
+          },
+          {
+            "phase": "post_contact",
+            "continuation": "exact_action",
+            "comparisons": 18,
+            "disagreements": 0,
+            "disagreement_rate": 0.0,
+            "one_sided_upper_bound": 0.13066758958023256,
+            "passes": false
+          },
+          {
+            "phase": "post_contact",
+            "continuation": "policy",
+            "comparisons": 18,
+            "disagreements": 0,
+            "disagreement_rate": 0.0,
+            "one_sided_upper_bound": 0.13066758958023256,
+            "passes": false
+          },
+          {
+            "phase": "pre_manipulation",
+            "continuation": "exact_action",
+            "comparisons": 12,
+            "disagreements": 0,
+            "disagreement_rate": 0.0,
+            "one_sided_upper_bound": 0.18398119474747684,
+            "passes": false
+          },
+          {
+            "phase": "pre_manipulation",
+            "continuation": "policy",
+            "comparisons": 12,
+            "disagreements": 0,
+            "disagreement_rate": 0.0,
+            "one_sided_upper_bound": 0.18398119474747684,
+            "passes": false
+          }
+        ],
+        "passing_cells": 0,
+        "fail_closed": true,
+        "statistical_limitation": "The bound treats paired comparisons as independent. Repeated checkpoints within a seed are correlated, so this audit can falsify universal validity but cannot certify deployment validity."
+      },
+      "interpretation_limit": "A mismatch rejects universal decision fidelity for this protocol. Agreement does not prove physical recoverability, complete state restoration, or validity outside the sampled task, policy, phase, and continuation."
+    }
+  ],
+  "pooling_policy": "Single cohort; no cross-cohort pooling was required."
+}

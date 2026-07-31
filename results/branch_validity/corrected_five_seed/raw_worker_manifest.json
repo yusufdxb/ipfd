@@ -1,0 +1,87 @@
+{
+  "artifacts": {
+    "seed_101_gripper_open_interruption.json": {
+      "bytes": 1401668,
+      "sha256": "4c0564112394c2a7b88460474155739dd7ecbf431ff2f3459a58c0d391555db2"
+    },
+    "seed_101_gripper_open_interruption.log": {
+      "bytes": 5012,
+      "sha256": "00991b66c1d1fa9ae62b15b3696f658cfd81e6a3f9f1d72b8ec3a2afd8cc4149"
+    },
+    "seed_101_object_teleport.json": {
+      "bytes": 1224860,
+      "sha256": "1add96bc0e01831a467d2fbc7b02165807ec5addbcc7afa48f2163f02dfe5aed"
+    },
+    "seed_101_object_teleport.log": {
+      "bytes": 5012,
+      "sha256": "117ced244786bb7ba266cabd680fb3229cf0c7a7c66d2826d46b49b26548c410"
+    },
+    "seed_211_gripper_open_interruption.json": {
+      "bytes": 1400414,
+      "sha256": "653e306da45ff73e349e4876e85c6350e98f197c0d76ee7d133887d344e03b62"
+    },
+    "seed_211_gripper_open_interruption.log": {
+      "bytes": 5012,
+      "sha256": "e1f2b0d30ba7475a1a1940b84459cbf2a64f5af4657ceb6bfa3acd8066e57910"
+    },
+    "seed_211_object_teleport.json": {
+      "bytes": 1224227,
+      "sha256": "3023e25fbe05b1a2af1de304d2177de827ac52560d1af8fd70a42ea2b11b5cac"
+    },
+    "seed_211_object_teleport.log": {
+      "bytes": 5012,
+      "sha256": "748a5894c483ad86f5954391a1be90046609cc2aabd54e169cfc0c3afd16e93c"
+    },
+    "seed_307_gripper_open_interruption.json": {
+      "bytes": 1403328,
+      "sha256": "00161707d96f2b83ff9df8d92c2747d7984b23416e74a4d197d658bf741c053f"
+    },
+    "seed_307_gripper_open_interruption.log": {
+      "bytes": 5012,
+      "sha256": "aa9722155ae6c15481b8fa59b886730204949abf7f9b1454bcc99d474de391ec"
+    },
+    "seed_307_object_teleport.json": {
+      "bytes": 1225547,
+      "sha256": "16210564efde36d5d08d8d04dad1e9b6344da6134ddd25e3b44229c66dac88dd"
+    },
+    "seed_307_object_teleport.log": {
+      "bytes": 5012,
+      "sha256": "4bd62632e0b57d22417d505848ce48e1021811807b2bc780255c51acd8891224"
+    },
+    "seed_401_gripper_open_interruption.json": {
+      "bytes": 1228770,
+      "sha256": "dd8cc3d297d794eae9a73ef55e73012eadffa5eba5469cd31f76d2ca710f4919"
+    },
+    "seed_401_gripper_open_interruption.log": {
+      "bytes": 5012,
+      "sha256": "d03efa0db81008370167ec4ea50328d1ce761700c15e8062a8ccf2e27668415d"
+    },
+    "seed_401_object_teleport.json": {
+      "bytes": 1225085,
+      "sha256": "31001cba820f8ef18b324689e353338becbf39132b531d3e52177afe680d8339"
+    },
+    "seed_401_object_teleport.log": {
+      "bytes": 5012,
+      "sha256": "f83d8b354f34213befd232afa27d8d07df3748bd906276274675457f605a16af"
+    },
+    "seed_503_gripper_open_interruption.json": {
+      "bytes": 1402714,
+      "sha256": "5bf0fb12297526e37d3dda1a11eccbe21837500fbc54a9ef2fd7150db3234083"
+    },
+    "seed_503_gripper_open_interruption.log": {
+      "bytes": 5012,
+      "sha256": "f41c54acaa3e0fa17c5ba3ea5e63dbff31936ec743ae9b81988fdfb013925da7"
+    },
+    "seed_503_object_teleport.json": {
+      "bytes": 1223719,
+      "sha256": "b4c885307a799a2eb193a4c650c9052533d196c380841fc723535df91f2f80dc"
+    },
+    "seed_503_object_teleport.log": {
+      "bytes": 5012,
+      "sha256": "af8ce090c27dbd7e6d225916df610208bc1133f48ca712d8f9ea768cefcdb8b2"
+    }
+  },
+  "note": "Local storage path is intentionally omitted from the repository artifact. Hashes and logical filenames preserve provenance.",
+  "schema_version": 1,
+  "storage": "external_to_repository"
+}

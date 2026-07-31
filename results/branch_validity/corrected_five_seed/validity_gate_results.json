@@ -1,0 +1,9 @@
+{
+  "accepted_branch_error": null,
+  "claim": "No empirical validity-gate claim was tested.",
+  "coverage": null,
+  "held_out_comparison": null,
+  "reason": "Protocol B reduced primary disagreement by 38.9 percent, below the preregistered 50 percent threshold.",
+  "schema_version": 1,
+  "status": "NOT_RUN_STOPPING_RULE"
+}

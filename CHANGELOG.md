@@ -7,6 +7,28 @@ All notable changes to IPFD are documented here. The format follows
 
 ## [Unreleased]
 
+### Archived
+- **IPFD is archived as an honest negative.** A preregistered five-seed study
+  measured whether a restored simulator branch preserves the uninterrupted
+  episode's task decision, the assumption every recovery verdict and Point of No
+  Return index depends on. It does not. Under the expanded restoration protocol,
+  primary exact-action `sustained_lift` disagreement fell from 18/444 to 11/444, a
+  38.9 percent relative reduction against a preregistered 50 percent requirement.
+  The stopping rule fired (`STOP_BRANCH_VALIDITY_DIRECTION`), the held-out validity
+  gate was never eligible to run, and no downstream robotics decision was
+  corrected. Research development stops here.
+- Added `ARCHIVED_NEGATIVE_RESULT.md` (full report), `CLAIM_AUDIT.md` (claims
+  changed during archival and why), and `ISAACLAB_ENGINEERING_NOTE.md` (unfiled
+  draft engineering observation for later human review).
+- Added the research evidence trail: `RESEARCH_AUDIT.md`, `NOVELTY_REVIEW.md`,
+  `HYPOTHESES.md`, `EXPERIMENT_PROTOCOL.md`, `CORRECTED_EXPERIMENT_PROTOCOL.md`,
+  `SNAPSHOT_PROTOCOLS.md`, `EVIDENCE_LEDGER.md`, the branch-validity analysis and
+  study modules with their tests, and both result cohorts with provenance and
+  artifact manifests under `results/branch_validity/`.
+- Rewrote the README lead, the roadmap, the revalidation note, the release-blocker
+  note, and the citation record so the archival verdict is stated up front and no
+  document reads as pending work.
+
 ### Added
 - Frame recording for live rollouts (`attach_record_camera`, `FrameRecorder`, and
   `--record_frames` on the learned-policy driver). Recording captures from a Camera

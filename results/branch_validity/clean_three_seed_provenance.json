@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task": "Isaac-Lift-Cube-Franka-v0",
+  "runtime": {
+    "isaac_lab": "4.5.22",
+    "isaac_sim": "6.0",
+    "python": "3.12",
+    "device_class": "single CUDA GPU",
+    "physics_step_seconds": 0.01,
+    "environment_step_seconds": 0.02
+  },
+  "repository_base_commit": "3675cad624a78d221e7f6abdc581d86ac070f8d2",
+  "generator": {
+    "path": "scripts/validate_recovery_oracle.py",
+    "sha256": "17b41305c418feb57550373ecbe1894652f11c4fd0164c55e3a181348589769e"
+  },
+  "checkpoint": {
+    "id": "checkpoint.pt",
+    "sha256": "fb658f989bf5ebf35b20347813275979a6778ade8d3823d12eb3190612f9e36d"
+  },
+  "command_arguments": {
+    "headless": true,
+    "seeds": [0, 1, 2],
+    "repeats": 1,
+    "num_envs": 4,
+    "probe_budget": 90,
+    "horizons": [1, 3, 5, 10],
+    "disturbances": ["teleport", "gripper_interrupt"],
+    "asset_family": "Isaac 4.5 production assets"
+  },
+  "artifacts": {
+    "clean_three_seed_report.json": {
+      "sha256": "86189ab525c394d24d6e1b8b26427850ad5822bae9bd3789074e4c4985b9cad2",
+      "bytes": 199499
+    },
+    "traces.npz": {
+      "stored_in_repository": false,
+      "sha256": "dcf30076c60ddfea754ea7dd13e0db95377186d8f5c6febaff9aa8ddc5a11558",
+      "bytes": 5329453
+    }
+  },
+  "result": {
+    "classification": "GENERALLY_INVALID",
+    "paired_comparisons": 120,
+    "decision_disagreements": 13,
+    "exact_action_disagreements": 10,
+    "policy_disagreements": 3
+  }
+}

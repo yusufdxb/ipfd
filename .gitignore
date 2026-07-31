@@ -14,3 +14,8 @@ venv/
 .pretrained_checkpoints/
 # NOTE: examples/figures/*.png|json ARE committed; they are the README hero image
 # and deliverable "example runs with saved plots". Regenerate via run_synthetic.py.
+# Large raw branch traces stay out of git. Their sizes and SHA-256 digests are
+# recorded in results/branch_validity/corrected_five_seed/artifact_manifest.json
+# and clean_three_seed_provenance.json; the files themselves are retained under
+# ~/.local/share/ipfd/branch_validity/. See ARCHIVED_NEGATIVE_RESULT.md.
+results/branch_validity/corrected_five_seed/per_branch_records.jsonl

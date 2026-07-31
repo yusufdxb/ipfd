@@ -1,0 +1,404 @@
+{
+  "exact_action_predicate_sensitivity": {
+    "final_height": {
+      "expanded_runtime_state": {
+        "disagreement_rate": 0.038288288288288286,
+        "disagreements": 17,
+        "false_recoverable": 0,
+        "false_unrecoverable": 17,
+        "records": 444
+      },
+      "scene_plus_basic_manager_state": {
+        "disagreement_rate": 0.0518018018018018,
+        "disagreements": 23,
+        "false_recoverable": 0,
+        "false_unrecoverable": 23,
+        "records": 444
+      }
+    },
+    "stable_grasp": {
+      "expanded_runtime_state": {
+        "disagreement_rate": 0.024774774774774775,
+        "disagreements": 11,
+        "false_recoverable": 1,
+        "false_unrecoverable": 10,
+        "records": 444
+      },
+      "scene_plus_basic_manager_state": {
+        "disagreement_rate": 0.036036036036036036,
+        "disagreements": 16,
+        "false_recoverable": 2,
+        "false_unrecoverable": 14,
+        "records": 444
+      }
+    },
+    "sustained_lift": {
+      "expanded_runtime_state": {
+        "disagreement_rate": 0.024774774774774775,
+        "disagreements": 11,
+        "false_recoverable": 0,
+        "false_unrecoverable": 11,
+        "records": 444
+      },
+      "scene_plus_basic_manager_state": {
+        "disagreement_rate": 0.04054054054054054,
+        "disagreements": 18,
+        "false_recoverable": 0,
+        "false_unrecoverable": 18,
+        "records": 444
+      }
+    }
+  },
+  "primary_exact_action_sustained_lift": {
+    "by_disturbance": {
+      "gripper_open_interruption": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.04700854700854701,
+          "disagreements": 11,
+          "false_recoverable": 0,
+          "false_unrecoverable": 11,
+          "records": 234
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.06837606837606838,
+          "disagreements": 16,
+          "false_recoverable": 0,
+          "false_unrecoverable": 16,
+          "records": 234
+        }
+      },
+      "object_teleport": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 210
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.009523809523809525,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 210
+        }
+      }
+    },
+    "by_horizon": {
+      "1": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        }
+      },
+      "10": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.02702702702702703,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 74
+        }
+      },
+      "3": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        }
+      },
+      "30": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.013513513513513514,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.05405405405405406,
+          "disagreements": 4,
+          "false_recoverable": 0,
+          "false_unrecoverable": 4,
+          "records": 74
+        }
+      },
+      "5": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 74
+        }
+      },
+      "90": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.13513513513513514,
+          "disagreements": 10,
+          "false_recoverable": 0,
+          "false_unrecoverable": 10,
+          "records": 74
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.16216216216216217,
+          "disagreements": 12,
+          "false_recoverable": 0,
+          "false_unrecoverable": 12,
+          "records": 74
+        }
+      }
+    },
+    "by_phase": {
+      "approach": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.016666666666666666,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.06666666666666667,
+          "disagreements": 4,
+          "false_recoverable": 0,
+          "false_unrecoverable": 4,
+          "records": 60
+        }
+      },
+      "disturbance_onset": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.05,
+          "disagreements": 3,
+          "false_recoverable": 0,
+          "false_unrecoverable": 3,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.05,
+          "disagreements": 3,
+          "false_recoverable": 0,
+          "false_unrecoverable": 3,
+          "records": 60
+        }
+      },
+      "first_contact": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.016666666666666666,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 60
+        }
+      },
+      "free_space_pre_manipulation": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 60
+        }
+      },
+      "initial_lift": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.016666666666666666,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.016666666666666666,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 60
+        }
+      },
+      "post_disturbance_recovery": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.041666666666666664,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 24
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.20833333333333334,
+          "disagreements": 5,
+          "false_recoverable": 0,
+          "false_unrecoverable": 5,
+          "records": 24
+        }
+      },
+      "stable_grasp": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.016666666666666666,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 60
+        }
+      },
+      "sustained_lift": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 60
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 60
+        }
+      }
+    },
+    "by_seed": {
+      "101": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.07777777777777778,
+          "disagreements": 7,
+          "false_recoverable": 0,
+          "false_unrecoverable": 7,
+          "records": 90
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.08888888888888889,
+          "disagreements": 8,
+          "false_recoverable": 0,
+          "false_unrecoverable": 8,
+          "records": 90
+        }
+      },
+      "211": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 3,
+          "false_recoverable": 0,
+          "false_unrecoverable": 3,
+          "records": 90
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.03333333333333333,
+          "disagreements": 3,
+          "false_recoverable": 0,
+          "false_unrecoverable": 3,
+          "records": 90
+        }
+      },
+      "307": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.011111111111111112,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 90
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.044444444444444446,
+          "disagreements": 4,
+          "false_recoverable": 0,
+          "false_unrecoverable": 4,
+          "records": 90
+        }
+      },
+      "401": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 84
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.011904761904761904,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "records": 84
+        }
+      },
+      "503": {
+        "expanded_runtime_state": {
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "records": 90
+        },
+        "scene_plus_basic_manager_state": {
+          "disagreement_rate": 0.022222222222222223,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "records": 90
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "source": {
+    "per_branch_records_sha256": "1c55862ce4a24bf564396c8d86873b13fc1667e491aada27bfff6c8d2166ce8f",
+    "protocol_comparison_sha256": "c41fb92be42bbb57f50eb6ba74a98bcd3d05c37f8ebdf32de8fa4be95f8817fa",
+    "records": 5328
+  }
+}

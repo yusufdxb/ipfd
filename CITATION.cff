@@ -3,10 +3,16 @@ message: "If you use IPFD in your research, please cite it as below."
 title: "IPFD: Isaac Policy Failure Debugger"
 abstract: >-
   A headless debugging utility for robot-policy rollouts in Isaac Lab that
-  localizes the oracle-relative point after which a provided recovery controller
-  no longer succeeds, and reports whether any internal signal predicted the
-  failure before it was externally observable. Scope is Franka Emika Panda
-  single-object pick-and-place.
+  localizes the recovery-controller-relative point after which a provided
+  recovery controller no longer succeeds from restored simulator branches, and
+  reports whether any internal signal predicted the failure before it was
+  externally observable. Scope is Franka Emika Panda single-object
+  pick-and-place. The project is archived as an honest negative: a preregistered
+  five-seed study found that restored branches with equal exposed state,
+  equal immediate observations, and identical replayed actions can still reverse
+  the downstream task decision, and that restoring additional exposed runtime
+  state reduced but did not eliminate that disagreement. See
+  ARCHIVED_NEGATIVE_RESULT.md.
 type: software
 authors:
   - given-names: Yusuf

@@ -1,0 +1,39 @@
+{
+  "artifacts": {
+    "decisive_study.png": {
+      "bytes": 103004,
+      "sha256": "6b99662f599e91b5d83744415c052d8ddd3a5703b0d15f20d9f5abe5ca7cb68d"
+    },
+    "downstream_decision_results.json": {
+      "bytes": 350,
+      "sha256": "9b0716b046133b87c04e9aa220972786260dc28b9b633ac54667a44c81c9fc73"
+    },
+    "per_branch_records.jsonl": {
+      "bytes": 10166696,
+      "sha256": "1c55862ce4a24bf564396c8d86873b13fc1667e491aada27bfff6c8d2166ce8f"
+    },
+    "protocol_comparison.json": {
+      "bytes": 43521,
+      "sha256": "c41fb92be42bbb57f50eb6ba74a98bcd3d05c37f8ebdf32de8fa4be95f8817fa"
+    },
+    "protocol_strata.json": {
+      "bytes": 11797,
+      "sha256": "0b6b3abee460568a17c3cabe4e4d9416231b153418ed2a5ff2d816cb33a2ac15"
+    },
+    "raw_worker_manifest.json": {
+      "bytes": 3343,
+      "sha256": "811346a83ad20cc50fbca174f296822dafd0cb71bacdaaa5732f21bee5bc4142"
+    },
+    "study_provenance.json": {
+      "bytes": 3621,
+      "sha256": "23cc623fc5573db86f22db4e5783f1ba10abbfff24451f1283b148d32a8af288"
+    },
+    "validity_gate_results.json": {
+      "bytes": 324,
+      "sha256": "037f9361910467ce538c51c02943632577ab4fb0359aded889d94f65347d8ae0"
+    }
+  },
+  "checkpoint_sha256": "fb658f989bf5ebf35b20347813275979a6778ade8d3823d12eb3190612f9e36d",
+  "configuration_sha256": "3de618f655fa13c2a28defc33a8892ef80290981f893aa4b0d93ba8beef84b3b",
+  "source_generator_sha256": "8d7ca4bc3e47c410fa6eae8a31525115c39ce97b5177ef80fb76948e529177cd"
+}

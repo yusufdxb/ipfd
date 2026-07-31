@@ -1,4 +1,13 @@
-# Learned-policy evidence revalidation
+# Learned-policy evidence revalidation (not performed; project archived)
+
+**Status: this revalidation was never carried out and is not scheduled.** IPFD is
+archived (see [ARCHIVED_NEGATIVE_RESULT.md](../ARCHIVED_NEGATIVE_RESULT.md)). The
+requirements below are retained because they correctly describe what a promotion
+to "verified" would have demanded, and because they document why the committed
+fixtures are labeled `historical_fixture_only` rather than as results. Note also
+that meeting every requirement below would still not have established that a
+restored branch preserves the uninterrupted episode's decision; that is the
+separate assumption the archived study falsified.
 
 The committed learned-policy fixtures are historical analysis artifacts. They
 are retained to test archive loading and deterministic report generation, but

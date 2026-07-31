@@ -1,0 +1,111 @@
+{
+  "asset_entries": {
+    "cube_entry_usd": {
+      "bytes": 4107,
+      "etag": "831d17ae3fbde71a5de0dc984ec25b02",
+      "sha256": "7a5c015690652f4ca1d62ed757d494c51f052067bd037372c8fd581bc92d437b",
+      "status": 200,
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Blocks/DexCube/dex_cube_instanceable.usd"
+    },
+    "franka_entry_usd": {
+      "bytes": 8038,
+      "etag": "92af573673aad160f73fcb0a43b1a038",
+      "sha256": "7f5a0c0aa6760cfbd348e08bc464d4b94341f027f51c2d9e42406ceefcc7787f",
+      "status": 200,
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd"
+    },
+    "table_entry_usd": {
+      "bytes": 4584,
+      "etag": "cc5384821e87bdcd44cf20fb461a5363",
+      "sha256": "479ed8fd374d8eafdedf3ca3b9d0d5981ffc6d5c5016929347f748be93d5df17",
+      "status": 200,
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Mounts/SeattleLabTable/table_instanceable.usd"
+    }
+  },
+  "checkpoint": {
+    "bytes": 1242731,
+    "path": "/home/yusuf/Sim/IsaacLab/.pretrained_checkpoints/rsl_rl/Isaac-Lift-Cube-Franka-v0/Assets/Isaac/6.0/Isaac/IsaacLab/PretrainedCheckpoints/rsl_rl/Isaac-Lift-Cube-Franka-v0/checkpoint.pt",
+    "sha256": "fb658f989bf5ebf35b20347813275979a6778ade8d3823d12eb3190612f9e36d"
+  },
+  "configuration": {
+    "sha256": "3de618f655fa13c2a28defc33a8892ef80290981f893aa4b0d93ba8beef84b3b",
+    "value": {
+      "base_seeds": [
+        101,
+        211,
+        307,
+        401,
+        503
+      ],
+      "continuations": [
+        "exact_action",
+        "closed_loop_policy"
+      ],
+      "disturbance_start_step": 70,
+      "disturbances": [
+        "object_teleport",
+        "gripper_open_interruption"
+      ],
+      "horizons": [
+        1,
+        3,
+        5,
+        10,
+        30,
+        90
+      ],
+      "max_control_steps": 220,
+      "num_envs": 33,
+      "phases": [
+        "free_space_pre_manipulation",
+        "approach",
+        "first_contact",
+        "stable_grasp",
+        "initial_lift",
+        "sustained_lift",
+        "disturbance_onset",
+        "post_disturbance_recovery"
+      ],
+      "protocols": [
+        "scene_plus_basic_manager_state",
+        "expanded_runtime_state"
+      ],
+      "task": "Isaac-Lift-Cube-Franka-v0"
+    }
+  },
+  "generator": {
+    "path": "/home/yusuf/Projects/ipfd/scripts/run_snapshot_protocol_study.py",
+    "sha256": "8d7ca4bc3e47c410fa6eae8a31525115c39ce97b5177ef80fb76948e529177cd"
+  },
+  "ipfd_git": {
+    "branch": "agent/open-issue-cleanup",
+    "head": "3675cad624a78d221e7f6abdc581d86ac070f8d2",
+    "status_short": [
+      "M scripts/README.md",
+      "?? CORRECTED_EXPERIMENT_PROTOCOL.md",
+      "?? EVIDENCE_LEDGER.md",
+      "?? EXPERIMENT_PROTOCOL.md",
+      "?? HYPOTHESES.md",
+      "?? NOVELTY_REVIEW.md",
+      "?? RESEARCH_AUDIT.md",
+      "?? SNAPSHOT_PROTOCOLS.md",
+      "?? results/",
+      "?? scripts/analyze_branch_validity.py",
+      "?? scripts/run_snapshot_protocol_study.py",
+      "?? scripts/validate_recovery_oracle.py",
+      "?? src/ipfd/branch_study.py",
+      "?? src/ipfd/branch_validity.py",
+      "?? src/ipfd/oracle_equivalence.py",
+      "?? tests/test_branch_study.py",
+      "?? tests/test_branch_validity.py",
+      "?? tests/test_oracle_equivalence.py"
+    ]
+  },
+  "isaac_lab_git": {
+    "branch": "",
+    "head": "a4a7602f29e755e2673fe0022ea35566df6dd7d5",
+    "status_short": [
+      "?? scripts/reinforcement_learning/rsl_rl/go2_ros2_bridge.py"
+    ]
+  }
+}

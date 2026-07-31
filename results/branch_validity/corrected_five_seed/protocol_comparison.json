@@ -1,0 +1,1429 @@
+{
+  "by_disturbance": {
+    "expanded_runtime_state|closed_loop_policy|gripper_open_interruption": {
+      "agreements": 670,
+      "disagreement_rate": 0.045584045584045586,
+      "disagreements": 32,
+      "false_recoverable": 17,
+      "false_unrecoverable": 15,
+      "records": 702
+    },
+    "expanded_runtime_state|closed_loop_policy|object_teleport": {
+      "agreements": 630,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 630
+    },
+    "expanded_runtime_state|exact_action|gripper_open_interruption": {
+      "agreements": 663,
+      "disagreement_rate": 0.05555555555555555,
+      "disagreements": 39,
+      "false_recoverable": 1,
+      "false_unrecoverable": 38,
+      "records": 702
+    },
+    "expanded_runtime_state|exact_action|object_teleport": {
+      "agreements": 630,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 630
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|gripper_open_interruption": {
+      "agreements": 648,
+      "disagreement_rate": 0.07692307692307693,
+      "disagreements": 54,
+      "false_recoverable": 34,
+      "false_unrecoverable": 20,
+      "records": 702
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|object_teleport": {
+      "agreements": 626,
+      "disagreement_rate": 0.006349206349206349,
+      "disagreements": 4,
+      "false_recoverable": 0,
+      "false_unrecoverable": 4,
+      "records": 630
+    },
+    "scene_plus_basic_manager_state|exact_action|gripper_open_interruption": {
+      "agreements": 649,
+      "disagreement_rate": 0.0754985754985755,
+      "disagreements": 53,
+      "false_recoverable": 2,
+      "false_unrecoverable": 51,
+      "records": 702
+    },
+    "scene_plus_basic_manager_state|exact_action|object_teleport": {
+      "agreements": 626,
+      "disagreement_rate": 0.006349206349206349,
+      "disagreements": 4,
+      "false_recoverable": 0,
+      "false_unrecoverable": 4,
+      "records": 630
+    }
+  },
+  "by_horizon": {
+    "expanded_runtime_state|closed_loop_policy|1": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|closed_loop_policy|10": {
+      "agreements": 221,
+      "disagreement_rate": 0.0045045045045045045,
+      "disagreements": 1,
+      "false_recoverable": 1,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|closed_loop_policy|3": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|closed_loop_policy|30": {
+      "agreements": 218,
+      "disagreement_rate": 0.018018018018018018,
+      "disagreements": 4,
+      "false_recoverable": 3,
+      "false_unrecoverable": 1,
+      "records": 222
+    },
+    "expanded_runtime_state|closed_loop_policy|5": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|closed_loop_policy|90": {
+      "agreements": 195,
+      "disagreement_rate": 0.12162162162162163,
+      "disagreements": 27,
+      "false_recoverable": 13,
+      "false_unrecoverable": 14,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|1": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|10": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|3": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|30": {
+      "agreements": 216,
+      "disagreement_rate": 0.02702702702702703,
+      "disagreements": 6,
+      "false_recoverable": 0,
+      "false_unrecoverable": 6,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|5": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "expanded_runtime_state|exact_action|90": {
+      "agreements": 189,
+      "disagreement_rate": 0.14864864864864866,
+      "disagreements": 33,
+      "false_recoverable": 1,
+      "false_unrecoverable": 32,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|1": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|10": {
+      "agreements": 221,
+      "disagreement_rate": 0.0045045045045045045,
+      "disagreements": 1,
+      "false_recoverable": 0,
+      "false_unrecoverable": 1,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|3": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|30": {
+      "agreements": 207,
+      "disagreement_rate": 0.06756756756756757,
+      "disagreements": 15,
+      "false_recoverable": 7,
+      "false_unrecoverable": 8,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|5": {
+      "agreements": 219,
+      "disagreement_rate": 0.013513513513513514,
+      "disagreements": 3,
+      "false_recoverable": 0,
+      "false_unrecoverable": 3,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|90": {
+      "agreements": 183,
+      "disagreement_rate": 0.17567567567567569,
+      "disagreements": 39,
+      "false_recoverable": 27,
+      "false_unrecoverable": 12,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|1": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|10": {
+      "agreements": 220,
+      "disagreement_rate": 0.009009009009009009,
+      "disagreements": 2,
+      "false_recoverable": 0,
+      "false_unrecoverable": 2,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|3": {
+      "agreements": 222,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|30": {
+      "agreements": 208,
+      "disagreement_rate": 0.06306306306306306,
+      "disagreements": 14,
+      "false_recoverable": 1,
+      "false_unrecoverable": 13,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|5": {
+      "agreements": 220,
+      "disagreement_rate": 0.009009009009009009,
+      "disagreements": 2,
+      "false_recoverable": 0,
+      "false_unrecoverable": 2,
+      "records": 222
+    },
+    "scene_plus_basic_manager_state|exact_action|90": {
+      "agreements": 183,
+      "disagreement_rate": 0.17567567567567569,
+      "disagreements": 39,
+      "false_recoverable": 1,
+      "false_unrecoverable": 38,
+      "records": 222
+    }
+  },
+  "by_phase": {
+    "expanded_runtime_state|closed_loop_policy|approach": {
+      "agreements": 175,
+      "disagreement_rate": 0.027777777777777776,
+      "disagreements": 5,
+      "false_recoverable": 3,
+      "false_unrecoverable": 2,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|disturbance_onset": {
+      "agreements": 171,
+      "disagreement_rate": 0.05,
+      "disagreements": 9,
+      "false_recoverable": 3,
+      "false_unrecoverable": 6,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|first_contact": {
+      "agreements": 174,
+      "disagreement_rate": 0.03333333333333333,
+      "disagreements": 6,
+      "false_recoverable": 4,
+      "false_unrecoverable": 2,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|free_space_pre_manipulation": {
+      "agreements": 180,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|initial_lift": {
+      "agreements": 178,
+      "disagreement_rate": 0.011111111111111112,
+      "disagreements": 2,
+      "false_recoverable": 2,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|post_disturbance_recovery": {
+      "agreements": 72,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 72
+    },
+    "expanded_runtime_state|closed_loop_policy|stable_grasp": {
+      "agreements": 176,
+      "disagreement_rate": 0.022222222222222223,
+      "disagreements": 4,
+      "false_recoverable": 4,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "expanded_runtime_state|closed_loop_policy|sustained_lift": {
+      "agreements": 174,
+      "disagreement_rate": 0.03333333333333333,
+      "disagreements": 6,
+      "false_recoverable": 1,
+      "false_unrecoverable": 5,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|approach": {
+      "agreements": 176,
+      "disagreement_rate": 0.022222222222222223,
+      "disagreements": 4,
+      "false_recoverable": 0,
+      "false_unrecoverable": 4,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|disturbance_onset": {
+      "agreements": 169,
+      "disagreement_rate": 0.06111111111111111,
+      "disagreements": 11,
+      "false_recoverable": 0,
+      "false_unrecoverable": 11,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|first_contact": {
+      "agreements": 175,
+      "disagreement_rate": 0.027777777777777776,
+      "disagreements": 5,
+      "false_recoverable": 0,
+      "false_unrecoverable": 5,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|free_space_pre_manipulation": {
+      "agreements": 180,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|initial_lift": {
+      "agreements": 175,
+      "disagreement_rate": 0.027777777777777776,
+      "disagreements": 5,
+      "false_recoverable": 1,
+      "false_unrecoverable": 4,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|post_disturbance_recovery": {
+      "agreements": 69,
+      "disagreement_rate": 0.041666666666666664,
+      "disagreements": 3,
+      "false_recoverable": 0,
+      "false_unrecoverable": 3,
+      "records": 72
+    },
+    "expanded_runtime_state|exact_action|stable_grasp": {
+      "agreements": 176,
+      "disagreement_rate": 0.022222222222222223,
+      "disagreements": 4,
+      "false_recoverable": 0,
+      "false_unrecoverable": 4,
+      "records": 180
+    },
+    "expanded_runtime_state|exact_action|sustained_lift": {
+      "agreements": 173,
+      "disagreement_rate": 0.03888888888888889,
+      "disagreements": 7,
+      "false_recoverable": 0,
+      "false_unrecoverable": 7,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|approach": {
+      "agreements": 162,
+      "disagreement_rate": 0.1,
+      "disagreements": 18,
+      "false_recoverable": 9,
+      "false_unrecoverable": 9,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|disturbance_onset": {
+      "agreements": 174,
+      "disagreement_rate": 0.03333333333333333,
+      "disagreements": 6,
+      "false_recoverable": 5,
+      "false_unrecoverable": 1,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|first_contact": {
+      "agreements": 172,
+      "disagreement_rate": 0.044444444444444446,
+      "disagreements": 8,
+      "false_recoverable": 6,
+      "false_unrecoverable": 2,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|free_space_pre_manipulation": {
+      "agreements": 180,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|initial_lift": {
+      "agreements": 179,
+      "disagreement_rate": 0.005555555555555556,
+      "disagreements": 1,
+      "false_recoverable": 1,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|post_disturbance_recovery": {
+      "agreements": 68,
+      "disagreement_rate": 0.05555555555555555,
+      "disagreements": 4,
+      "false_recoverable": 2,
+      "false_unrecoverable": 2,
+      "records": 72
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|stable_grasp": {
+      "agreements": 168,
+      "disagreement_rate": 0.06666666666666667,
+      "disagreements": 12,
+      "false_recoverable": 4,
+      "false_unrecoverable": 8,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|sustained_lift": {
+      "agreements": 171,
+      "disagreement_rate": 0.05,
+      "disagreements": 9,
+      "false_recoverable": 7,
+      "false_unrecoverable": 2,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|approach": {
+      "agreements": 167,
+      "disagreement_rate": 0.07222222222222222,
+      "disagreements": 13,
+      "false_recoverable": 0,
+      "false_unrecoverable": 13,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|disturbance_onset": {
+      "agreements": 169,
+      "disagreement_rate": 0.06111111111111111,
+      "disagreements": 11,
+      "false_recoverable": 2,
+      "false_unrecoverable": 9,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|first_contact": {
+      "agreements": 178,
+      "disagreement_rate": 0.011111111111111112,
+      "disagreements": 2,
+      "false_recoverable": 0,
+      "false_unrecoverable": 2,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|free_space_pre_manipulation": {
+      "agreements": 180,
+      "disagreement_rate": 0.0,
+      "disagreements": 0,
+      "false_recoverable": 0,
+      "false_unrecoverable": 0,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|initial_lift": {
+      "agreements": 176,
+      "disagreement_rate": 0.022222222222222223,
+      "disagreements": 4,
+      "false_recoverable": 0,
+      "false_unrecoverable": 4,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|post_disturbance_recovery": {
+      "agreements": 59,
+      "disagreement_rate": 0.18055555555555555,
+      "disagreements": 13,
+      "false_recoverable": 0,
+      "false_unrecoverable": 13,
+      "records": 72
+    },
+    "scene_plus_basic_manager_state|exact_action|stable_grasp": {
+      "agreements": 173,
+      "disagreement_rate": 0.03888888888888889,
+      "disagreements": 7,
+      "false_recoverable": 0,
+      "false_unrecoverable": 7,
+      "records": 180
+    },
+    "scene_plus_basic_manager_state|exact_action|sustained_lift": {
+      "agreements": 173,
+      "disagreement_rate": 0.03888888888888889,
+      "disagreements": 7,
+      "false_recoverable": 0,
+      "false_unrecoverable": 7,
+      "records": 180
+    }
+  },
+  "by_predicate": {
+    "expanded_runtime_state|closed_loop_policy|final_height": {
+      "agreements": 433,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 4,
+      "false_unrecoverable": 7,
+      "records": 444
+    },
+    "expanded_runtime_state|closed_loop_policy|stable_grasp": {
+      "agreements": 433,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 8,
+      "false_unrecoverable": 3,
+      "records": 444
+    },
+    "expanded_runtime_state|closed_loop_policy|sustained_lift": {
+      "agreements": 434,
+      "disagreement_rate": 0.02252252252252252,
+      "disagreements": 10,
+      "false_recoverable": 5,
+      "false_unrecoverable": 5,
+      "records": 444
+    },
+    "expanded_runtime_state|exact_action|final_height": {
+      "agreements": 427,
+      "disagreement_rate": 0.038288288288288286,
+      "disagreements": 17,
+      "false_recoverable": 0,
+      "false_unrecoverable": 17,
+      "records": 444
+    },
+    "expanded_runtime_state|exact_action|stable_grasp": {
+      "agreements": 433,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 1,
+      "false_unrecoverable": 10,
+      "records": 444
+    },
+    "expanded_runtime_state|exact_action|sustained_lift": {
+      "agreements": 433,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 0,
+      "false_unrecoverable": 11,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|final_height": {
+      "agreements": 422,
+      "disagreement_rate": 0.04954954954954955,
+      "disagreements": 22,
+      "false_recoverable": 9,
+      "false_unrecoverable": 13,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|stable_grasp": {
+      "agreements": 425,
+      "disagreement_rate": 0.04279279279279279,
+      "disagreements": 19,
+      "false_recoverable": 15,
+      "false_unrecoverable": 4,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy|sustained_lift": {
+      "agreements": 427,
+      "disagreement_rate": 0.038288288288288286,
+      "disagreements": 17,
+      "false_recoverable": 10,
+      "false_unrecoverable": 7,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|exact_action|final_height": {
+      "agreements": 421,
+      "disagreement_rate": 0.0518018018018018,
+      "disagreements": 23,
+      "false_recoverable": 0,
+      "false_unrecoverable": 23,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|exact_action|stable_grasp": {
+      "agreements": 428,
+      "disagreement_rate": 0.036036036036036036,
+      "disagreements": 16,
+      "false_recoverable": 2,
+      "false_unrecoverable": 14,
+      "records": 444
+    },
+    "scene_plus_basic_manager_state|exact_action|sustained_lift": {
+      "agreements": 426,
+      "disagreement_rate": 0.04054054054054054,
+      "disagreements": 18,
+      "false_recoverable": 0,
+      "false_unrecoverable": 18,
+      "records": 444
+    }
+  },
+  "controls": {
+    "all_passed": true,
+    "workers": [
+      {
+        "branch_steps": {
+          "approach": 13,
+          "disturbance_onset": 70,
+          "first_contact": 23,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 28,
+          "stable_grasp": 26,
+          "sustained_lift": 34
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 14,
+          "disturbance_onset": 70,
+          "first_contact": 23,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 40,
+          "post_disturbance_recovery": 78,
+          "stable_grasp": 39,
+          "sustained_lift": 45
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 26,
+          "disturbance_onset": 70,
+          "first_contact": 31,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 38,
+          "stable_grasp": 34,
+          "sustained_lift": 45
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 20,
+          "disturbance_onset": 70,
+          "first_contact": 26,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 59,
+          "post_disturbance_recovery": 78,
+          "stable_grasp": 58,
+          "sustained_lift": 66
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 22,
+          "disturbance_onset": 70,
+          "first_contact": 29,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 34,
+          "stable_grasp": 31,
+          "sustained_lift": 41
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 15,
+          "disturbance_onset": 70,
+          "first_contact": 24,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 30,
+          "post_disturbance_recovery": 78,
+          "stable_grasp": 27,
+          "sustained_lift": 35
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 26,
+          "disturbance_onset": 70,
+          "first_contact": 32,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 39,
+          "stable_grasp": 34,
+          "sustained_lift": 46
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 12,
+          "disturbance_onset": 70,
+          "first_contact": 22,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 28,
+          "stable_grasp": 25,
+          "sustained_lift": 34
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 24,
+          "disturbance_onset": 70,
+          "first_contact": 29,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 46,
+          "stable_grasp": 43,
+          "sustained_lift": 52
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [
+          "post_disturbance_recovery"
+        ],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      },
+      {
+        "branch_steps": {
+          "approach": 15,
+          "disturbance_onset": 70,
+          "first_contact": 26,
+          "free_space_pre_manipulation": 0,
+          "initial_lift": 31,
+          "post_disturbance_recovery": 78,
+          "stable_grasp": 28,
+          "sustained_lift": 37
+        },
+        "branch_steps_unique": true,
+        "contact_measurement_available": true,
+        "disturbance_onset_observed": true,
+        "exact_actions_identical": true,
+        "horizon_semantics_exact": true,
+        "nominal_sustained_lift_before_disturbance": true,
+        "passed": true,
+        "phases_missing": [],
+        "phases_observed": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ],
+        "required_continuations_present": true,
+        "required_horizons_present": true,
+        "required_protocols_present": true,
+        "schedule_equivalence_asserted": true
+      }
+    ]
+  },
+  "limitations": [
+    "Five base seeds are the independent uncertainty units.",
+    "Multiple phases, horizons, predicates, and continuations within a seed are correlated.",
+    "Protocol B does not restore unexposed PhysX solver or contact-cache state.",
+    "Entry-USD hashes do not cover transitive asset dependencies."
+  ],
+  "overall_by_protocol_and_continuation": {
+    "expanded_runtime_state|closed_loop_policy": {
+      "agreements": 1300,
+      "disagreement_rate": 0.024024024024024024,
+      "disagreements": 32,
+      "false_recoverable": 17,
+      "false_unrecoverable": 15,
+      "records": 1332
+    },
+    "expanded_runtime_state|exact_action": {
+      "agreements": 1293,
+      "disagreement_rate": 0.02927927927927928,
+      "disagreements": 39,
+      "false_recoverable": 1,
+      "false_unrecoverable": 38,
+      "records": 1332
+    },
+    "scene_plus_basic_manager_state|closed_loop_policy": {
+      "agreements": 1274,
+      "disagreement_rate": 0.04354354354354354,
+      "disagreements": 58,
+      "false_recoverable": 34,
+      "false_unrecoverable": 24,
+      "records": 1332
+    },
+    "scene_plus_basic_manager_state|exact_action": {
+      "agreements": 1275,
+      "disagreement_rate": 0.04279279279279279,
+      "disagreements": 57,
+      "false_recoverable": 2,
+      "false_unrecoverable": 55,
+      "records": 1332
+    }
+  },
+  "preregistered_primary_comparison": {
+    "continuation": "exact_action",
+    "paired_record_counts_equal": true,
+    "predicate": "sustained_lift",
+    "protocol_a": {
+      "agreements": 426,
+      "disagreement_rate": 0.04054054054054054,
+      "disagreements": 18,
+      "false_recoverable": 0,
+      "false_unrecoverable": 18,
+      "records": 444
+    },
+    "protocol_b": {
+      "agreements": 433,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 0,
+      "false_unrecoverable": 11,
+      "records": 444
+    },
+    "relative_disagreement_reduction": 0.3888888888888889,
+    "required_relative_reduction": 0.5,
+    "required_seeds_improved": 2,
+    "seed_cluster_uncertainty": {
+      "bootstrap_95": [
+        -0.024761904761904763,
+        -0.006666666666666668
+      ],
+      "bootstrap_samples": 10000,
+      "independent_units": 5,
+      "paired_mean_difference": -0.015714285714285715,
+      "per_seed": [
+        {
+          "b_minus_a": -0.011111111111111113,
+          "base_seed": 101,
+          "protocol_a_rate": 0.08888888888888889,
+          "protocol_b_rate": 0.07777777777777778
+        },
+        {
+          "b_minus_a": 0.0,
+          "base_seed": 211,
+          "protocol_a_rate": 0.03333333333333333,
+          "protocol_b_rate": 0.03333333333333333
+        },
+        {
+          "b_minus_a": -0.03333333333333333,
+          "base_seed": 307,
+          "protocol_a_rate": 0.044444444444444446,
+          "protocol_b_rate": 0.011111111111111112
+        },
+        {
+          "b_minus_a": -0.011904761904761904,
+          "base_seed": 401,
+          "protocol_a_rate": 0.011904761904761904,
+          "protocol_b_rate": 0.0
+        },
+        {
+          "b_minus_a": -0.022222222222222223,
+          "base_seed": 503,
+          "protocol_a_rate": 0.022222222222222223,
+          "protocol_b_rate": 0.0
+        }
+      ]
+    },
+    "seeds_improved": 4,
+    "threshold_passed": false
+  },
+  "provenance": {
+    "asset_entries": {
+      "cube_entry_usd": {
+        "bytes": 4107,
+        "etag": "831d17ae3fbde71a5de0dc984ec25b02",
+        "sha256": "7a5c015690652f4ca1d62ed757d494c51f052067bd037372c8fd581bc92d437b",
+        "status": 200,
+        "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Blocks/DexCube/dex_cube_instanceable.usd"
+      },
+      "franka_entry_usd": {
+        "bytes": 8038,
+        "etag": "92af573673aad160f73fcb0a43b1a038",
+        "sha256": "7f5a0c0aa6760cfbd348e08bc464d4b94341f027f51c2d9e42406ceefcc7787f",
+        "status": 200,
+        "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd"
+      },
+      "table_entry_usd": {
+        "bytes": 4584,
+        "etag": "cc5384821e87bdcd44cf20fb461a5363",
+        "sha256": "479ed8fd374d8eafdedf3ca3b9d0d5981ffc6d5c5016929347f748be93d5df17",
+        "status": 200,
+        "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Mounts/SeattleLabTable/table_instanceable.usd"
+      }
+    },
+    "checkpoint": {
+      "bytes": 1242731,
+      "path": "/home/yusuf/Sim/IsaacLab/.pretrained_checkpoints/rsl_rl/Isaac-Lift-Cube-Franka-v0/Assets/Isaac/6.0/Isaac/IsaacLab/PretrainedCheckpoints/rsl_rl/Isaac-Lift-Cube-Franka-v0/checkpoint.pt",
+      "sha256": "fb658f989bf5ebf35b20347813275979a6778ade8d3823d12eb3190612f9e36d"
+    },
+    "configuration": {
+      "sha256": "3de618f655fa13c2a28defc33a8892ef80290981f893aa4b0d93ba8beef84b3b",
+      "value": {
+        "base_seeds": [
+          101,
+          211,
+          307,
+          401,
+          503
+        ],
+        "continuations": [
+          "exact_action",
+          "closed_loop_policy"
+        ],
+        "disturbance_start_step": 70,
+        "disturbances": [
+          "object_teleport",
+          "gripper_open_interruption"
+        ],
+        "horizons": [
+          1,
+          3,
+          5,
+          10,
+          30,
+          90
+        ],
+        "max_control_steps": 220,
+        "num_envs": 33,
+        "phases": [
+          "free_space_pre_manipulation",
+          "approach",
+          "first_contact",
+          "stable_grasp",
+          "initial_lift",
+          "sustained_lift",
+          "disturbance_onset",
+          "post_disturbance_recovery"
+        ],
+        "protocols": [
+          "scene_plus_basic_manager_state",
+          "expanded_runtime_state"
+        ],
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      }
+    },
+    "generator": {
+      "path": "/home/yusuf/Projects/ipfd/scripts/run_snapshot_protocol_study.py",
+      "sha256": "8d7ca4bc3e47c410fa6eae8a31525115c39ce97b5177ef80fb76948e529177cd"
+    },
+    "ipfd_git": {
+      "branch": "agent/open-issue-cleanup",
+      "head": "3675cad624a78d221e7f6abdc581d86ac070f8d2",
+      "status_short": [
+        "M scripts/README.md",
+        "?? CORRECTED_EXPERIMENT_PROTOCOL.md",
+        "?? EVIDENCE_LEDGER.md",
+        "?? EXPERIMENT_PROTOCOL.md",
+        "?? HYPOTHESES.md",
+        "?? NOVELTY_REVIEW.md",
+        "?? RESEARCH_AUDIT.md",
+        "?? SNAPSHOT_PROTOCOLS.md",
+        "?? results/",
+        "?? scripts/analyze_branch_validity.py",
+        "?? scripts/run_snapshot_protocol_study.py",
+        "?? scripts/validate_recovery_oracle.py",
+        "?? src/ipfd/branch_study.py",
+        "?? src/ipfd/branch_validity.py",
+        "?? src/ipfd/oracle_equivalence.py",
+        "?? tests/test_branch_study.py",
+        "?? tests/test_branch_validity.py",
+        "?? tests/test_oracle_equivalence.py"
+      ]
+    },
+    "isaac_lab_git": {
+      "branch": "",
+      "head": "a4a7602f29e755e2673fe0022ea35566df6dd7d5",
+      "status_short": [
+        "?? scripts/reinforcement_learning/rsl_rl/go2_ros2_bridge.py"
+      ]
+    }
+  },
+  "record_count": 5328,
+  "schema_version": 1,
+  "scientific_object": "counterfactual_branch_decision_fidelity",
+  "stopping_rule": {
+    "decision": "STOP_BRANCH_VALIDITY_DIRECTION",
+    "gate_eligible": false,
+    "positive_control_meaningfully_improved": false
+  },
+  "worker_summaries": [
+    {
+      "base_seed": 101,
+      "branch_steps": {
+        "approach": 13,
+        "disturbance_onset": 70,
+        "first_contact": 23,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 28,
+        "stable_grasp": 26,
+        "sustained_lift": 34
+      },
+      "disturbance": "object_teleport",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 101,
+      "branch_steps": {
+        "approach": 14,
+        "disturbance_onset": 70,
+        "first_contact": 23,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 40,
+        "post_disturbance_recovery": 78,
+        "stable_grasp": 39,
+        "sustained_lift": 45
+      },
+      "disturbance": "gripper_open_interruption",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "post_disturbance_recovery",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 576
+    },
+    {
+      "base_seed": 211,
+      "branch_steps": {
+        "approach": 26,
+        "disturbance_onset": 70,
+        "first_contact": 31,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 38,
+        "stable_grasp": 34,
+        "sustained_lift": 45
+      },
+      "disturbance": "object_teleport",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 211,
+      "branch_steps": {
+        "approach": 20,
+        "disturbance_onset": 70,
+        "first_contact": 26,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 59,
+        "post_disturbance_recovery": 78,
+        "stable_grasp": 58,
+        "sustained_lift": 66
+      },
+      "disturbance": "gripper_open_interruption",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "post_disturbance_recovery",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 576
+    },
+    {
+      "base_seed": 307,
+      "branch_steps": {
+        "approach": 22,
+        "disturbance_onset": 70,
+        "first_contact": 29,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 34,
+        "stable_grasp": 31,
+        "sustained_lift": 41
+      },
+      "disturbance": "object_teleport",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 307,
+      "branch_steps": {
+        "approach": 15,
+        "disturbance_onset": 70,
+        "first_contact": 24,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 30,
+        "post_disturbance_recovery": 78,
+        "stable_grasp": 27,
+        "sustained_lift": 35
+      },
+      "disturbance": "gripper_open_interruption",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "post_disturbance_recovery",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 576
+    },
+    {
+      "base_seed": 401,
+      "branch_steps": {
+        "approach": 26,
+        "disturbance_onset": 70,
+        "first_contact": 32,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 39,
+        "stable_grasp": 34,
+        "sustained_lift": 46
+      },
+      "disturbance": "object_teleport",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 401,
+      "branch_steps": {
+        "approach": 12,
+        "disturbance_onset": 70,
+        "first_contact": 22,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 28,
+        "stable_grasp": 25,
+        "sustained_lift": 34
+      },
+      "disturbance": "gripper_open_interruption",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 503,
+      "branch_steps": {
+        "approach": 24,
+        "disturbance_onset": 70,
+        "first_contact": 29,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 46,
+        "stable_grasp": 43,
+        "sustained_lift": 52
+      },
+      "disturbance": "object_teleport",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 504
+    },
+    {
+      "base_seed": 503,
+      "branch_steps": {
+        "approach": 15,
+        "disturbance_onset": 70,
+        "first_contact": 26,
+        "free_space_pre_manipulation": 0,
+        "initial_lift": 31,
+        "post_disturbance_recovery": 78,
+        "stable_grasp": 28,
+        "sustained_lift": 37
+      },
+      "disturbance": "gripper_open_interruption",
+      "phases_observed": [
+        "approach",
+        "disturbance_onset",
+        "first_contact",
+        "free_space_pre_manipulation",
+        "initial_lift",
+        "post_disturbance_recovery",
+        "stable_grasp",
+        "sustained_lift"
+      ],
+      "records": 576
+    }
+  ]
+}

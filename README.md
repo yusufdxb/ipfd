@@ -5,9 +5,103 @@
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
 [![Latest release](https://img.shields.io/github/v/release/yusufdxb/ipfd)](https://github.com/yusufdxb/ipfd/releases/latest)
 
-A success rate tells you an episode failed. IPFD tells you the step at which a
-tested recovery controller stopped being able to save it, and whether any internal
-policy signal changed before the failure was externally visible.
+## Research status: archived honest negative
+
+**IPFD is archived. It is not under active research development, and it did not
+demonstrate a flagship research capability.** The full report is
+[`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md).
+
+**Original hypothesis.** A recovery probe restores a recorded simulator state into
+a second environment and re-runs it, so its verdict can stand in for what the
+uninterrupted episode would have done. Everything IPFD reports downstream, most of
+all the Point of No Return index, rests on that substitution.
+
+**What falsified it.** In the tested Isaac Lab lift task, restored branches whose
+exposed state, immediate policy observation, and replayed action sequence all
+matched the uninterrupted reference still reached a *different* task decision. In
+the preserved three-seed cohort, all 120 restored branches matched the recorded
+observation immediately after restoration, and 13 of those 120 still reversed the
+terminal decision, 10 of them under identical recorded actions.
+
+**The corrected experiment.** A preregistered five-seed study
+([`CORRECTED_EXPERIMENT_PROTOCOL.md`](CORRECTED_EXPERIMENT_PROTOCOL.md)) fixed the
+confounds in the first cohort: duplicated branch points, mislabeled horizons, and
+unmatched disturbance schedules. It compared two declared restoration treatments
+([`SNAPSHOT_PROTOCOLS.md`](SNAPSHOT_PROTOCOLS.md)) as a positive control, Protocol A
+(`scene_plus_basic_manager_state`) against Protocol B (`expanded_runtime_state`,
+which additionally restores action-term buffers, articulation targets, manager and
+termination buffers, and disturbance-scheduler state). The registered rule was that
+Protocol B had to cut primary decision disagreement by at least 50 percent.
+
+**Key numerical result.** On the primary comparison (exact-action continuation,
+`sustained_lift` predicate, 444 paired records) disagreement fell from **18/444
+(4.05%) under Protocol A to 11/444 (2.48%) under Protocol B**, a **38.9 percent
+relative reduction, below the preregistered 50 percent threshold**. Four of five
+seed groups improved; the seed-cluster bootstrap 95% interval on the paired
+difference was [-2.48, -0.67] percentage points. Residual disagreement concentrated
+at long horizons (Protocol B: 0 of 296 primary records at horizons 1 through 10,
+10 of 74 at 90 steps) and in the gripper-open disturbance family (11 of 234); the
+object-teleport family reached 0 of 210.
+
+**Why research development stopped.** The stopping rule fired
+(`STOP_BRANCH_VALIDITY_DIRECTION`). Because the positive control missed its
+threshold, the held-out validity gate was **not eligible to run**, and no
+downstream robotics decision, PoNR, controller ranking, or checkpoint selection,
+was corrected. Both stages are recorded as `NOT_RUN_STOPPING_RULE` in
+[`validity_gate_results.json`](results/branch_validity/corrected_five_seed/validity_gate_results.json)
+and
+[`downstream_decision_results.json`](results/branch_validity/corrected_five_seed/downstream_decision_results.json).
+There is no result here worth building further research on.
+
+**What remains technically useful.** A paired, hash-provenanced measurement
+harness for restored-branch decision fidelity in Isaac Lab; two explicitly
+documented snapshot protocols and the list of state each one does and does not
+restore; a small reproducible observation that exposed-state equality plus
+identical replayed actions does not imply decision equality in a contact-rich task
+([`ISAACLAB_ENGINEERING_NOTE.md`](ISAACLAB_ENGINEERING_NOTE.md)); and a fail-closed
+analysis layer that refuses to certify a validity envelope it cannot support.
+
+**Reproduction entry points.**
+
+```bash
+# CPU: re-derive the corrected-study strata, figure, and not-run gate records
+python3 scripts/analyze_snapshot_protocol_study.py \
+  --study-dir results/branch_validity/corrected_five_seed
+
+# GPU: regenerate the five-seed study itself (see CORRECTED_EXPERIMENT_PROTOCOL.md)
+OMNI_KIT_ACCEPT_EULA=YES PYTHONPATH=src "$IPFD_ISAACLAB_ROOT/isaaclab.sh" -p \
+  scripts/run_snapshot_protocol_study.py --checkpoint "$IPFD_CHECKPOINT" \
+  --asset-root "$IPFD_ASSET_ROOT" --output-dir /tmp/ipfd-corrected-five-seed \
+  --isaac-lab-root "$IPFD_ISAACLAB_ROOT"
+```
+
+**Limitations.** One task, one robot, one checkpoint, one simulator, one machine,
+five independent seed groups. Branch points, horizons, predicates, and
+continuations within a seed group are correlated, so five is the real sample size.
+Protocol B does not restore unexposed PhysX solver, contact-cache, or broadphase
+state, so it is a positive control for *omitted exposed* state only. Entry-USD
+hashes do not cover transitive asset dependencies. Nothing here generalizes to
+other tasks, simulators, policies, or robots, and nothing here was validated on
+hardware.
+
+The final claim this project supports, and nothing wider:
+
+> In the tested Isaac Lab contact-rich manipulation setting, equality of exposed
+> restored state, immediate observations, and recorded future actions did not
+> guarantee equality of downstream task decisions. Restoring additional
+> articulation and manager state reduced, but did not eliminate, decision
+> disagreement.
+
+---
+
+# IPFD: Isaac Policy Failure Debugger
+
+A success rate tells you an episode failed. IPFD reports the step after which a
+tested recovery controller stopped succeeding from restored simulator branches,
+and whether any internal policy signal changed before the failure was externally
+visible. The archived result above bounds how far that index can be trusted: the
+restored branches it is computed from can reverse the decision they are standing
+in for.
 
 Scope is one robot (Franka Emika Panda), one task (`Isaac-Lift-Cube-Franka-v0`,
 single-object lift in [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)), and one
@@ -17,7 +111,8 @@ not a benchmark suite, an Isaac Sim extension, or an ML-based detector.
 ## Evidence status
 
 Read this before the feature list. The CPU analysis layer is stable and tested.
-The simulator-side recovery evidence is mid-revalidation and is labeled as such.
+The simulator-side recovery evidence was never revalidated to the release bar, and
+the branch-validity study above is why that work stopped rather than continued.
 
 | Area | Status | Backed by |
 |---|---|---|
@@ -31,9 +126,14 @@ The simulator-side recovery evidence is mid-revalidation and is labeled as such.
 | Entropy-collapse detector | No signal on this checkpoint. | The published checkpoint uses a state-independent action std, so the entropy proxy is constant and the detector does not fire. The report shows it flat. |
 | The published NVIDIA Lift-Cube checkpoint is competent on the current local runtime | No. Measured 0.00% success. | `scripts/eval_checkpoint.py` over 64 environments reports `max_lift mean=0.000` and `SUCCESS_RATE 0.00%`, and recorded frames show the arm parked away from the cube. This blocks the learned-policy evidence bundle. See [docs/RELEASE_BLOCKERS.md](docs/RELEASE_BLOCKERS.md). |
 | The scripted-oracle recovery experiment still reproduces on the current runtime | Yes, as historical diagnostic data. | `scripts/verify_pnor_grasped.py` reproduced its recorded numbers exactly: PoNR 138 against an injected slip at step 127, 68 recoverable and 92 unrecoverable probe verdicts, peak lift 0.179 m. The script labels its own output `HISTORICAL_ONLY`, since it predates the repeated physical predicate and the evidence schema. |
+| A restored branch reaches the same task decision as the uninterrupted episode | **Falsified for the tested protocols.** This is the load-bearing assumption under every recovery verdict. | Three-seed cohort: 13/120 paired decision disagreements, 10/60 under identical recorded actions, with 120/120 immediate observation equality. Corrected five-seed study: 11/444 primary disagreements even under the expanded restoration protocol. See [`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md). |
+| Additional exposed-state restoration fixes it | No. Reduced disagreement, missed the preregistered bar. | 18/444 to 11/444, a 38.9% relative reduction against a registered 50% requirement. `results/branch_validity/corrected_five_seed/protocol_comparison.json`. |
 
 Everything simulator-side above rests on one machine and one checkpoint. Treat it
-as a compatibility fingerprint, not a general result.
+as a compatibility fingerprint, not a general result. Because restored-branch
+decision fidelity is negative for the tested protocols, treat every PoNR number in
+this repository as a controller-relative diagnostic over restored branches, not as
+a measurement of what the uninterrupted episode would have done.
 
 > **Validated runtime fingerprint:** locally installed `isaaclab` **4.5.22** with
 > Isaac Sim **6.0.0.0**. The CPU analysis layer needs neither.
@@ -197,10 +297,12 @@ problem, not a result.
 
 A single run is not evidence. The historical fixture reported PoNR at step 56, but
 that value used the retracted height-only predicate and is not a current expected
-result. A learned-policy headline is promoted only when the release evidence gate
-accepts a complete bundle: a competence artifact, both failure modes across at
+result. A learned-policy headline would be promoted only if the release evidence gate
+accepted a complete bundle: a competence artifact, both failure modes across at
 least five seeds, and real actionability cases. The thresholds and the exact
-commands are in [docs/EVIDENCE_GATE.md](docs/EVIDENCE_GATE.md).
+commands are in [docs/EVIDENCE_GATE.md](docs/EVIDENCE_GATE.md). That bundle was
+never produced, the gate never passed, and with the project archived it is not
+scheduled to be.
 
 The legacy `scripts/verify_pnor_*.py` chain records historical diagnostic
 experiments and cannot satisfy the current gate. See
@@ -229,19 +331,13 @@ establish is stated in
 
 ## Compatibility reports
 
-The simulator results come from one setup, so independent reports broaden the
-compatibility evidence.
+The simulator results come from one setup. The repository is archived and no
+longer solicits work, but the [validation checklist](docs/VALIDATION.md) still
+runs and still emits a deterministic, copy-pasteable evidence block if you want to
+check the CPU path or the GPU driver against your own runtime.
 
-- Follow the [validation checklist](docs/VALIDATION.md): clone, install, run the
-  CPU path, and optionally the GPU driver. Every step emits a deterministic,
-  copy-pasteable evidence block.
-- Post the result in a
-  [Tested on my machine](https://github.com/yusufdxb/ipfd/discussions) discussion
-  (OS, Python, Isaac Lab version, GPU, what worked).
-- For a version or platform mismatch, open a
-  [compatibility report](https://github.com/yusufdxb/ipfd/issues/new?template=compatibility_report.yml).
-
-Planned direction is in [ROADMAP.md](ROADMAP.md).
+[ROADMAP.md](ROADMAP.md) records the direction that was planned and why it was
+dropped. It is a historical document, not a plan.
 
 ## License
 

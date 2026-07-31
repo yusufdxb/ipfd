@@ -1,0 +1,9 @@
+{
+  "after_gating": null,
+  "before_gating": null,
+  "claim": "No downstream-correction claim was demonstrated.",
+  "reason": "The validity-gate stage was ineligible, so no PoNR, controller ranking, or checkpoint-selection correction was attempted.",
+  "schema_version": 1,
+  "status": "NOT_RUN_STOPPING_RULE",
+  "uninterrupted_ground_truth": null
+}

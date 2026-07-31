@@ -1,8 +1,12 @@
 # Release blockers (PyPI publish path)
 
-Status as measured on 2026-07-29 against the local Isaac Lab 4.5.22 runtime with
+**Status: unblocking was never attempted and is not scheduled. IPFD is archived**
+(see [ARCHIVED_NEGATIVE_RESULT.md](../ARCHIVED_NEGATIVE_RESULT.md)). The "ordered
+unblock path" below is a record of what publishing would have required, not a plan.
+
+Measured on 2026-07-29 against the local Isaac Lab 4.5.22 runtime with
 Isaac Sim 6.0.0.0. This file records why the tag-triggered publish path is inert,
-so the next attempt does not start by tagging and hoping.
+so any future attempt does not start by tagging and hoping.
 
 ## The publish path is fail-closed on GPU evidence
 
@@ -49,7 +53,7 @@ Consequences:
 - The retracted learned-policy PoNR headline cannot be revalidated on this
   runtime, because revalidation requires a genuinely competent policy.
 
-## Ordered unblock path
+## Ordered unblock path (not executed)
 
 1. Resolve checkpoint competence. Either fix the legacy-to-current actor
    mapping in `ipfd/oracles/rsl_rl_policy.py`, or train a checkpoint against the
