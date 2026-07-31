@@ -98,3 +98,23 @@ Verified during the archival pass, with no expensive GPU rerun:
 | Baseline generator `scripts/validate_recovery_oracle.py` against three-seed provenance | Matches `17b41305…` |
 | Learned checkpoint against `checkpoint_sha256` | Matches `fb658f98…` |
 | Three-seed report, summary, and figure against `SNAPSHOT_PROTOCOLS.md` | All three match |
+
+### Verifying the generator digests after the archival commit
+
+The two generator digests above pin the scripts **as of the archival commit
+`7611cf6c5cdde29009265121b833547eb085c9ca`**, which is the state that produced the
+recorded results. Later commits on `main` may edit those scripts for portability
+without invalidating any recorded result, so a digest check against the current
+working tree can legitimately differ. Verify against the archival commit:
+
+```bash
+git show 7611cf6c:scripts/run_snapshot_protocol_study.py | sha256sum   # 8d7ca4bc…
+git show 7611cf6c:scripts/validate_recovery_oracle.py    | sha256sum   # 17b41305…
+```
+
+Known divergence: commit `clarify historical release and remove machine-specific
+defaults` replaced a hardcoded `--isaac-lab-root` default with an
+environment-derived value, changing that script's digest to `20b769bc…` on later
+commits. The change is confined to argument handling and does not touch the
+experiment, the analysis, or any recorded artifact. The hash-sealed provenance
+JSON was deliberately left untouched.

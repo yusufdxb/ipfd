@@ -1,10 +1,31 @@
 from __future__ import annotations
 
+import importlib.util
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+
+
+def load_study_module():
+    """Import the study orchestrator as a module without running it.
+
+    The script inspects ``sys.argv`` at import time to decide whether it is a
+    worker process, so argv is neutralised for the duration of the import.
+    """
+    path = Path(__file__).resolve().parents[1] / "scripts" / "run_snapshot_protocol_study.py"
+    spec = importlib.util.spec_from_file_location("_ipfd_study_under_test", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    saved = sys.argv
+    sys.argv = [str(path)]
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.argv = saved
+    return module
 
 from ipfd.branch_study import (
     HORIZONS,
@@ -153,9 +174,50 @@ def test_primary_runner_returns_nonzero_before_runtime_on_missing_checkpoint(tmp
             "https://invalid.example/unused",
             "--output-dir",
             str(tmp_path / "result"),
+            "--isaac-lab-root",
+            str(tmp_path),
         ],
         capture_output=True,
         text=True,
     )
     assert completed.returncode != 0
     assert "checkpoint does not exist" in completed.stderr
+
+
+def test_primary_runner_requires_an_isaac_lab_root(tmp_path):
+    """Neither the flag nor the environment variable must fail loudly.
+
+    A missing Isaac Lab root previously fell back to a machine-specific default,
+    which would silently record simulator provenance for a path that does not
+    exist on any other machine.
+    """
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run_snapshot_protocol_study.py"
+    environment = {k: v for k, v in os.environ.items() if k != "IPFD_ISAACLAB_ROOT"}
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--checkpoint",
+            str(tmp_path / "missing.pt"),
+            "--asset-root",
+            "https://invalid.example/unused",
+            "--output-dir",
+            str(tmp_path / "result"),
+        ],
+        capture_output=True,
+        text=True,
+        env=environment,
+    )
+    assert completed.returncode != 0
+    assert "--isaac-lab-root" in completed.stderr
+
+
+def test_isaac_lab_root_resolution_rejects_a_path_that_does_not_exist(tmp_path):
+    module = load_study_module()
+    with pytest.raises(SystemExit) as excinfo:
+        module.resolve_isaac_lab_root(tmp_path / "absent")
+    assert "does not exist" in str(excinfo.value)
+    with pytest.raises(SystemExit) as excinfo:
+        module.resolve_isaac_lab_root(None)
+    assert "IPFD_ISAACLAB_ROOT" in str(excinfo.value)
+    assert module.resolve_isaac_lab_root(tmp_path) == tmp_path.resolve()

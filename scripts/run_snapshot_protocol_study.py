@@ -339,7 +339,7 @@ def orchestrator_main(args: argparse.Namespace) -> int:
     }
     provenance = {
         "ipfd_git": git_provenance(_REPO),
-        "isaac_lab_git": git_provenance(Path(args.isaac_lab_root).resolve()),
+        "isaac_lab_git": git_provenance(resolve_isaac_lab_root(args.isaac_lab_root)),
         "checkpoint": {
             "path": os.fspath(checkpoint),
             "sha256": sha256_file(checkpoint),
@@ -420,6 +420,39 @@ def orchestrator_main(args: argparse.Namespace) -> int:
     return 0
 
 
+#: Environment variable naming the Isaac Lab checkout. This is the same variable
+#: the reproduction commands in CORRECTED_EXPERIMENT_PROTOCOL.md already export.
+IPFD_ISAACLAB_ROOT_ENV = "IPFD_ISAACLAB_ROOT"
+
+
+def _default_isaac_lab_root() -> Path | None:
+    """Resolve the Isaac Lab root from the environment, or return None.
+
+    Returning None makes ``--isaac-lab-root`` a required flag, so a run on a
+    machine that has neither the environment variable nor the flag fails with an
+    explicit argparse error instead of silently recording provenance for a path
+    that does not exist.
+    """
+    value = os.environ.get(IPFD_ISAACLAB_ROOT_ENV, "").strip()
+    return Path(value) if value else None
+
+
+def resolve_isaac_lab_root(value: Path | None) -> Path:
+    """Validate the Isaac Lab root and fail loudly when it is unusable."""
+    if value is None:
+        raise SystemExit(
+            "Isaac Lab root is not set. Pass --isaac-lab-root </path/to/IsaacLab> "
+            f"or export {IPFD_ISAACLAB_ROOT_ENV}."
+        )
+    resolved = Path(value).expanduser().resolve()
+    if not resolved.is_dir():
+        raise SystemExit(
+            f"Isaac Lab root does not exist or is not a directory: {resolved}. "
+            f"Pass --isaac-lab-root </path/to/IsaacLab> or export {IPFD_ISAACLAB_ROOT_ENV}."
+        )
+    return resolved
+
+
 def build_orchestrator_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--task", default="Isaac-Lift-Cube-Franka-v0")
@@ -428,7 +461,17 @@ def build_orchestrator_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--num-envs", type=int, default=DEFAULT_NUM_ENVS)
     parser.add_argument("--device", default="cuda:0")
-    parser.add_argument("--isaac-lab-root", default="/home/yusuf/Sim/IsaacLab")
+    parser.add_argument(
+        "--isaac-lab-root",
+        type=Path,
+        default=_default_isaac_lab_root(),
+        required=IPFD_ISAACLAB_ROOT_ENV not in os.environ,
+        help=(
+            "Path to the Isaac Lab checkout, used to record simulator provenance. "
+            f"Defaults to ${IPFD_ISAACLAB_ROOT_ENV} when that variable is set; "
+            "otherwise this flag is required."
+        ),
+    )
     return parser
 
 
