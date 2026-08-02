@@ -1,0 +1,75 @@
+{
+  "case_count": 6,
+  "cases": [
+    {
+      "adapter_kind": "mujoco",
+      "audit_summary_sha256": "3c0e8be9d673515acfe5455a6d95be9dd2e1fd403da7b6ac95877b6963cc87dc",
+      "configuration": "mujoco_free_space.yaml",
+      "configuration_sha256": "20222aab21dfee855caa758a20fc2db29a75ebe6f5a8852459aba238ce383bcb",
+      "environment": "ipfd_mujoco_free_space_v1",
+      "output_directory": "results/v2/mujoco_free_space",
+      "overall_result": "SUPPORTED",
+      "simulator_version": "3.5.0",
+      "snapshot_protocol": "integration_with_warmstart"
+    },
+    {
+      "adapter_kind": "mujoco",
+      "audit_summary_sha256": "6203887d5012378d684ab0a21dbfb9d4b29b2ee86f129cd92bcf529801a1a575",
+      "configuration": "mujoco_intermittent_contact.yaml",
+      "configuration_sha256": "45d0b28649e4ee7815f8fda5df3997d87f7f33abe1b7029c958028056686d617",
+      "environment": "ipfd_mujoco_intermittent_contact_v1",
+      "output_directory": "results/v2/mujoco_intermittent_contact",
+      "overall_result": "UNSUPPORTED",
+      "simulator_version": "3.5.0",
+      "snapshot_protocol": "full_physics"
+    },
+    {
+      "adapter_kind": "mujoco",
+      "audit_summary_sha256": "906706e917565dd59ea40bdf83a4164fe1b03014612bb4de6c477a74adbb5fec",
+      "configuration": "mujoco_sustained_minimal.yaml",
+      "configuration_sha256": "5e45b15e334e8634aa3581728187e0c9afa02d551a7fa1ad8bdb3ade0d9cbb82",
+      "environment": "ipfd_mujoco_sustained_contact_v1",
+      "output_directory": "results/v2/mujoco_sustained_minimal",
+      "overall_result": "UNSUPPORTED",
+      "simulator_version": "3.5.0",
+      "snapshot_protocol": "minimal_visible"
+    },
+    {
+      "adapter_kind": "mujoco",
+      "audit_summary_sha256": "9a1917d5ed16d41471bf09369babb7655c6c417a078a2118383eef8e67c3e32f",
+      "configuration": "mujoco_sustained_full_physics.yaml",
+      "configuration_sha256": "6b862a3932fa4b3b472c20cf58e9bfa74a74542200ac5a74dbdd23d51b583895",
+      "environment": "ipfd_mujoco_sustained_contact_v1",
+      "output_directory": "results/v2/mujoco_sustained_full_physics",
+      "overall_result": "UNSUPPORTED",
+      "simulator_version": "3.5.0",
+      "snapshot_protocol": "full_physics"
+    },
+    {
+      "adapter_kind": "mujoco",
+      "audit_summary_sha256": "aaf19a06993100855ec57fd50590cecf45ebc48857582ab411c40909b3231f0f",
+      "configuration": "mujoco_sustained_integration.yaml",
+      "configuration_sha256": "74844a935d3ee243b1c2ddc46d4b0b6e746e076e4125b57fc4cc95c66b3a4089",
+      "environment": "ipfd_mujoco_sustained_contact_v1",
+      "output_directory": "results/v2/mujoco_sustained_integration",
+      "overall_result": "SUPPORTED",
+      "simulator_version": "3.5.0",
+      "snapshot_protocol": "integration_with_warmstart"
+    },
+    {
+      "adapter_kind": "isaac_lab_archive",
+      "audit_summary_sha256": "69a2581827f46f36ae9a083ca964215902696ad0dfb8b7fcc1789472c688f049",
+      "configuration": "isaac_lab_archived.yaml",
+      "configuration_sha256": "117a0470bade0da3c64bea2d43e6b7ca5582f19b2002f2f55631e292a83a3773",
+      "environment": "Isaac-Lift-Cube-Franka-v0",
+      "output_directory": "results/v2/isaac_lab_archived",
+      "overall_result": "UNSUPPORTED",
+      "simulator_version": "4.5.22",
+      "snapshot_protocol": "expanded_runtime_state"
+    }
+  ],
+  "command": "ipfd audit --config audit_matrix.yaml",
+  "interpretation": "This is an execution index across separately scoped audits, not a universal simulator verdict. Each child audit retains its own contract result.",
+  "result": "COMPLETED_WITH_UNSUPPORTED_SCOPES",
+  "schema_version": 1
+}

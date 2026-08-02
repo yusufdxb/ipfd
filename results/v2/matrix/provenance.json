@@ -1,0 +1,45 @@
+{
+  "adapter": {
+    "adapter": "audit_matrix",
+    "case_count": 6,
+    "child_configuration_sha256": {
+      "isaac_lab_archived.yaml": "117a0470bade0da3c64bea2d43e6b7ca5582f19b2002f2f55631e292a83a3773",
+      "mujoco_free_space.yaml": "20222aab21dfee855caa758a20fc2db29a75ebe6f5a8852459aba238ce383bcb",
+      "mujoco_intermittent_contact.yaml": "45d0b28649e4ee7815f8fda5df3997d87f7f33abe1b7029c958028056686d617",
+      "mujoco_sustained_full_physics.yaml": "6b862a3932fa4b3b472c20cf58e9bfa74a74542200ac5a74dbdd23d51b583895",
+      "mujoco_sustained_integration.yaml": "74844a935d3ee243b1c2ddc46d4b0b6e746e076e4125b57fc4cc95c66b3a4089",
+      "mujoco_sustained_minimal.yaml": "5e45b15e334e8634aa3581728187e0c9afa02d551a7fa1ad8bdb3ade0d9cbb82"
+    }
+  },
+  "adapter_provenance_sha256": "5dfc484f707484c7aeb8ce0226455bfea0f53c3167c6f18f17b41f43c9849654",
+  "configuration": {
+    "path": "audit_matrix.yaml",
+    "sha256": "0a8cb8d66cf6d235e3849b4027664b1a0a997651238963369436ec44fe8b24c4"
+  },
+  "generated_at_utc": "2026-08-02T13:34:03.796731+00:00",
+  "hardware": {
+    "accelerator_identifier": "not_recorded_in_public_artifacts",
+    "architecture": "x86_64",
+    "processor_family": "x86_64"
+  },
+  "schema_version": 1,
+  "software": {
+    "PyYAML": "6.0.3",
+    "ipfd": "1.1.0.dev0",
+    "isaaclab": "4.5.22",
+    "mujoco": "3.5.0",
+    "numpy": "1.26.4",
+    "operating_system": "Linux",
+    "operating_system_release": "6.8.0-136-generic",
+    "python": "3.12.13"
+  },
+  "source": {
+    "branch": "v2/replay-integrity-contract",
+    "commit": "a3ae56b884ac7013f18985f0bf07c8de6c0fc4b1",
+    "dirty": false,
+    "ignored_generated_output_paths": [
+      "results/v2",
+      "results/v2/matrix"
+    ]
+  }
+}

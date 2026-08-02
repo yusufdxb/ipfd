@@ -1,0 +1,105 @@
+{
+  "adapter": {
+    "adapter": "MuJoCoReplayAdapter",
+    "continuation_behavior": "restored",
+    "continuation_mode": "restored",
+    "controller_or_policy_history_captured": false,
+    "environment": "sustained_contact",
+    "frame_skip": 5,
+    "instances": 2,
+    "model_dimensions": {
+      "na": 0,
+      "nhistory": 0,
+      "nq": 1,
+      "nsensordata": 2,
+      "nu": 1,
+      "nv": 1
+    },
+    "model_source": "embedded_asset_free_mjcf",
+    "package_version": "3.5.0",
+    "random_state_handling": {
+      "adapter_rng_state_captured": false,
+      "post_reset_stochastic_events": false,
+      "reset_seed": 307,
+      "simulator_random_state": "none_used_by_embedded_models"
+    },
+    "sensor_refresh_behavior": "mj_forward is called after mj_setState; sensors and derived contact state are recomputed",
+    "simulator": "MuJoCo",
+    "simulator_version": "3.5.0",
+    "snapshot_protocol": "integration_with_warmstart",
+    "solver_state_availability": {
+      "constraint_solver_iteration_scratch": "unavailable",
+      "contact_manifolds": "recomputed_not_serialized",
+      "warm_start_in_snapshot_protocol": true,
+      "warm_start_preserved_for_continuation": true
+    },
+    "state_components_captured": [
+      "simulation_time",
+      "generalized_positions",
+      "generalized_velocities",
+      "actuator_activations",
+      "control_and_sensor_history",
+      "solver_acceleration_warmstart",
+      "controls",
+      "applied_generalized_forces",
+      "applied_cartesian_forces",
+      "equality_constraint_activation",
+      "mocap_positions",
+      "mocap_orientations",
+      "user_data",
+      "plugin_state",
+      "task_initial_qpos",
+      "adapter_control_step_counter"
+    ],
+    "state_components_unavailable": [
+      "derived_contact_manifolds_recomputed_by_mj_forward",
+      "constraint_solver_iteration_scratch",
+      "renderer_state",
+      "external_policy_or_controller_history",
+      "adapter_random_generator_state"
+    ],
+    "task_state_captured": [
+      "within_bounds",
+      "contact_active",
+      "contact_count",
+      "initial_qpos"
+    ],
+    "timestep": 0.002,
+    "unsupported_restoration_claims": [
+      "No claim that derived contact manifolds or solver scratch are serialized",
+      "No claim that external policy, controller, renderer, or process state is restored",
+      "No universal MuJoCo fidelity verdict"
+    ]
+  },
+  "adapter_provenance_sha256": "3a4347b727b86a6761b89907dff4b5b8493c18916f84b33575e61c19e41a54eb",
+  "configuration": {
+    "path": "mujoco_sustained_integration.yaml",
+    "sha256": "74844a935d3ee243b1c2ddc46d4b0b6e746e076e4125b57fc4cc95c66b3a4089"
+  },
+  "generated_at_utc": "2026-08-02T13:34:03.682994+00:00",
+  "hardware": {
+    "accelerator_identifier": "not_recorded_in_public_artifacts",
+    "architecture": "x86_64",
+    "processor_family": "x86_64"
+  },
+  "schema_version": 1,
+  "software": {
+    "PyYAML": "6.0.3",
+    "ipfd": "1.1.0.dev0",
+    "isaaclab": "4.5.22",
+    "mujoco": "3.5.0",
+    "numpy": "1.26.4",
+    "operating_system": "Linux",
+    "operating_system_release": "6.8.0-136-generic",
+    "python": "3.12.13"
+  },
+  "source": {
+    "branch": "v2/replay-integrity-contract",
+    "commit": "a3ae56b884ac7013f18985f0bf07c8de6c0fc4b1",
+    "dirty": false,
+    "ignored_generated_output_paths": [
+      "results/v2",
+      "results/v2/mujoco_sustained_integration"
+    ]
+  }
+}

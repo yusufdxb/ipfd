@@ -1,0 +1,46 @@
+{
+  "adapter": {
+    "adapter": "isaac_lab_archive",
+    "archival_commit": "7611cf6c5cdde29009265121b833547eb085c9ca",
+    "records_bytes": 10166696,
+    "records_sha256": "1c55862ce4a24bf564396c8d86873b13fc1667e491aada27bfff6c8d2166ce8f",
+    "simulator": "Isaac Lab",
+    "simulator_version": "4.5.22",
+    "source_mode": "read_only_immutable_evidence",
+    "unsupported_restoration_claims": [
+      "The archive does not establish complete PhysX snapshot restoration.",
+      "This conversion does not rerun the simulator."
+    ]
+  },
+  "adapter_provenance_sha256": "996eed2c92b028f562cf23ce1ba6cb38826176942f97f7573fc1450a24728fc5",
+  "configuration": {
+    "path": "isaac_lab_archived.yaml",
+    "sha256": "117a0470bade0da3c64bea2d43e6b7ca5582f19b2002f2f55631e292a83a3773"
+  },
+  "generated_at_utc": "2026-08-02T13:34:03.752920+00:00",
+  "hardware": {
+    "accelerator_identifier": "not_recorded_in_public_artifacts",
+    "architecture": "x86_64",
+    "processor_family": "x86_64"
+  },
+  "schema_version": 1,
+  "software": {
+    "PyYAML": "6.0.3",
+    "ipfd": "1.1.0.dev0",
+    "isaaclab": "4.5.22",
+    "mujoco": "3.5.0",
+    "numpy": "1.26.4",
+    "operating_system": "Linux",
+    "operating_system_release": "6.8.0-136-generic",
+    "python": "3.12.13"
+  },
+  "source": {
+    "branch": "v2/replay-integrity-contract",
+    "commit": "a3ae56b884ac7013f18985f0bf07c8de6c0fc4b1",
+    "dirty": false,
+    "ignored_generated_output_paths": [
+      "results/v2",
+      "results/v2/isaac_lab_archived"
+    ]
+  }
+}
