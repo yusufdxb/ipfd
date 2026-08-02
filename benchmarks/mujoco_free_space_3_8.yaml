@@ -1,0 +1,48 @@
+schema_version: 1
+adapter:
+  kind: mujoco
+  simulator: MuJoCo
+  regime: free_space
+  timestep: 0.002
+  frame_skip: 5
+  position_bound: 5.0
+  progress_threshold: 0.05
+  stable_velocity: 0.01
+  initial_position_jitter: 0.002
+simulator_version: "3.8.1"
+environment: ipfd_mujoco_free_space_v1
+task: deterministic_free_motion
+snapshot_protocol: integration_with_warmstart
+branch_states:
+  - {id: free-seed-101-step-10, step: 10, seed: 101, cluster: seed-101}
+  - {id: free-seed-211-step-10, step: 10, seed: 211, cluster: seed-211}
+  - {id: free-seed-307-step-10, step: 10, seed: 307, cluster: seed-307}
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: restored
+action_source: deterministic
+decision_functions:
+  - within_bounds
+  - collision
+  - forward_progress
+tolerances:
+  default: {absolute: 1.0e-12, relative: 1.0e-10}
+  scene_state: {absolute: 1.0e-11, relative: 1.0e-10}
+  policy_observations: {absolute: 1.0e-11, relative: 1.0e-10}
+  privileged_observations: {absolute: 1.0e-11, relative: 1.0e-10}
+  task_state: {absolute: 1.0e-12, relative: 1.0e-10}
+  controller_targets: {absolute: 0.0, relative: 0.0}
+  sensor_state: {absolute: 1.0e-11, relative: 1.0e-10}
+  counters: {absolute: 0.0, relative: 0.0}
+  contact_state: {absolute: 1.0e-11, relative: 1.0e-10}
+  task_outputs: {absolute: 0.0, relative: 0.0}
+  termination: {absolute: 0.0, relative: 0.0}
+  reward: {absolute: 1.0e-12, relative: 1.0e-10}
+independent_cluster_key: seed
+minimum_independent_clusters: 3
+output_directory: ../results/v2/mujoco_free_space_3_8
+reduction:
+  enabled: true
+  max_trials: 80
+  branch_steps: [0, 1, 5]
+regression:
+  baseline_summary: ../results/v2/mujoco_free_space/audit_summary.json

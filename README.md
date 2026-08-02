@@ -1,11 +1,61 @@
-# IPFD: Isaac Policy Failure Debugger
+# IPFD: Intervention Probe Fidelity Diagnostics
 
 [![CI](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml/badge.svg)](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
 [![Latest release](https://img.shields.io/github/v/release/yusufdxb/ipfd)](https://github.com/yusufdxb/ipfd/releases/latest)
 
-**A post-mortem debugger for a reinforcement-learning policy in simulation: given one failed rollout, it tried to report the exact step after which the failure could no longer be undone. The measurement it rests on turned out not to hold, so the project is archived as a negative result.**
+## v2 engineering objective
+
+IPFD v2 is a simulator snapshot-and-restore conformance and regression tool. It
+audits four separate contracts:
+
+- L0: measured restore equality;
+- L1: one-step dynamics fidelity;
+- L2: identical-action finite-horizon trajectory fidelity;
+- L3: agreement of a user-declared downstream decision.
+
+The governing rule is:
+
+> Equality at restoration time does not establish downstream counterfactual validity.
+
+Every result is one of `SUPPORTED`, `UNSUPPORTED`, or
+`INSUFFICIENT_EVIDENCE`, scoped to a simulator and version, environment, task,
+snapshot protocol, continuation, horizon, action source, decision function,
+tolerances, independent clusters, and provenance. IPFD never emits a universal
+simulator verdict.
+
+The simulator-neutral core includes an Isaac Lab adapter, an asset-free MuJoCo
+reference adapter, free-space, intermittent-contact, and sustained-contact
+benchmarks, automatic failure reduction, protocol and version regression, JSON
+and JSONL outputs, a concise report, and a divergence visualization.
+
+Install the reference backend and run one audit:
+
+```bash
+python -m pip install -e '.[mujoco]'
+ipfd audit --config benchmarks/mujoco_free_space.yaml
+```
+
+Run the complete MuJoCo 3.5 and locally preserved Isaac evidence matrix with the
+same primary command:
+
+```bash
+ipfd audit --config benchmarks/audit_matrix.yaml
+```
+
+The matrix command requires the immutable archived Isaac per-branch artifact
+named in its manifest. A clean clone without that external archived payload can
+run every live MuJoCo case independently.
+
+Start with [`REPLAY_FIDELITY_CONTRACT.md`](REPLAY_FIDELITY_CONTRACT.md),
+[`ADAPTER_CONTRACT.md`](ADAPTER_CONTRACT.md), and
+[`BENCHMARK_PROTOCOL.md`](BENCHMARK_PROTOCOL.md). The historical studies remain
+available as immutable motivation in
+[`HISTORICAL_BASELINE.md`](HISTORICAL_BASELINE.md). IPFD v2 is a new engineering
+objective, not a continuation of the stopped scientific claim.
+
+## Historical research status: archived honest negative
 
 > ## ARCHIVED
 >
@@ -137,7 +187,7 @@ The final claim this project supports, and nothing wider:
 
 ---
 
-## What the tool actually does
+## Historical v1 implementation: Isaac Policy Failure Debugger
 
 A success rate tells you an episode failed. IPFD reports the step after which a
 tested recovery controller stopped succeeding from restored simulator branches,
