@@ -5,11 +5,54 @@
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
 [![Latest release](https://img.shields.io/github/v/release/yusufdxb/ipfd)](https://github.com/yusufdxb/ipfd/releases/latest)
 
-## Research status: archived honest negative
+**A post-mortem debugger for a reinforcement-learning policy in simulation: given one failed rollout, it tried to report the exact step after which the failure could no longer be undone. The measurement it rests on turned out not to hold, so the project is archived as a negative result.**
 
-**IPFD is archived. It is not under active research development, and it did not
-demonstrate a flagship research capability.** The full report is
-[`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md).
+> ## ARCHIVED
+>
+> IPFD is not under active development. It did not demonstrate a flagship
+> research capability, and the number it exists to produce is not trustworthy
+> in the general case. The full report is
+> [`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md). This README
+> keeps the tooling documented because the measurement harness and the negative
+> finding are the useful parts.
+
+## The 30-second version
+
+|  |  |
+|---|---|
+| **Hypothesis** | If you rewind a simulator to step `t` and re-run it, the rewound branch stands in for what the original, uninterrupted episode would have done, so a recovery controller's success or failure from that branch tells you whether step `t` was still recoverable. |
+| **Mechanism** | Roll out and record the episode in environment 0, restore the saved state at step `t` into an isolated environment 1, run a recovery controller there for a fixed budget, and define the Point of No Return as the first step after which recovery never succeeds again. |
+| **What falsified it** | On an Isaac Lab contact-rich lift task, restored branches that matched the reference on exposed simulator state, on the immediate policy observation, and on the exact replayed action sequence still reached a *different* terminal task decision: 13 of 120 in the first three-seed cohort with 120 of 120 immediate observation equality, and 11 of 444 in the corrected five-seed study even under the expanded restoration protocol. |
+| **Why that is interesting** | "Save the state, restore it, try again" is an unexamined assumption under a lot of simulation tooling, counterfactual analysis, and RL debugging. Here it is measured directly, and equality at the restore boundary does not imply equality of the outcome. |
+| **Why it stopped** | The preregistered positive control (restoring strictly more exposed state) had to cut disagreement by 50 percent and cut it by 38.9 percent, so the stopping rule fired, the downstream validity gate was never eligible to run, and no robotics decision was ever corrected. |
+
+```mermaid
+flowchart LR
+  R[Record episode<br/>in env 0] --> S[Save simulator state<br/>at step t]
+  S --> B[Restore into env 1<br/>origin-shifted, isolated]
+  B --> C{Recovery controller<br/>succeeds within budget?}
+  C -->|yes| Y[step t recoverable]
+  C -->|no| N[step t not recoverable]
+  Y --> P[PoNR = first step after<br/>which recovery never succeeds]
+  N --> P
+  B -.->|FALSIFIED: the restored branch can<br/>reverse the decision it stands in for| X[The substitution<br/>does not hold]
+```
+
+## What is and is not trustworthy here
+
+| Layer | State | Trust |
+|---|---|---|
+| CPU analysis layer (detectors, PoNR index, metrics, report, plots) | Implemented, pure NumPy, no simulator import | Stable. 156 tests pass, 85% branch coverage, `ruff` and `mypy` clean on Python 3.10, 3.11, 3.12 |
+| Isaac Lab attachment (env, reset/step, observation structure, report) | Implemented | Verified on exactly one runtime fingerprint, one machine, one checkpoint |
+| Restored-branch decision fidelity, the assumption under every PoNR number | Measured | **Falsified for the tested protocols.** Treat every PoNR value here as a controller-relative diagnostic over restored branches, not as a statement about the uninterrupted episode |
+| Fixing it by restoring more exposed state | Tested as a preregistered positive control | Reduced disagreement from 18/444 to 11/444, missed the registered 50 percent bar |
+| Learned-policy headline result | Never produced | The release evidence gate never passed. The published Lift-Cube checkpoint measured 0.00% success on the local runtime |
+| Hardware validation | None | Nothing here was run on a robot |
+
+The rest of this page is the long-form record: the falsification in detail, the
+per-claim evidence table, the tool's own semantics, and the reproduction commands.
+
+## Research status: archived honest negative
 
 **Original hypothesis.** A recovery probe restores a recorded simulator state into
 a second environment and re-runs it, so its verdict can stand in for what the
@@ -94,7 +137,7 @@ The final claim this project supports, and nothing wider:
 
 ---
 
-# IPFD: Isaac Policy Failure Debugger
+## What the tool actually does
 
 A success rate tells you an episode failed. IPFD reports the step after which a
 tested recovery controller stopped succeeding from restored simulator branches,
@@ -116,7 +159,7 @@ the branch-validity study above is why that work stopped rather than continued.
 
 | Area | Status | Backed by |
 |---|---|---|
-| Analysis layer (detectors, PoNR, metrics, report, plotting) | Stable. Pure NumPy, no simulator import. | 132 tests, 85.59% branch coverage, `ruff` and `mypy` clean, on Python 3.10, 3.11, 3.12 |
+| Analysis layer (detectors, PoNR, metrics, report, plotting) | Stable. Pure NumPy, no simulator import. | 156 tests pass, 85% branch coverage, `ruff` and `mypy` clean, on Python 3.10, 3.11, 3.12 |
 | Frozen-fixture reports are byte-stable when regenerated from a recorded rollout | Stable, GPU-free. | `tests/test_replay_fixture.py`. `test_report_reproducible` checks that two in-process builds of one synthetic rollout agree, which is narrower than byte-stability across the Python matrix. |
 | IPFD attaches to a live Isaac Lab rollout (env, reset/step, obs structure, report) | Verified on one runtime. | [`scripts/verify_isaac_runtime.py`](scripts/verify_isaac_runtime.py) prints `IPFD_RUNTIME_SMOKE: overall PASS` |
 | Probe writes do not move env 0 at the reset boundary | Measured, narrowly. | Historical runs measured max env-0 pose delta of 0.00e+00 m across probe `reset_to` calls. This is a reset-boundary measurement. It does not claim env 0 is static while the vectorized simulator steps every cell. |
