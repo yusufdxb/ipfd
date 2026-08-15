@@ -7,6 +7,8 @@ state:
 
 ```python
 class ReplayAdapter(Protocol):
+    def reset(self, seed: int) -> ObservationRecord | None: ...
+    def action(self, step: int, source, env_ids: Sequence[int]) -> ArrayLike: ...
     def capture(self, env_ids: Sequence[int]) -> Snapshot: ...
     def restore(self, snapshot: Snapshot, env_ids: Sequence[int]) -> None: ...
     def observe(self, env_ids: Sequence[int]) -> ObservationRecord: ...
@@ -15,10 +17,12 @@ class ReplayAdapter(Protocol):
     def provenance(self) -> Mapping[str, object]: ...
 ```
 
-Adapters may expose lifecycle helpers such as `reset`, `action`, and `close`, but
-the six methods above define interoperability. Simulator-neutral means common
-records and audit semantics, not a claim that all simulators expose the same
-state.
+The eight methods above define live-audit interoperability. `reset` prepares both
+paired instances from one declared seed. `action` returns one action row per
+requested environment in the same order. Adapters may expose lifecycle helpers
+such as `close`, but the runner does not treat `reset` or `action` as optional.
+Simulator-neutral means common records and audit semantics, not a claim that all
+simulators expose the same state.
 
 ## Record requirements
 
@@ -60,8 +64,10 @@ effect and applies the same refresh sequence to both branches.
 
 A step record contains the next observation and state projection, contact state,
 task outputs, termination and truncation fields, reward where relevant, and
-semantic metadata. The enclosing trajectory and audit record store the ordered
-applied actions. Numerical values and semantic events remain separate.
+semantic metadata. `applied_actions` records what was actually submitted to the
+simulator, separately from the runner's requested actions. If an adapter cannot
+observe applied actions, it uses `None` and conformance reports insufficient
+evidence for delivery. Numerical values and semantic events remain separate.
 
 ### `TrajectoryRecord`
 

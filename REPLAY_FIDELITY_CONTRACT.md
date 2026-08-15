@@ -84,6 +84,10 @@ live failure reproducer retains the identical action values so the reduced case 
 independently auditable. Adapter provenance records control decimation and
 execution details that affect action delivery.
 
+An adapter conformance run separately compares the requested pair with
+`StepRecord.applied_actions`. Equality of requested actions alone is not evidence
+that a backend delivered them identically.
+
 L1 reports two channels:
 
 1. **Numerical:** per-field absolute and relative differences, raw measurements,
@@ -101,6 +105,11 @@ zero or equality.
 L2 replays an identical recorded action sequence from the branch state. Every
 adapter must support audits at 1, 5, 10, 30, and 90 control steps. Configurations
 may add horizons but may not silently omit the required set.
+
+When horizons are executed as separate simulator reruns, the captured snapshot,
+requested action prefixes, and complete paired trajectory prefixes must match.
+A mismatch stops the audit rather than combining unrelated samples into one
+frontier.
 
 For every branch and horizon, L2 records:
 

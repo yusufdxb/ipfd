@@ -87,7 +87,7 @@ jobs:
         run: |
           python -m venv /tmp/ipfd-clean
           /tmp/ipfd-clean/bin/pip install --upgrade pip
-          /tmp/ipfd-clean/bin/pip install dist/*.whl
+          /tmp/ipfd-clean/bin/pip install "mujoco>=3.5" dist/*.whl
           cp tests/fixtures/learned_teleport_rollout.npz /tmp/ipfd-clean/
           cd /tmp/ipfd-clean
           ./bin/python - <<'PY'
@@ -101,12 +101,13 @@ jobs:
           print("installed-wheel end-to-end OK; PoNR", real.t_ponr, "reproduced with no GPU")
           PY
           ./bin/ipfd analyze learned_teleport_rollout.npz --report report.json --plot timeline.png
-          ./bin/ipfd-demo --json demo.json
+          ./bin/ipfd demo --output demo-results
           ./bin/ipfd-evidence-gate --help
           ./bin/pip check
           test -s report.json
           test -s timeline.png
-          test -s demo.json
+          test -s demo-results/summary.json
+          test -s demo-results/report.png
       - name: Install and import the source distribution
         run: |
           python -m venv /tmp/ipfd-sdist

@@ -45,6 +45,8 @@ own results.
 | `mujoco_sustained_minimal.yaml` | sustained contact | `minimal_visible` | 150 | Deliberately narrow state contract |
 | `mujoco_sustained_full_physics.yaml` | sustained contact | `full_physics` | 150 | Full documented physics state without warm-start state |
 | `mujoco_sustained_integration.yaml` | sustained contact | `integration_with_warmstart` | 150 | Integration-state and warm-start protocol, plus protocol regression |
+| `demo_filtered_minimal.yaml` | filtered actuator in floor contact | `minimal_visible` | 100 | Demo failure case: visible L0 match, delayed contact and decision disagreement |
+| `demo_filtered_integration.yaml` | filtered actuator in floor contact | `integration_with_warmstart` | 100 | Demo improved protocol and bit-exact control |
 | `isaac_lab_archived.yaml` | archived mixed contact phases | `expanded_runtime_state` | retained per record | Read-only detection of the preserved Isaac Lab decision-fidelity failure |
 
 `isaac_lab_live_scene_only.yaml` is a hardware-dependent zero-action smoke audit
@@ -86,6 +88,24 @@ The same environment, actions, decision predicates, seeds, branch step,
 horizons, and tolerances are used for the three snapshot protocols. This isolates
 the restoration protocol as the declared comparison axis. The decisions cover
 bounds, collision, sustained contact, and stable contact.
+
+### Regime D: filtered-actuator floor contact
+
+The demo system preloads a filtered actuator while a sphere remains in floor
+contact, then changes the control identically in both branches. The narrow
+protocol restores qpos, qvel, history, and control but explicitly omits actuator
+activation and solver warm-start. Required visible fields agree at L0. The
+omitted bundle produces a later numerical threshold crossing, contact-mode
+disagreement, and reversal of the `remains_in_contact` decision. A mechanism
+ablation captures actuator activation while still omitting solver warm-start and
+removes the L2/L3 mismatch through h=90. Its exact derived-field L0 remains
+unsupported. The integration protocol restores the full integration state and
+is the improved-protocol control that passes every tested level.
+
+Position and velocity use separate declared tolerances because they have
+different units. The demo's `DEGRADED` h=30 display means L2 has crossed its
+position tolerance while L3 still agrees; the underlying strict audit result for
+that L2 claim is `UNSUPPORTED`.
 
 ## Independent trajectories
 
