@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ipfd"
 version = "2.0.0.dev0"
-description = "Audit simulator snapshot-and-restore fidelity from exposed state through downstream decisions."
+description = "Audit counterfactual fidelity of simulator snapshot-and-restore workflows."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Yusuf Guenena" }]
-keywords = ["robotics", "simulation", "snapshot", "replay", "regression-testing"]
+keywords = ["robotics", "simulation", "snapshot", "counterfactual", "reliability"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

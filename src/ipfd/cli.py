@@ -7,11 +7,6 @@ import json
 import sys
 from pathlib import Path
 
-from .actionability import evaluate_actionability
-from .replay import load_rollout
-from .report import build_report
-from .viz import plot_timeline
-
 __all__ = ["main"]
 
 
@@ -47,7 +42,23 @@ def main(argv: list[str] | None = None) -> int:
     regress.add_argument("--baseline", type=Path, required=True)
     regress.add_argument("--candidate", type=Path, required=True)
     regress.add_argument("--output", type=Path)
+    fidelity = subparsers.add_parser(
+        "fidelity",
+        help="audit empirical counterfactual fidelity from branch records",
+    )
+    from .fidelity_cli import add_fidelity_arguments
+
+    add_fidelity_arguments(fidelity)
     args = parser.parse_args(argv)
+
+    if args.command == "fidelity":
+        try:
+            from .fidelity_cli import run_fidelity
+
+            return run_fidelity(args)
+        except Exception as exc:
+            print(f"IPFD_FIDELITY_ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return 2
 
     if args.command == "audit":
         try:
@@ -110,6 +121,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command != "analyze":  # pragma: no cover - argparse enforces this
         parser.error(f"unknown command: {args.command}")
+
+    from .actionability import evaluate_actionability
+    from .replay import load_rollout
+    from .report import build_report
+    from .viz import plot_timeline
 
     rollout = load_rollout(args.rollout)
     report = build_report(rollout)
