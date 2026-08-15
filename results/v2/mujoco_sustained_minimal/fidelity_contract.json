@@ -1,0 +1,82 @@
+{
+  "central_principle": "Equality at restoration time does not establish downstream counterfactual validity.",
+  "levels": {
+    "L0": {
+      "compares": [
+        "exposed scene state",
+        "policy observations",
+        "privileged observations",
+        "task-manager state",
+        "controller targets",
+        "sensor state",
+        "simulation counters"
+      ],
+      "forbidden_implication": "L0 does not imply trajectory or decision fidelity.",
+      "name": "restore equality",
+      "permitted_meaning": "Only the measured exposed state agrees at the restoration boundary."
+    },
+    "L1": {
+      "compares": [
+        "next state",
+        "next observation",
+        "contact state",
+        "task-manager outputs",
+        "termination state",
+        "reward where relevant"
+      ],
+      "name": "one-step dynamics fidelity",
+      "separation": "Numerical differences and semantic differences are reported separately."
+    },
+    "L2": {
+      "measurements": [
+        "first numerical divergence",
+        "first observation divergence",
+        "first contact divergence",
+        "maximum state error",
+        "terminal state error",
+        "divergence-growth curve"
+      ],
+      "name": "finite-horizon open-loop trajectory fidelity",
+      "required_horizons": [
+        1,
+        5,
+        10,
+        30,
+        90
+      ],
+      "requires": "Identical recorded actions for uninterrupted and restored instances."
+    },
+    "L3": {
+      "measurement": "Whether uninterrupted and restored branches produce the same declared conclusion.",
+      "name": "downstream decision fidelity",
+      "primary": true,
+      "requires": "A user-declared decision function."
+    }
+  },
+  "name": "IPFD Replay Fidelity Contract",
+  "schema_version": 1,
+  "scope_fields": [
+    "simulator",
+    "simulator_version",
+    "environment",
+    "task",
+    "snapshot_protocol",
+    "continuation_mode",
+    "horizon",
+    "action_source",
+    "decision_function",
+    "tolerances",
+    "hardware_and_software_provenance"
+  ],
+  "tolerance_policy": {
+    "environment_specific_tolerances_required": true,
+    "raw_measurements_preserved": true,
+    "universal_tolerance": false
+  },
+  "universal_simulator_verdicts_permitted": false,
+  "verdicts": [
+    "SUPPORTED",
+    "UNSUPPORTED",
+    "INSUFFICIENT_EVIDENCE"
+  ]
+}

@@ -1,386 +1,342 @@
-# IPFD: Isaac Policy Failure Debugger
+# IPFD: Counterfactual Fidelity Auditing for Robot Simulation
 
 [![CI](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml/badge.svg)](https://github.com/yusufdxb/ipfd/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
-[![Latest release](https://img.shields.io/github/v/release/yusufdxb/ipfd)](https://github.com/yusufdxb/ipfd/releases/latest)
 
-**A post-mortem debugger for a reinforcement-learning policy in simulation: given one failed rollout, it tried to report the exact step after which the failure could no longer be undone. The measurement it rests on turned out not to hold, so the project is archived as a negative result.**
+IPFD tests how long a restored simulator branch remains a trustworthy empirical
+substitute for an uninterrupted rollout. It is designed for researchers who use
+snapshots for branching rollouts, counterfactual policy evaluation, recovery
+analysis, failure debugging, replay, checkpoint comparison, and offline
+diagnostics.
 
-> ## ARCHIVED
->
-> IPFD is not under active development. It did not demonstrate a flagship
-> research capability, and the number it exists to produce is not trustworthy
-> in the general case. The full report is
-> [`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md). This README
-> keeps the tooling documented because the measurement harness and the negative
-> finding are the useful parts.
+The question is deliberately scoped:
 
-## The 30-second version
+> Under this restoration protocol, continuation mode, disturbance, task phase,
+> decision predicate, and runtime, where has decision disagreement been observed
+> as rollout horizon increases?
 
-|  |  |
+IPFD reports a **counterfactual fidelity curve**, an **observed empirical
+frontier**, error direction, seed-aware uncertainty, protocol deltas, and a
+fail-closed fidelity gate. It does not certify a simulator, prove that snapshots
+are valid, or extrapolate beyond tested horizons and strata.
+
+## Quick start
+
+The fidelity analyzer is pure CPU and consumes JSONL branch-comparison records. It
+does not import Isaac Lab.
+
+```bash
+python -m pip install -e '.[dev]'
+
+ipfd fidelity \
+  examples/fidelity_records.jsonl \
+  --max-disagreement 0.25 \
+  --group-by protocol,continuation,disturbance \
+  --minimum-independent-seeds 2
+```
+
+The bundled input is synthetic and exists only to demonstrate the interface. It
+is not simulator evidence. To audit the pooled primary estimand in the corrected
+study from the committed, compressed decision records:
+
+```bash
+ipfd fidelity \
+  results/fidelity/corrected_five_seed_decisions.jsonl.xz \
+  --protocol expanded_runtime_state \
+  --continuation exact_action \
+  --predicate sustained_lift \
+  --group-by protocol,continuation \
+  --max-disagreement 0.05 \
+  --provenance results/branch_validity/corrected_five_seed/study_provenance.json
+```
+
+This grouping keeps the protocol, continuation, and predicate fixed while pooling
+the observed disturbance and phase categories. The output lists those pooled
+categories explicitly. Add either field to `--group-by` to obtain narrower
+curves.
+
+For an exact paired comparison of the two restore protocols, omit the protocol
+filter and add:
+
+```text
+--compare-protocols scene_plus_basic_manager_state,expanded_runtime_state
+```
+
+Use `--format json` for machine-readable output and `--output PATH` to write an
+artifact. The artifact records the input SHA-256, grouping and filters, tolerance,
+bootstrap configuration, and available Git provenance. Bootstrap sampling is
+deterministic when `--bootstrap-seed` is fixed.
+See [Counterfactual fidelity audits](docs/COUNTERFACTUAL_FIDELITY.md) for the data
+contract, interpretation rules, API, and gate behavior.
+
+## What the audit answers
+
+| Question | Reported result |
 |---|---|
-| **Hypothesis** | If you rewind a simulator to step `t` and re-run it, the rewound branch stands in for what the original, uninterrupted episode would have done, so a recovery controller's success or failure from that branch tells you whether step `t` was still recoverable. |
-| **Mechanism** | Roll out and record the episode in environment 0, restore the saved state at step `t` into an isolated environment 1, run a recovery controller there for a fixed budget, and define the Point of No Return as the first step after which recovery never succeeds again. |
-| **What falsified it** | On an Isaac Lab contact-rich lift task, restored branches that matched the reference on exposed simulator state, on the immediate policy observation, and on the exact replayed action sequence still reached a *different* terminal task decision: 13 of 120 in the first three-seed cohort with 120 of 120 immediate observation equality, and 11 of 444 in the corrected five-seed study even under the expanded restoration protocol. |
-| **Why that is interesting** | "Save the state, restore it, try again" is an unexamined assumption under a lot of simulation tooling, counterfactual analysis, and RL debugging. Here it is measured directly, and equality at the restore boundary does not imply equality of the outcome. |
-| **Why it stopped** | The preregistered positive control (restoring strictly more exposed state) had to cut disagreement by 50 percent and cut it by 38.9 percent, so the stopping rule fired, the downstream validity gate was never eligible to run, and no robotics decision was ever corrected. |
+| At which tested horizons was disagreement absent? | Counts and descriptive rates, worded as "no disagreement observed" |
+| Where did disagreement first appear? | The first tested horizon with a disagreement |
+| Where did a selected tolerance fail? | The first tested horizon above the tolerance |
+| Is the transition localized? | A bracket between tested horizons, never an interpolated exact point |
+| Does a richer protocol help? | Paired protocol deltas on comparable records |
+| Which conditions are restore-sensitive? | Curves grouped by continuation, disturbance, phase, and predicate |
+| Which way do errors run? | False-recoverable and false-unrecoverable counts |
+| Is there enough independent evidence? | Independent seed count and a fail-closed gate decision |
 
-```mermaid
-flowchart LR
-  R[Record episode<br/>in env 0] --> S[Save simulator state<br/>at step t]
-  S --> B[Restore into env 1<br/>origin-shifted, isolated]
-  B --> C{Recovery controller<br/>succeeds within budget?}
-  C -->|yes| Y[step t recoverable]
-  C -->|no| N[step t not recoverable]
-  Y --> P[PoNR = first step after<br/>which recovery never succeeds]
-  N --> P
-  B -.->|FALSIFIED: the restored branch can<br/>reverse the decision it stands in for| X[The substitution<br/>does not hold]
-```
+`ACCEPT_OBSERVED_ENVELOPE` means only that the requested horizon is inside a
+tested empirical envelope whose equal-weight seed-mean disagreement rate meets
+the configured rule. The branch-level rate remains descriptive. The gate fails
+closed for inadequate seed counts, changing branch support across horizons,
+non-monotonic evidence, unseen strata, and untested horizons. None of its statuses
+is a formal safety or simulator-correctness claim.
 
-## What is and is not trustworthy here
+## Existing five-seed evidence
 
-| Layer | State | Trust |
-|---|---|---|
-| CPU analysis layer (detectors, PoNR index, metrics, report, plots) | Implemented, pure NumPy, no simulator import | Stable. 156 tests pass, 85% branch coverage, `ruff` and `mypy` clean on Python 3.10, 3.11, 3.12 |
-| Isaac Lab attachment (env, reset/step, observation structure, report) | Implemented | Verified on exactly one runtime fingerprint, one machine, one checkpoint |
-| Restored-branch decision fidelity, the assumption under every PoNR number | Measured | **Falsified for the tested protocols.** Treat every PoNR value here as a controller-relative diagnostic over restored branches, not as a statement about the uninterrupted episode |
-| Fixing it by restoring more exposed state | Tested as a preregistered positive control | Reduced disagreement from 18/444 to 11/444, missed the registered 50 percent bar |
-| Learned-policy headline result | Never produced | The release evidence gate never passed. The published Lift-Cube checkpoint measured 0.00% success on the local runtime |
-| Hardware validation | None | Nothing here was run on a robot |
+The corrected Isaac Lab study contains 5,328 decision-comparison rows generated
+from 74 unique branch points, two restore protocols, two continuation modes, three
+decision predicates, and six horizons. These are repeated measurements within only
+**five independent seed groups**. The 5,328 rows are not 5,328 independent trials.
 
-The rest of this page is the long-form record: the falsification in detail, the
-per-claim evidence table, the tool's own semantics, and the reproduction commands.
+For the primary stratum, exact-action continuation with the `sustained_lift`
+predicate, the richer `expanded_runtime_state` protocol produced this descriptive
+curve:
 
-## Research status: archived honest negative
+| Horizon (control steps) | Disagreements | Branch-level rate |
+|---:|---:|---:|
+| 1 | 0 / 74 | 0.00% |
+| 3 | 0 / 74 | 0.00% |
+| 5 | 0 / 74 | 0.00% |
+| 10 | 0 / 74 | 0.00% |
+| 30 | 1 / 74 | 1.35% |
+| 90 | 10 / 74 | 13.51% |
 
-**Original hypothesis.** A recovery probe restores a recorded simulator state into
-a second environment and re-runs it, so its verdict can stand in for what the
-uninterrupted episode would have done. Everything IPFD reports downstream, most of
-all the Point of No Return index, rests on that substitution.
+At a 5% disagreement tolerance, the observed empirical frontier is bracketed
+between the tested horizons of 30 and 90 steps. This means no decision
+disagreement was observed through horizon 10 in this sampled five-seed experiment,
+one was observed at horizon 30, and the descriptive rate exceeded 5% at horizon
+90. It does not mean snapshots were proven valid through 10 or 30 steps.
 
-**What falsified it.** In the tested Isaac Lab lift task, restored branches whose
-exposed state, immediate policy observation, and replayed action sequence all
-matched the uninterrupted reference still reached a *different* task decision. In
-the preserved three-seed cohort, all 120 restored branches matched the recorded
-observation immediately after restoration, and 13 of those 120 still reversed the
-terminal decision, 10 of them under identical recorded actions.
+At horizon 90, disagreement appeared in three of the five seed groups. The
+per-seed counts were 6/15, 3/15, 1/15, 0/14, and 0/15. That seed-level view is more
+informative about replication than the pooled 10/74 alone.
 
-**The corrected experiment.** A preregistered five-seed study
-([`CORRECTED_EXPERIMENT_PROTOCOL.md`](CORRECTED_EXPERIMENT_PROTOCOL.md)) fixed the
-confounds in the first cohort: duplicated branch points, mislabeled horizons, and
-unmatched disturbance schedules. It compared two declared restoration treatments
-([`SNAPSHOT_PROTOCOLS.md`](SNAPSHOT_PROTOCOLS.md)) as a positive control, Protocol A
-(`scene_plus_basic_manager_state`) against Protocol B (`expanded_runtime_state`,
-which additionally restores action-term buffers, articulation targets, manager and
-termination buffers, and disturbance-scheduler state). The registered rule was that
-Protocol B had to cut primary decision disagreement by at least 50 percent.
+### Restore protocol comparison
 
-**Key numerical result.** On the primary comparison (exact-action continuation,
-`sustained_lift` predicate, 444 paired records) disagreement fell from **18/444
-(4.05%) under Protocol A to 11/444 (2.48%) under Protocol B**, a **38.9 percent
-relative reduction, below the preregistered 50 percent threshold**. Four of five
-seed groups improved; the seed-cluster bootstrap 95% interval on the paired
-difference was [-2.48, -0.67] percentage points. Residual disagreement concentrated
-at long horizons (Protocol B: 0 of 296 primary records at horizons 1 through 10,
-10 of 74 at 90 steps) and in the gripper-open disturbance family (11 of 234); the
-object-teleport family reached 0 of 210.
+On the same primary stratum, each protocol contributed 444 rows across all six
+horizons:
 
-**Why research development stopped.** The stopping rule fired
-(`STOP_BRANCH_VALIDITY_DIRECTION`). Because the positive control missed its
-threshold, the held-out validity gate was **not eligible to run**, and no
-downstream robotics decision, PoNR, controller ranking, or checkpoint selection,
-was corrected. Both stages are recorded as `NOT_RUN_STOPPING_RULE` in
-[`validity_gate_results.json`](results/branch_validity/corrected_five_seed/validity_gate_results.json)
-and
-[`downstream_decision_results.json`](results/branch_validity/corrected_five_seed/downstream_decision_results.json).
-There is no result here worth building further research on.
+| Restore protocol | Disagreements | Rate | False recoverable | False unrecoverable |
+|---|---:|---:|---:|---:|
+| `scene_plus_basic_manager_state` | 18 / 444 | 4.05% | 0 | 18 |
+| `expanded_runtime_state` | 11 / 444 | 2.48% | 0 | 11 |
 
-**What remains technically useful.** A paired, hash-provenanced measurement
-harness for restored-branch decision fidelity in Isaac Lab; two explicitly
-documented snapshot protocols and the list of state each one does and does not
-restore; a small reproducible observation that exposed-state equality plus
-identical replayed actions does not imply decision equality in a contact-rich task
-([`ISAACLAB_ENGINEERING_NOTE.md`](ISAACLAB_ENGINEERING_NOTE.md)); and a fail-closed
-analysis layer that refuses to certify a validity envelope it cannot support.
+The relative reduction was 38.9%, below the preregistered 50% positive-control
+threshold. The archived study generator's 10,000-draw bootstrap resampled the
+five seed groups and recorded a paired mean difference of -1.57 percentage points
+with an empirical 95% seed-resampling interval of [-2.48, -0.67] percentage
+points. With only five independent groups, this is weak effect-size evidence, not
+a basis for a general validity claim. New audit artifacts identify their own
+bootstrap algorithm and random seed.
 
-**Reproduction entry points.**
+Observed disagreement rates varied across disturbance and continuation
+categories. Across all three predicates under the expanded protocol:
 
-```bash
-# CPU: re-derive the corrected-study strata, figure, and not-run gate records
-python3 scripts/analyze_snapshot_protocol_study.py \
-  --study-dir results/branch_validity/corrected_five_seed
+| Continuation | Disturbance | Disagreements | Error direction |
+|---|---|---:|---|
+| Exact action | `object_teleport` | 0 / 630 | none observed |
+| Exact action | `gripper_open_interruption` | 39 / 702 | 1 false recoverable, 38 false unrecoverable |
+| Closed-loop policy | `object_teleport` | 0 / 630 | none observed |
+| Closed-loop policy | `gripper_open_interruption` | 32 / 702 | 17 false recoverable, 15 false unrecoverable |
 
-# GPU: regenerate the five-seed study itself (see CORRECTED_EXPERIMENT_PROTOCOL.md)
-OMNI_KIT_ACCEPT_EULA=YES PYTHONPATH=src "$IPFD_ISAACLAB_ROOT/isaaclab.sh" -p \
-  scripts/run_snapshot_protocol_study.py --checkpoint "$IPFD_CHECKPOINT" \
-  --asset-root "$IPFD_ASSET_ROOT" --output-dir /tmp/ipfd-corrected-five-seed \
-  --isaac-lab-root "$IPFD_ISAACLAB_ROOT"
-```
+This identifies the gripper interruption as more restore-sensitive in this study.
+It does not isolate why. In particular, the data do not establish that unexposed
+contact-solver state caused the residual disagreement.
 
-**Limitations.** One task, one robot, one checkpoint, one simulator, one machine,
-five independent seed groups. Branch points, horizons, predicates, and
-continuations within a seed group are correlated, so five is the real sample size.
-Protocol B does not restore unexposed PhysX solver, contact-cache, or broadphase
-state, so it is a positive control for *omitted exposed* state only. Entry-USD
-hashes do not cover transitive asset dependencies. Nothing here generalizes to
-other tasks, simulators, policies, or robots, and nothing here was validated on
-hardware.
+The source artifacts and registered protocol are preserved under
+[`results/branch_validity/corrected_five_seed/`](results/branch_validity/corrected_five_seed/)
+and [`CORRECTED_EXPERIMENT_PROTOCOL.md`](CORRECTED_EXPERIMENT_PROTOCOL.md).
+An exact-content xz copy of the 10.2 MB per-branch JSONL is committed as
+[`results/fidelity/corrected_five_seed_decisions.jsonl.xz`](results/fidelity/corrected_five_seed_decisions.jsonl.xz).
+Its decoded SHA-256 matches the immutable source digest in the artifact manifest.
+The committed
+[`corrected_five_seed_primary_audit.json`](results/fidelity/corrected_five_seed_primary_audit.json)
+records the paired primary analysis, complete configuration, source identities,
+and implementation revision.
 
-The final claim this project supports, and nothing wider:
+## Why IPFD changed direction
 
-> In the tested Isaac Lab contact-rich manipulation setting, equality of exposed
-> restored state, immediate observations, and recorded future actions did not
-> guarantee equality of downstream task decisions. Restoring additional
-> articulation and manager state reduced, but did not eliminate, decision
-> disagreement.
+IPFD originally tried to locate a physical "Point of No Return" by restoring a
+saved state, running a recovery controller, and treating that branch verdict as a
+statement about the uninterrupted episode. That interpretation required restored
+branches to preserve the downstream decision they stood in for.
 
----
+The assumption failed. In the initial three-seed cohort, exposed restored state,
+the immediate policy observation, and replayed actions could match while the final
+task decision still changed. The corrected five-seed study removed known design
+confounds and still found 11 disagreements in 444 primary comparisons under the
+expanded restore protocol. The expanded protocol had fewer observed errors, but
+did not eliminate them or meet the preregistered improvement threshold.
 
-## What the tool actually does
+That result invalidated the old PoNR interpretation. It also exposed a broader
+engineering problem worth measuring: snapshot-based counterfactual workflows need
+an empirical account of how fidelity changes with horizon and operating
+conditions. IPFD now audits that account directly.
 
-A success rate tells you an episode failed. IPFD reports the step after which a
-tested recovery controller stopped succeeding from restored simulator branches,
-and whether any internal policy signal changed before the failure was externally
-visible. The archived result above bounds how far that index can be trusted: the
-restored branches it is computed from can reverse the decision they are standing
-in for.
+The negative result remains part of the repository record:
 
-Scope is one robot (Franka Emika Panda), one task (`Isaac-Lift-Cube-Franka-v0`,
-single-object lift in [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)), and one
-output (a per-rollout failure debug report). Detectors are deterministic NumPy. It is
-not a benchmark suite, an Isaac Sim extension, or an ML-based detector.
+- [`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md) explains the failed
+  assumption and stopping decision.
+- [`SNAPSHOT_PROTOCOLS.md`](SNAPSHOT_PROTOCOLS.md) inventories what each tested
+  protocol restores and omits.
+- [`CLAIM_AUDIT.md`](CLAIM_AUDIT.md) and
+  [`EVIDENCE_LEDGER.md`](EVIDENCE_LEDGER.md) separate supported claims from
+  rejected ones.
+- [`HISTORICAL_BASELINE.md`](HISTORICAL_BASELINE.md) preserves the original tool
+  and its evidence boundary.
 
-## Evidence status
+The historical PoNR, detector, replay, and report code is retained for provenance
+and regression coverage. Its PoNR values describe recovery outcomes on restored
+branches. They must not be read as physical irrecoverability in the uninterrupted
+episode.
 
-Read this before the feature list. The CPU analysis layer is stable and tested.
-The simulator-side recovery evidence was never revalidated to the release bar, and
-the branch-validity study above is why that work stopped rather than continued.
+## Two complementary audit paths
 
-| Area | Status | Backed by |
-|---|---|---|
-| Analysis layer (detectors, PoNR, metrics, report, plotting) | Stable. Pure NumPy, no simulator import. | 156 tests pass, 85% branch coverage, `ruff` and `mypy` clean, on Python 3.10, 3.11, 3.12 |
-| Frozen-fixture reports are byte-stable when regenerated from a recorded rollout | Stable, GPU-free. | `tests/test_replay_fixture.py`. `test_report_reproducible` checks that two in-process builds of one synthetic rollout agree, which is narrower than byte-stability across the Python matrix. |
-| IPFD attaches to a live Isaac Lab rollout (env, reset/step, obs structure, report) | Verified on one runtime. | [`scripts/verify_isaac_runtime.py`](scripts/verify_isaac_runtime.py) prints `IPFD_RUNTIME_SMOKE: overall PASS` |
-| Probe writes do not move env 0 at the reset boundary | Measured, narrowly. | Historical runs measured max env-0 pose delta of 0.00e+00 m across probe `reset_to` calls. This is a reset-boundary measurement. It does not claim env 0 is static while the vectorized simulator steps every cell. |
-| PoNR localizes an expected-PoNR disturbance on a trained policy | Historical fixture only. Classified `historical_fixture_only`; the release evidence gate is not satisfied. | The published fixture used a height-only recovery predicate that an airborne, out-of-reach object can satisfy, which is the teleport disturbance being injected. A conservative physical predicate now exists in the live path. Regenerated simulator evidence is required. See [docs/REVALIDATION.md](docs/REVALIDATION.md). |
-| An expected no-PoNR control yields no PoNR | Historical fixture only. | The old slip fixture contains a non-monotone probe verdict sequence, so repeated probes are required before a verdict flip counts as evidence. |
-| Imminence alarm localizes the fault | No. | On the trained policy tested, the alarm fires at the grasp transition, before the injected fault. Self-calibrated detectors are noisy across task phases. On a trained policy the usable signal is PoNR, not the alarm. |
-| Entropy-collapse detector | No signal on this checkpoint. | The published checkpoint uses a state-independent action std, so the entropy proxy is constant and the detector does not fire. The report shows it flat. |
-| The published NVIDIA Lift-Cube checkpoint is competent on the current local runtime | No. Measured 0.00% success. | `scripts/eval_checkpoint.py` over 64 environments reports `max_lift mean=0.000` and `SUCCESS_RATE 0.00%`, and recorded frames show the arm parked away from the cube. This blocks the learned-policy evidence bundle. See [docs/RELEASE_BLOCKERS.md](docs/RELEASE_BLOCKERS.md). |
-| The scripted-oracle recovery experiment still reproduces on the current runtime | Yes, as historical diagnostic data. | `scripts/verify_pnor_grasped.py` reproduced its recorded numbers exactly: PoNR 138 against an injected slip at step 127, 68 recoverable and 92 unrecoverable probe verdicts, peak lift 0.179 m. The script labels its own output `HISTORICAL_ONLY`, since it predates the repeated physical predicate and the evidence schema. |
-| A restored branch reaches the same task decision as the uninterrupted episode | **Falsified for the tested protocols.** This is the load-bearing assumption under every recovery verdict. | Three-seed cohort: 13/120 paired decision disagreements, 10/60 under identical recorded actions, with 120/120 immediate observation equality. Corrected five-seed study: 11/444 primary disagreements even under the expanded restoration protocol. See [`ARCHIVED_NEGATIVE_RESULT.md`](ARCHIVED_NEGATIVE_RESULT.md). |
-| Additional exposed-state restoration fixes it | No. Reduced disagreement, missed the preregistered bar. | 18/444 to 11/444, a 38.9% relative reduction against a registered 50% requirement. `results/branch_validity/corrected_five_seed/protocol_comparison.json`. |
+The new `ipfd fidelity` command analyzes compatible branch-comparison records and
+answers horizon, protocol, disturbance, phase, continuation, predicate, and error
+direction questions.
 
-Everything simulator-side above rests on one machine and one checkpoint. Treat it
-as a compatibility fingerprint, not a general result. Because restored-branch
-decision fidelity is negative for the tested protocols, treat every PoNR number in
-this repository as a controller-relative diagnostic over restored branches, not as
-a measurement of what the uninterrupted episode would have done.
+The existing simulator conformance path remains useful. `ipfd audit` evaluates
+declared contracts from restore equality through downstream decision agreement:
 
-> **Validated runtime fingerprint:** locally installed `isaaclab` **4.5.22** with
-> Isaac Sim **6.0.0.0**. The CPU analysis layer needs neither.
+- L0: measured equality immediately after restoration;
+- L1: one-step dynamics fidelity;
+- L2: identical-action finite-horizon trajectory fidelity;
+- L3: agreement of a user-declared downstream decision.
 
-## What the report contains
-
-Given one rollout, IPFD emits a Point of No Return index, the observable-failure
-time, the detector alarm time, the timing metrics below, and a stacked timeline plot.
-
-`build_report` computes that index from whatever `recovery_success` labels it is
-given. It does not verify who produced them: controller identity, budget, predicate,
-stride, and repeat count are optional metadata on `Rollout`. Provenance is enforced
-only by the release evidence gate, described below.
-
-The recording below is the failure IPFD is built to time. It is a live capture
-from `scripts/verify_pnor_grasped.py` on Isaac Lab 4.5.22, driven by the vendored
-scripted pick-lift oracle. The gripper is forced open once the cube is genuinely
-grasped and lifted (step 127), the cube falls, and the arm keeps executing its
-lift command afterward. In that run the recovery probe placed PoNR at step 138.
-
-![Recorded Franka lift with an injected gripper slip](examples/figures/rollout_slip.gif)
-
-Frames come from a Camera sensor in the scene. The headless viewport render
-product returns all-zero frames on this runtime, so nothing is captured through
-the viewport. This is the scripted oracle, not a learned policy, and the script
-labels its own output `HISTORICAL_ONLY`.
-
-![IPFD timeline on a trained policy](examples/figures/learned_teleport.png)
-
-This figure is a historical trained-policy artifact, retained as a deterministic
-analysis regression. Its alarm (orange) fires before the injected fault, and its
-recovery labels come from the height-only predicate now under revalidation. The
-title line ("SILENT FAILURE | seed=0") is an analysis verdict over the recorded
-arrays, not current proof of physical irrecoverability.
-
-## Point of No Return
-
-A physical optimal-control PoNR cannot be read off a passive log, and one
-controller's failure is not proof that a state was doomed. IPFD therefore measures
-a narrower, operational quantity against the recovery controller actually run:
-
-```
-recovery_success[t] == True  <=>  the supplied recovery controller, restarted from
-                                  the saved sim state at step t, satisfies the
-                                  supplied success predicate within a fixed budget.
-
-PoNR = the first step after which recovery never again succeeds.
-```
-
-Three properties follow, and they bound what the number means:
-
-1. It is **oracle-relative**. A stronger recovery controller can push the measured
-   step later, so when positive recovery verdicts are physically sound, the measured
-   step is a **lower bound** on the optimal-control PoNR step.
-2. A failed recovery attempt is **not** proof of physical irrecoverability.
-3. Strided probing resolves PoNR to an interval, not an exact step.
-
-Producing `recovery_success` requires a simulator that can save and restore state.
-Consuming it does not. That split is why the analysis layer runs in CI with no GPU.
-
-## Architecture
-
-![IPFD architecture](examples/figures/architecture.png)
-
-The recovery probe cannot run in the primary environment. In the validated runtime,
-exposed scene state round-tripped exactly while the continued trajectory diverged
-after evolved, contact-rich state. The experiment did not isolate which unexposed
-simulator or task state caused that divergence. A separate two-environment
-measurement showed `reset_to(..., env_ids=[1])` did not change env 0's object pose
-at the reset boundary. IPFD therefore uses environment isolation in a decoupled
-two-pass design:
-
-- **env 0 (primary)** is rolled out and recorded, and is never `reset_to`.
-- **env 1 (probe)** receives origin-shifted snapshots of the primary and runs the
-  recovery oracle for a fixed budget. Its verdicts become `recovery_success[t]`.
-
-The analysis layer (`detectors.py`, `ponr.py`, `metrics.py`, `report.py`, `viz.py`,
-`types.py`) is pure NumPy and Matplotlib and never imports a simulator.
-Simulator-facing code is confined to `adapters/isaac_lab.py` and `oracles/`, both
-lazily imported.
-
-To run IPFD on your own task, implement the recovery oracle. See
-[**Bring your own recovery oracle**](docs/ORACLE_CONTRACT.md) for the callable
-signatures, the exact meaning of `recovery_success[t]`, fixed-budget semantics, and
-a copy-adaptable example.
-
-## Quickstart: analysis layer (no GPU, no Isaac Lab)
+Run the asset-free MuJoCo reference audit:
 
 ```bash
-pip install -e ".[dev]"
-pytest
-python3 examples/run_synthetic.py   # writes plots and JSON to examples/figures/
-ipfd-demo                           # packaged offline demonstration
+python -m pip install -e '.[mujoco]'
+ipfd audit --config benchmarks/mujoco_free_space.yaml
 ```
 
-Given a recorded rollout archive, the same analysis runs as a single command with
-no simulator present:
+Run the preserved matrix of live MuJoCo cases and archived Isaac evidence:
+
+```bash
+ipfd audit --config benchmarks/audit_matrix.yaml
+```
+
+The matrix requires the immutable archived Isaac per-branch artifact named in its
+manifest. A clean clone without that external payload can run the live MuJoCo
+cases independently. Contract and adapter details are in
+[`REPLAY_FIDELITY_CONTRACT.md`](REPLAY_FIDELITY_CONTRACT.md),
+[`ADAPTER_CONTRACT.md`](ADAPTER_CONTRACT.md), and
+[`BENCHMARK_PROTOCOL.md`](BENCHMARK_PROTOCOL.md).
+
+The historical rollout analyzer remains available:
 
 ```bash
 ipfd analyze rollout.npz --report report.json --plot timeline.png
-ipfd analyze rollout.npz --disturbance-onset 56 --probe-stride 8
 ```
 
-The disturbance arguments produce the conservative causal-actionability
-classification described in [docs/CAUSAL_ACTIONABILITY.md](docs/CAUSAL_ACTIONABILITY.md),
-which asks whether an alarm followed a known disturbance and preceded the
-evidence-bounded PoNR, rather than crediting any early alarm.
+## Statistical discipline
 
-```python
-from ipfd import build_report, plot_timeline
-from ipfd.adapters.synthetic import make_silent_failure_rollout
+Branch-level rates are descriptive. Seed groups are the independent experimental
+unit in the corrected study because branch points, horizons, continuations, and
+predicates within a seed share simulator history and experimental conditions.
 
-rollout = make_silent_failure_rollout(seed=0)
-report  = build_report(rollout)
-print(report.summary())
-plot_timeline(rollout, report, "timeline.png")
-```
+IPFD therefore:
 
-If your shell has sourced ROS, run `env -u PYTHONPATH pytest` so ROS does not
-inject its `launch_testing` plugin into this project's test collection.
+- reports row counts and independent seed counts separately;
+- exposes per-seed disagreement rates;
+- resamples whole seeds, not individual rows, for cluster bootstrap summaries;
+- does not present comparison-level binomial intervals as independent-trial
+  uncertainty;
+- marks small-seed results as limited evidence;
+- treats an all-zero sample as "no disagreement observed," never as proof of zero
+  error;
+- refuses unseen strata and horizons outside the measured range;
+- rejects curves whose branch support changes across the queried horizons;
+- labels non-monotonic curves instead of forcing a frontier.
 
-## GPU validation driver (with Isaac Lab)
+A bootstrap interval such as [0, 0] from five all-zero seeds only reproduces the
+absence of observed errors in those five clusters. It cannot describe failure
+modes that were not sampled.
 
-Prerequisites: a compatible Isaac Lab runtime, a CUDA GPU, and an Isaac Lab Python
-environment. The only locally validated fingerprint is the one above. The first
-learned-policy run downloads NVIDIA's published Lift-Cube checkpoint, so it can
-take several minutes.
+## Reproduce the corrected evidence
 
-Run the compatibility preflight first:
+Run the new seed-aware audit from a clean clone:
 
 ```bash
-OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless
+ipfd fidelity \
+  results/fidelity/corrected_five_seed_decisions.jsonl.xz \
+  --continuation exact_action \
+  --predicate sustained_lift \
+  --group-by protocol,continuation \
+  --compare-protocols scene_plus_basic_manager_state,expanded_runtime_state \
+  --minimum-independent-seeds 5 \
+  --max-disagreement 0.05 \
+  --provenance results/branch_validity/corrected_five_seed/study_provenance.json
 ```
 
-If your installation resolves assets from a different channel, point both commands
-at the tested Isaac 4.5 production tree:
+The historical analysis script still reproduces the archived stopping-rule
+outputs when the uncompressed working artifact is present:
 
 ```bash
-ASSET_ROOT=https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5
-OMNI_KIT_ACCEPT_EULA=YES python3 scripts/verify_isaac_runtime.py --headless --asset_root "$ASSET_ROOT"
+python3 scripts/analyze_snapshot_protocol_study.py \
+  --study-dir results/branch_validity/corrected_five_seed
 ```
 
-The learned-policy driver rolls the checkpoint through the packaged
-`collect_rollout`, injects a disturbance, runs the env-isolated recovery probe, and
-writes the timeline figure and a machine-readable evidence record. The teleport case
-is the expected-PoNR run:
+Regenerating the simulator study requires the declared Isaac Lab runtime, assets,
+checkpoint, and a CUDA-capable machine:
 
 ```bash
-OMNI_KIT_ACCEPT_EULA=YES \
-  python3 scripts/verify_learned_policy.py --headless --use_pretrained \
-         --probe --failure teleport --save_plot artifacts/timeline.png \
-         --save_rollout artifacts/rollout.npz \
-         --json artifacts/recovery-run.json \
-         --asset_root "$ASSET_ROOT"
+OMNI_KIT_ACCEPT_EULA=YES PYTHONPATH=src "$IPFD_ISAACLAB_ROOT/isaaclab.sh" -p \
+  scripts/run_snapshot_protocol_study.py \
+  --checkpoint "$IPFD_CHECKPOINT" \
+  --asset-root "$IPFD_ASSET_ROOT" \
+  --output-dir /tmp/ipfd-corrected-five-seed \
+  --isaac-lab-root "$IPFD_ISAACLAB_ROOT"
 ```
 
-Swap `--failure slip` for the expected no-PoNR control. If the policy never
-reaches the lift precondition, the command exits non-zero with
-`fault_injection_triggered: NO`, which is a runtime or checkpoint compatibility
-problem, not a result.
+See [`CORRECTED_EXPERIMENT_PROTOCOL.md`](CORRECTED_EXPERIMENT_PROTOCOL.md) before
+running or modifying the experiment. A new run is new evidence and must not
+overwrite the archived artifacts.
 
-A single run is not evidence. The historical fixture reported PoNR at step 56, but
-that value used the retracted height-only predicate and is not a current expected
-result. A learned-policy headline would be promoted only if the release evidence gate
-accepted a complete bundle: a competence artifact, both failure modes across at
-least five seeds, and real actionability cases. The thresholds and the exact
-commands are in [docs/EVIDENCE_GATE.md](docs/EVIDENCE_GATE.md). That bundle was
-never produced, the gate never passed, and with the project archived it is not
-scheduled to be.
+## Scientific limits
 
-The legacy `scripts/verify_pnor_*.py` chain records historical diagnostic
-experiments and cannot satisfy the current gate. See
-[`scripts/README.md`](scripts/README.md) for the index.
+The corrected Isaac evidence covers one task, one robot, one learned checkpoint,
+one simulator/runtime fingerprint, two incomplete restoration protocols, two
+disturbances, and five independent seed groups on one machine. It has no hardware
+validation.
 
-## Metrics
+An empirical fidelity envelope is conditional on all of those choices. It is not:
 
-| Metric | Question it answers |
-|---|---|
-| `time_to_failure` | When did failure become externally observable? |
-| `failure_lead_time` | How early did the alarm fire relative to visible failure? |
-| `ponr_lead_time` | Did the alarm precede the point of no return? (positive means alarm first) |
-| `false_continuity_rate` | What fraction of the doomed window did the detector stay quiet? |
-| `drift_magnitude_at_collapse` | How much had the representation drifted at PoNR? |
+- a simulator-wide snapshot certificate;
+- a causal effect estimate;
+- evidence of sim-to-real transfer;
+- proof of recovery, irrecoverability, or a physical Point of No Return;
+- a formal safety result;
+- a guarantee for untested policies, tasks, phases, disturbances, or horizons.
 
-## Reproducibility
+The strongest supported conclusion is narrower:
 
-Fixed seeds make the synthetic rollouts deterministic, and reports regenerated from
-the frozen recorded fixtures are byte-identical (`tests/test_replay_fixture.py`).
-CI runs lint, type checks, branch coverage, source
-builds, and installed-package smoke tests on Python 3.10, 3.11, and 3.12 with no
-GPU. Live runs write auditable competence and recovery artifacts. The boundary
-between what the published package reproduces and what only a live simulator can
-establish is stated in
-[`docs/GPU_REPRODUCIBILITY.md`](docs/GPU_REPRODUCIBILITY.md).
+> In the tested Isaac Lab contact-rich manipulation setting, equality of exposed
+> restored state, immediate observations, and recorded future actions did not
+> guarantee equality of downstream task decisions. Observed disagreement varied
+> across horizon, restoration protocol, disturbance, and continuation categories
+> in the sampled five-seed experiment.
 
-## Compatibility reports
+## Development
 
-The simulator results come from one setup. The repository is archived and no
-longer solicits work, but the [validation checklist](docs/VALIDATION.md) still
-runs and still emits a deterministic, copy-pasteable evidence block if you want to
-check the CPU path or the GPU driver against your own runtime.
+```bash
+pytest
+ruff check .
+mypy src/ipfd
+```
 
-[ROADMAP.md](ROADMAP.md) records the direction that was planned and why it was
-dropped. It is a historical document, not a plan.
+If the shell has sourced ROS, use `env -u PYTHONPATH pytest` to prevent ROS from
+injecting its `launch_testing` plugin into test collection.
 
 ## License
 

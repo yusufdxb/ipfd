@@ -1,0 +1,66 @@
+schema_version: 1
+adapter:
+  kind: isaac_lab_archive
+  simulator: Isaac Lab
+  records_path: ../results/branch_validity/corrected_five_seed/per_branch_records.jsonl
+  expected_sha256: 1c55862ce4a24bf564396c8d86873b13fc1667e491aada27bfff6c8d2166ce8f
+  archival_commit: 7611cf6c5cdde29009265121b833547eb085c9ca
+  source_mode: read_only_immutable_evidence
+simulator_version: "4.5.22"
+environment: Isaac-Lift-Cube-Franka-v0
+task: Isaac-Lift-Cube-Franka-v0
+snapshot_protocol: expanded_runtime_state
+branch_states:
+  - id: archive-seed-101
+    step: 0
+    seed: 101
+    cluster: seed-101
+  - id: archive-seed-211
+    step: 0
+    seed: 211
+    cluster: seed-211
+  - id: archive-seed-307
+    step: 0
+    seed: 307
+    cluster: seed-307
+  - id: archive-seed-401
+    step: 0
+    seed: 401
+    cluster: seed-401
+  - id: archive-seed-503
+    step: 0
+    seed: 503
+    cluster: seed-503
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: exact_action
+action_source: archived_identical_recorded_actions
+decision_functions:
+  - sustained_lift
+tolerances:
+  default: {absolute: 1.0e-5, relative: 1.0e-5}
+  scene_state: {absolute: 1.0e-5, relative: 1.0e-5}
+  policy_observations: {absolute: 1.0e-6, relative: 1.0e-5}
+  privileged_observations: {absolute: 1.0e-6, relative: 1.0e-5}
+  task_state: {absolute: 1.0e-5, relative: 1.0e-5}
+  controller_targets: {absolute: 1.0e-6, relative: 1.0e-5}
+  sensor_state: {absolute: 1.0e-3, relative: 1.0e-4}
+  counters: {absolute: 0.0, relative: 0.0}
+  contact_state: {absolute: 1.0e-3, relative: 1.0e-4}
+  task_outputs: {absolute: 1.0e-5, relative: 1.0e-5}
+  termination: {absolute: 0.0, relative: 0.0}
+  reward: {absolute: 1.0e-5, relative: 1.0e-5}
+independent_cluster_key: base_seed
+minimum_independent_clusters: 5
+output_directory: ../results/v2/isaac_lab_archived
+reduction:
+  enabled: true
+  max_trials: 100
+  branch_steps: []
+  mode: preserved_record_selection
+  read_only_archive: true
+  reduce_horizon_and_action_prefix: false
+  reduce_active_entities: false
+  reduce_branch_timing: false
+  reduce_disturbance_schedule: false
+  reduce_decision_predicate: false
+  reduce_snapshot_components: false

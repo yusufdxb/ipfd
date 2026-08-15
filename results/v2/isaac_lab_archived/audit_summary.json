@@ -1,0 +1,546 @@
+{
+  "artifacts": {
+    "REPORT.md": {
+      "bytes": 1367,
+      "sha256": "c251a135ecc0c6c3440422260fe02cd039e087fe4a1321353cf7e1e9670192c5"
+    },
+    "divergence.svg": {
+      "bytes": 1026,
+      "sha256": "e2a27aa9299b6dcd7e213b918e0d6d567d46d23edd59aa8a751e3dc2b31b5666"
+    },
+    "fidelity_contract.json": {
+      "bytes": 2342,
+      "sha256": "429540beccb8f911c2a54ddf64dc85302c838601881fbb9b36c58700a3aeb37b"
+    },
+    "minimal_reproducer.json": {
+      "bytes": 9948,
+      "sha256": "b2df10797fe8b78b19c254cc05a6815a7fadcf9ba4fddee751cfe0331c0bfb1b"
+    },
+    "per_branch_records.jsonl": {
+      "bytes": 2029886,
+      "sha256": "0a01236a9e38e17b0e6419cdccd0e1ecd522227f86af174ee002b6ce51441c58"
+    },
+    "provenance.json": {
+      "bytes": 1515,
+      "sha256": "7f1d2d7a6c7e69b78eeb7c819411aa9be6518b8af0fd4aca235e6acb1b8769e3"
+    }
+  },
+  "branch_record_count": 370,
+  "configuration_count": 5,
+  "configurations": [
+    {
+      "comparison_key": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "horizon": 1,
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      },
+      "independent_clusters": [
+        "101",
+        "211",
+        "307",
+        "401",
+        "503"
+      ],
+      "levels": {
+        "L0": {
+          "passed": false
+        },
+        "L1": {
+          "passed": null
+        },
+        "L2": {
+          "first_numerical_divergence": 1,
+          "maximum_state_error": 15.346473693847656,
+          "passed": false
+        },
+        "L3": {
+          "comparisons": 74,
+          "decision_disagreement": false,
+          "disagreements": 0,
+          "passed": true
+        }
+      },
+      "minimum_independent_clusters": 5,
+      "result": "UNSUPPORTED",
+      "scope": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "evidence_mode": "immutable_archived_pairs",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "base_seed",
+        "simulator": "Isaac Lab",
+        "simulator_version": "4.5.22",
+        "snapshot_protocol": "expanded_runtime_state",
+        "task": "Isaac-Lift-Cube-Franka-v0",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "controller_targets": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "policy_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "privileged_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "reward": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "scene_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "sensor_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "task_outputs": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "task_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      }
+    },
+    {
+      "comparison_key": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "horizon": 5,
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      },
+      "independent_clusters": [
+        "101",
+        "211",
+        "307",
+        "401",
+        "503"
+      ],
+      "levels": {
+        "L0": {
+          "passed": false
+        },
+        "L1": {
+          "passed": null
+        },
+        "L2": {
+          "first_numerical_divergence": 1,
+          "maximum_state_error": 23.504467010498047,
+          "passed": false
+        },
+        "L3": {
+          "comparisons": 74,
+          "decision_disagreement": false,
+          "disagreements": 0,
+          "passed": true
+        }
+      },
+      "minimum_independent_clusters": 5,
+      "result": "UNSUPPORTED",
+      "scope": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "evidence_mode": "immutable_archived_pairs",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "base_seed",
+        "simulator": "Isaac Lab",
+        "simulator_version": "4.5.22",
+        "snapshot_protocol": "expanded_runtime_state",
+        "task": "Isaac-Lift-Cube-Franka-v0",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "controller_targets": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "policy_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "privileged_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "reward": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "scene_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "sensor_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "task_outputs": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "task_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      }
+    },
+    {
+      "comparison_key": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "horizon": 10,
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      },
+      "independent_clusters": [
+        "101",
+        "211",
+        "307",
+        "401",
+        "503"
+      ],
+      "levels": {
+        "L0": {
+          "passed": false
+        },
+        "L1": {
+          "passed": null
+        },
+        "L2": {
+          "first_numerical_divergence": 1,
+          "maximum_state_error": 23.504467010498047,
+          "passed": false
+        },
+        "L3": {
+          "comparisons": 74,
+          "decision_disagreement": false,
+          "disagreements": 0,
+          "passed": true
+        }
+      },
+      "minimum_independent_clusters": 5,
+      "result": "UNSUPPORTED",
+      "scope": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "evidence_mode": "immutable_archived_pairs",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "base_seed",
+        "simulator": "Isaac Lab",
+        "simulator_version": "4.5.22",
+        "snapshot_protocol": "expanded_runtime_state",
+        "task": "Isaac-Lift-Cube-Franka-v0",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "controller_targets": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "policy_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "privileged_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "reward": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "scene_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "sensor_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "task_outputs": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "task_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      }
+    },
+    {
+      "comparison_key": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "horizon": 30,
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      },
+      "independent_clusters": [
+        "101",
+        "211",
+        "307",
+        "401",
+        "503"
+      ],
+      "levels": {
+        "L0": {
+          "passed": false
+        },
+        "L1": {
+          "passed": null
+        },
+        "L2": {
+          "first_numerical_divergence": 1,
+          "maximum_state_error": 41.14010238647461,
+          "passed": false
+        },
+        "L3": {
+          "comparisons": 74,
+          "decision_disagreement": true,
+          "disagreements": 1,
+          "passed": false
+        }
+      },
+      "minimum_independent_clusters": 5,
+      "result": "UNSUPPORTED",
+      "scope": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "evidence_mode": "immutable_archived_pairs",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "base_seed",
+        "simulator": "Isaac Lab",
+        "simulator_version": "4.5.22",
+        "snapshot_protocol": "expanded_runtime_state",
+        "task": "Isaac-Lift-Cube-Franka-v0",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "controller_targets": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "policy_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "privileged_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "reward": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "scene_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "sensor_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "task_outputs": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "task_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      }
+    },
+    {
+      "comparison_key": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "horizon": 90,
+        "task": "Isaac-Lift-Cube-Franka-v0"
+      },
+      "independent_clusters": [
+        "101",
+        "211",
+        "307",
+        "401",
+        "503"
+      ],
+      "levels": {
+        "L0": {
+          "passed": false
+        },
+        "L1": {
+          "passed": null
+        },
+        "L2": {
+          "first_numerical_divergence": 1,
+          "maximum_state_error": 111.42945861816406,
+          "passed": false
+        },
+        "L3": {
+          "comparisons": 74,
+          "decision_disagreement": true,
+          "disagreements": 10,
+          "passed": false
+        }
+      },
+      "minimum_independent_clusters": 5,
+      "result": "UNSUPPORTED",
+      "scope": {
+        "action_source": "archived_identical_recorded_actions",
+        "continuation_mode": "exact_action",
+        "decision_function": "sustained_lift",
+        "environment": "Isaac-Lift-Cube-Franka-v0",
+        "evidence_mode": "immutable_archived_pairs",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "base_seed",
+        "simulator": "Isaac Lab",
+        "simulator_version": "4.5.22",
+        "snapshot_protocol": "expanded_runtime_state",
+        "task": "Isaac-Lift-Cube-Franka-v0",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "controller_targets": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "policy_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "privileged_observations": {
+            "absolute": 1e-06,
+            "relative": 1e-05
+          },
+          "reward": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "scene_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "sensor_state": {
+            "absolute": 0.001,
+            "relative": 0.0001
+          },
+          "task_outputs": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "task_state": {
+            "absolute": 1e-05,
+            "relative": 1e-05
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "failure_reproducer_produced": true,
+  "interpretation": "Scoped empirical support only. This is not a universal simulator verdict.",
+  "overall_result": "UNSUPPORTED",
+  "schema_version": 1
+}

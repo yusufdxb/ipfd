@@ -1,7 +1,8 @@
-"""IPFD: Isaac Policy Failure Debugger.
+"""IPFD: counterfactual fidelity auditing for robot simulation.
 
-Localize the oracle-relative transition after which a tested recovery controller
-no longer succeeds, and compare it with detector and visible-failure timing.
+Audit which numerical trajectories and downstream decisions a declared simulator
+snapshot-and-restore protocol supports. The v1 rollout-analysis imports remain
+available for historical artifact compatibility, but they are not the v2 mission.
 
 The public surface is intentionally small:
 
@@ -27,9 +28,16 @@ from .ponr import (
 from .replay import load_rollout, save_rollout
 from .report import AnalysisConfig, FailureDebugReport, build_report
 from .types import Rollout
-from .viz import plot_timeline
 
-__version__ = "1.1.0.dev0"
+__version__ = "2.0.0.dev0"
+
+
+def plot_timeline(rollout: Rollout, report: FailureDebugReport, path: str) -> str:
+    """Lazily render a legacy rollout timeline without loading Matplotlib on import."""
+
+    from .viz import plot_timeline as render_timeline
+
+    return render_timeline(rollout, report, path)
 
 __all__ = [
     "Rollout",

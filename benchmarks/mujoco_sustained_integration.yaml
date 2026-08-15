@@ -1,0 +1,64 @@
+schema_version: 1
+adapter:
+  kind: mujoco
+  simulator: MuJoCo
+  regime: sustained_contact
+  timestep: 0.002
+  frame_skip: 5
+  contact_window: 20
+  position_bound: 3.0
+  stable_velocity: 0.02
+  initial_position_jitter: 0.003
+simulator_version: "3.5.0"
+environment: ipfd_mujoco_sustained_contact_v1
+task: block_on_plane_sustained_push
+snapshot_protocol: integration_with_warmstart
+branch_states:
+  - id: sustained-seed-101-step-150
+    step: 150
+    seed: 101
+    cluster: seed-101
+  - id: sustained-seed-211-step-150
+    step: 150
+    seed: 211
+    cluster: seed-211
+  - id: sustained-seed-307-step-150
+    step: 150
+    seed: 307
+    cluster: seed-307
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: restored
+action_source: deterministic
+decision_functions:
+  - within_bounds
+  - collision
+  - sustained_contact
+  - stable_contact
+tolerances:
+  default: {absolute: 0.0, relative: 0.0}
+  scene_state: {absolute: 0.0, relative: 0.0}
+  policy_observations: {absolute: 0.0, relative: 0.0}
+  privileged_observations: {absolute: 0.0, relative: 0.0}
+  task_state: {absolute: 0.0, relative: 0.0}
+  controller_targets: {absolute: 0.0, relative: 0.0}
+  sensor_state: {absolute: 0.0, relative: 0.0}
+  counters: {absolute: 0.0, relative: 0.0}
+  contact_state: {absolute: 0.0, relative: 0.0}
+  task_outputs: {absolute: 0.0, relative: 0.0}
+  termination: {absolute: 0.0, relative: 0.0}
+  reward: {absolute: 0.0, relative: 0.0}
+independent_cluster_key: seed
+minimum_independent_clusters: 3
+output_directory: ../results/v2/mujoco_sustained_integration
+reduction:
+  enabled: true
+  max_trials: 120
+  branch_steps: [0, 25, 50, 100, 125]
+  reduce_horizon_and_action_prefix: true
+  reduce_active_entities: true
+  reduce_branch_timing: true
+  reduce_disturbance_schedule: true
+  reduce_decision_predicate: true
+  reduce_snapshot_components: true
+regression:
+  baseline_summary: ../results/v2/mujoco_sustained_minimal/audit_summary.json

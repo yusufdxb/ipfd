@@ -287,11 +287,13 @@ class PhysicalRecoveryCheck:
     def _tensor(value: Any) -> Any:
         if hasattr(value, "detach"):
             return value.detach()
+        if isinstance(value, np.ndarray):
+            return value
         try:
             import warp as wp
 
             return wp.to_torch(value).detach()
-        except (ImportError, RuntimeError, TypeError):
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError):
             return np.asarray(value)
 
     @staticmethod
