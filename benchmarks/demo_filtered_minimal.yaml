@@ -1,0 +1,54 @@
+schema_version: 1
+adapter:
+  kind: mujoco
+  simulator: MuJoCo
+  regime: filtered_contact
+  timestep: 0.002
+  frame_skip: 1
+  activation_preload_steps: 100
+  post_preload_control: 0.55
+  position_bound: 0.1
+  initial_position_jitter: 0.003
+  minimal_capture_actuator_activation: false
+simulator_version: runtime
+environment: ipfd_mujoco_filtered_contact_v1
+task: filtered_actuator_floor_contact
+snapshot_protocol: minimal_visible
+branch_states:
+  - {id: filtered-seed-101-step-100, step: 100, seed: 101, cluster: seed-101}
+  - {id: filtered-seed-211-step-100, step: 100, seed: 211, cluster: seed-211}
+  - {id: filtered-seed-307-step-100, step: 100, seed: 307, cluster: seed-307}
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: exact_action
+action_source: deterministic
+decision_functions: [remains_in_contact]
+tolerances:
+  default: {absolute: 0.0, relative: 0.0}
+  scene_state:
+    absolute: 0.0
+    relative: 0.0
+    fields:
+      qpos: {absolute: 1.5e-4, relative: 0.0, unit: m}
+      qvel: {absolute: 1.0e-2, relative: 0.0, unit: m/s}
+      mover_position: {absolute: 1.5e-4, relative: 0.0, unit: m}
+  policy_observations: {absolute: 0.01, relative: 0.0}
+  privileged_observations: {absolute: 0.0, relative: 0.0}
+  task_state: {absolute: 0.0, relative: 0.0}
+  controller_targets: {absolute: 0.0, relative: 0.0}
+  sensor_state: {absolute: 0.01, relative: 0.0}
+  counters: {absolute: 0.0, relative: 0.0}
+  # Sub-millimeter penetration differences are acceptable while the contact
+  # event itself remains identical; active/count disagreement still fails.
+  contact_state: {absolute: 0.001, relative: 0.0}
+  task_outputs:
+    absolute: 0.0
+    relative: 0.0
+    fields:
+      forward_progress: {absolute: 1.5e-4, relative: 0.0, unit: m}
+      speed: {absolute: 1.0e-2, relative: 0.0, unit: m/s}
+  termination: {absolute: 0.0, relative: 0.0}
+  reward: {absolute: 0.01, relative: 0.0}
+independent_cluster_key: seed
+minimum_independent_clusters: 3
+output_directory: ../results/demo/filtered_minimal
+reduction: {enabled: false}

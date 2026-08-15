@@ -9,6 +9,8 @@ installed.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Mapping, Sequence
 from importlib import metadata
 from typing import Any
@@ -101,7 +103,31 @@ _SUSTAINED_CONTACT_XML = """
 """
 
 
+_FILTERED_CONTACT_XML = """
+<mujoco model="ipfd_filtered_contact">
+  <option timestep="0.002" iterations="8"/>
+  <worldbody>
+    <geom name="floor" type="plane" size="1 1 0.1"/>
+    <body name="mover" pos="0 0 0.05">
+      <joint name="travel" type="slide" axis="0 0 1" damping="0.05"/>
+      <geom name="probe" type="sphere" size="0.05" mass="0.1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <general name="drive" joint="travel" dyntype="filterexact"
+             dynprm="0.05" gainprm="2.0"
+             ctrllimited="true" ctrlrange="-1 1"/>
+  </actuator>
+  <sensor>
+    <jointpos name="travel_position" joint="travel"/>
+    <jointvel name="travel_velocity" joint="travel"/>
+  </sensor>
+</mujoco>
+"""
+
+
 _REGIME_XML = {
+    "filtered_contact": _FILTERED_CONTACT_XML,
     "free_space": _FREE_SPACE_XML,
     "intermittent_contact": _INTERMITTENT_CONTACT_XML,
     "sustained_contact": _SUSTAINED_CONTACT_XML,
@@ -119,6 +145,7 @@ _SUPPORTED_DECISIONS = {
     "sustained_contact",
     "stable_contact",
     "forward_progress",
+    "remains_in_contact",
 }
 
 
@@ -144,8 +171,9 @@ class MuJoCoReplayAdapter:
 
     Args:
         settings: Adapter settings. ``regime`` selects ``free_space``,
-            ``intermittent_contact``, or ``sustained_contact``. All models are
-            embedded MJCF and require no external assets.
+            ``filtered_contact``, ``intermittent_contact``, or
+            ``sustained_contact``. All models are embedded MJCF and require no
+            external assets.
         snapshot_protocol: One of ``minimal_visible``, ``full_physics``, or
             ``integration_with_warmstart``.
         continuation_mode: ``restored`` preserves warm-start values when the
@@ -184,13 +212,24 @@ class MuJoCoReplayAdapter:
         self.snapshot_protocol = snapshot_protocol
         self.continuation_mode = continuation_mode
         self._continuation_behavior = _canonical_continuation_mode(continuation_mode)
+        capture_activation = self.settings.get("minimal_capture_actuator_activation", True)
+        if not isinstance(capture_activation, bool):
+            raise TypeError("settings.minimal_capture_actuator_activation must be a boolean")
+        self._minimal_capture_activation = capture_activation
         self._model = _mujoco.MjModel.from_xml_string(_REGIME_XML[regime])
+        self._model_xml_sha256 = hashlib.sha256(
+            _REGIME_XML[regime].encode("utf-8")
+        ).hexdigest()
         timestep = float(self.settings.get("timestep", self._model.opt.timestep))
         if not np.isfinite(timestep) or timestep <= 0.0:
             raise ValueError("settings.timestep must be finite and positive")
         self._model.opt.timestep = timestep
         self._frame_skip = self._positive_int("frame_skip", default=1)
         self._contact_window = self._positive_int("contact_window", default=20)
+        self._activation_preload_steps = self._positive_int("activation_preload_steps", default=100)
+        self._post_preload_control = float(self.settings.get("post_preload_control", 0.55))
+        if not np.isfinite(self._post_preload_control) or abs(self._post_preload_control) > 1.0:
+            raise ValueError("settings.post_preload_control must be finite and within [-1, 1]")
         self._bounds = float(self.settings.get("position_bound", 2.0 if regime != "sustained_contact" else 1.0))
         self._progress_threshold = float(self.settings.get("progress_threshold", 1.0e-6))
         self._stable_velocity = float(self.settings.get("stable_velocity", 1.0e-3))
@@ -210,7 +249,44 @@ class MuJoCoReplayAdapter:
         self._seed = 0
         self._closed = False
         self._mover_body_id = int(self._model.body("mover").id)
+        self._model_configuration = self._effective_model_configuration()
+        self._model_configuration_sha256 = hashlib.sha256(
+            json.dumps(
+                self._model_configuration,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
         self.reset(seed=0)
+
+    def _effective_model_configuration(self) -> dict[str, Any]:
+        assert _mujoco is not None
+        option = self._model.opt
+        return {
+            "mjcf_sha256": self._model_xml_sha256,
+            "mujoco_version": _mujoco.mj_versionString(),
+            "timestep": float(option.timestep),
+            "integrator": int(option.integrator),
+            "solver": int(option.solver),
+            "iterations": int(option.iterations),
+            "ls_iterations": int(option.ls_iterations),
+            "tolerance": float(option.tolerance),
+            "ls_tolerance": float(option.ls_tolerance),
+            "gravity": np.asarray(option.gravity, dtype=np.float64).tolist(),
+            "cone": int(option.cone),
+            "jacobian": int(option.jacobian),
+            "disableflags": int(option.disableflags),
+            "enableflags": int(option.enableflags),
+            "frame_skip": self._frame_skip,
+            "dimensions": {
+                "nq": int(self._model.nq),
+                "nv": int(self._model.nv),
+                "na": int(self._model.na),
+                "nu": int(self._model.nu),
+                "nsensordata": int(self._model.nsensordata),
+                "nhistory": int(self._model.nhistory),
+            },
+        }
 
     def _positive_int(self, name: str, *, default: int) -> int:
         value = self.settings.get(name, default)
@@ -240,13 +316,16 @@ class MuJoCoReplayAdapter:
 
     def _signature(self) -> int:
         if self.snapshot_protocol == "minimal_visible":
-            return (
+            signature = (
                 _enum_value("mjSTATE_TIME")
                 | _enum_value("mjSTATE_QPOS")
                 | _enum_value("mjSTATE_QVEL")
-                | _enum_value("mjSTATE_ACT")
+                | _enum_value("mjSTATE_CTRL")
                 | _enum_value("mjSTATE_HISTORY")
             )
+            if self._minimal_capture_activation:
+                signature |= _enum_value("mjSTATE_ACT")
+            return signature
         if self.snapshot_protocol == "full_physics":
             return _enum_value("mjSTATE_FULLPHYSICS")
         return _enum_value("mjSTATE_INTEGRATION")
@@ -356,6 +435,8 @@ class MuJoCoReplayAdapter:
                 "component_sizes": self._component_sizes(),
                 "environment": self.regime,
                 "continuation_behavior": self._continuation_behavior,
+                "model_xml_sha256": self._model_xml_sha256,
+                "model_configuration_sha256": self._model_configuration_sha256,
             },
         )
 
@@ -368,6 +449,15 @@ class MuJoCoReplayAdapter:
             )
         if snapshot.metadata.get("environment") != self.regime:
             raise ValueError("snapshot environment does not match this MuJoCo adapter")
+        if snapshot.metadata.get("model_xml_sha256") != self._model_xml_sha256:
+            raise ValueError("snapshot MuJoCo model digest does not match this adapter")
+        if (
+            snapshot.metadata.get("model_configuration_sha256")
+            != self._model_configuration_sha256
+        ):
+            raise ValueError(
+                "snapshot MuJoCo integration configuration does not match this adapter"
+            )
         signature = snapshot.metadata.get("state_signature")
         if isinstance(signature, bool) or not isinstance(signature, (int, np.integer)):
             raise ValueError("snapshot metadata has no valid state_signature")
@@ -440,19 +530,43 @@ class MuJoCoReplayAdapter:
         contacts = [self._contact_measurements(self._data[item]) for item in ids]
         within_bounds = np.max(np.abs(qpos), axis=1) <= self._bounds
         policy_vector = np.concatenate((qpos, qvel, sensors), axis=1)
+        scene_state = {
+            "qpos": qpos,
+            "qvel": qvel,
+            "mover_position": body_position,
+        }
+        privileged_observations = {
+            "qacc": qacc,
+            "constraint_force": constraint_force,
+            "actuator_force": actuator_force,
+        }
+        unavailable = [
+            "external_policy_observation_history",
+            "external_task_manager_state",
+            "contact_solver_cache",
+        ]
+        activation_unavailable = (
+            self.snapshot_protocol == "minimal_visible"
+            and not self._minimal_capture_activation
+            and self._model.na > 0
+        )
+        if activation_unavailable:
+            # This intentionally narrow contract models the common qpos/qvel
+            # snapshot. Activation-dependent accelerations and forces are not
+            # restore-boundary claims when their causal state is omitted.
+            unavailable.extend(
+                (
+                    "actuator_activation_state",
+                    "activation_dependent_acceleration_and_force",
+                )
+            )
+            privileged_observations = {}
+        else:
+            scene_state["act"] = act
         return ObservationRecord(
-            scene_state={
-                "qpos": qpos,
-                "qvel": qvel,
-                "act": act,
-                "mover_position": body_position,
-            },
+            scene_state=scene_state,
             policy_observations={"state": policy_vector},
-            privileged_observations={
-                "qacc": qacc,
-                "constraint_force": constraint_force,
-                "actuator_force": actuator_force,
-            },
+            privileged_observations=privileged_observations,
             task_state={
                 "within_bounds": within_bounds,
                 "contact_active": np.asarray([item[0] for item in contacts], dtype=bool),
@@ -465,16 +579,15 @@ class MuJoCoReplayAdapter:
                 "simulation_time": np.asarray([self._data[item].time for item in ids], dtype=np.float64),
                 "control_steps": self._step_counts[np.asarray(ids, dtype=int)].copy(),
             },
-            unavailable=(
-                "external_policy_observation_history",
-                "external_task_manager_state",
-                "contact_solver_cache",
-            ),
+            unavailable=tuple(unavailable),
         )
 
     def _default_action(self, step: int) -> np.ndarray:
         if self.regime == "free_space":
             return np.asarray([0.25], dtype=np.float64)
+        if self.regime == "filtered_contact":
+            value = -1.0 if step < self._activation_preload_steps else self._post_preload_control
+            return np.asarray([value], dtype=np.float64)
         if self.regime == "intermittent_contact":
             push_steps = self._positive_int("contact_push_steps", default=40)
             return np.asarray([1.0 if step < push_steps else -1.0], dtype=np.float64)
@@ -575,6 +688,7 @@ class MuJoCoReplayAdapter:
             terminated={"terminated": terminated, "out_of_bounds": terminated.copy()},
             reward={"value": reward},
             semantic={"regime": self.regime},
+            applied_actions=action.copy(),
         )
 
     @staticmethod
@@ -604,6 +718,8 @@ class MuJoCoReplayAdapter:
                 bool(self._row(step.task_outputs["within_bounds"], env_id).item())
                 for step in record.steps
             )
+        if name == "remains_in_contact":
+            return all(active)
         if name == "collision":
             return any(active)
         if name == "sustained_contact":
@@ -641,17 +757,23 @@ class MuJoCoReplayAdapter:
             "package_version": package_version,
             "environment": self.regime,
             "model_source": "embedded_asset_free_mjcf",
+            "model_xml_sha256": self._model_xml_sha256,
+            "model_configuration_sha256": self._model_configuration_sha256,
+            "model_configuration": self._model_configuration,
             "snapshot_protocol": self.snapshot_protocol,
+            "minimal_capture_actuator_activation": self._minimal_capture_activation,
             "continuation_mode": self.continuation_mode,
             "continuation_behavior": self._continuation_behavior,
             "state_components_captured": list(self._signature_components())
             + ["task_initial_qpos", "adapter_control_step_counter"],
             "state_components_unavailable": list(self._unavailable_components()),
             "task_state_captured": [
+                "initial_qpos",
+            ],
+            "task_state_recomputed_or_measured": [
                 "within_bounds",
                 "contact_active",
                 "contact_count",
-                "initial_qpos",
             ],
             "controller_or_policy_history_captured": False,
             "random_state_handling": {
@@ -671,6 +793,12 @@ class MuJoCoReplayAdapter:
             "sensor_refresh_behavior": (
                 "mj_forward is called after mj_setState; sensors and derived contact state are recomputed"
             ),
+            "callback_identity": "no MuJoCo callbacks registered by this adapter",
+            "managed_external_state": {
+                "policy_or_controller": "none",
+                "renderer": "not captured",
+                "plugins": "none in bundled models",
+            },
             "unsupported_restoration_claims": [
                 "No claim that derived contact manifolds or solver scratch are serialized",
                 "No claim that external policy, controller, renderer, or process state is restored",
@@ -686,6 +814,38 @@ class MuJoCoReplayAdapter:
             },
             "timestep": float(self._model.opt.timestep),
             "frame_skip": self._frame_skip,
+            "deterministic_action_schedule": (
+                {
+                    "activation_preload_steps": self._activation_preload_steps,
+                    "preload_control": -1.0,
+                    "post_preload_control": self._post_preload_control,
+                }
+                if self.regime == "filtered_contact"
+                else None
+            ),
+            "decision_contracts": {
+                "within_bounds": {
+                    "definition": "all generalized positions remain within the configured absolute bound",
+                    "position_bound": self._bounds,
+                },
+                "collision": {"definition": "at least one contact is active in the continuation"},
+                "remains_in_contact": {
+                    "definition": "contact is active at every continuation step"
+                },
+                "sustained_contact": {
+                    "definition": "the continuation contains a consecutive contact run of the configured length",
+                    "contact_window": self._contact_window,
+                },
+                "stable_contact": {
+                    "definition": "contact remains active and speed stays below the configured threshold",
+                    "contact_window": self._contact_window,
+                    "stable_velocity": self._stable_velocity,
+                },
+                "forward_progress": {
+                    "definition": "terminal generalized position exceeds the first continuation position",
+                    "progress_threshold": self._progress_threshold,
+                },
+            },
             "instances": self.num_envs,
         }
 

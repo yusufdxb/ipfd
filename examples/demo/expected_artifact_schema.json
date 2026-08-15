@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IPFD MuJoCo demo summary",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "system",
+    "experiment",
+    "trajectory",
+    "protocols",
+    "decision_results",
+    "sensitivity",
+    "demo_expectation_met",
+    "measured_result",
+    "capability_disclosure",
+    "engineering_decision",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "system": {"type": "string"},
+    "experiment": {"type": "object"},
+    "trajectory": {"type": "object"},
+    "protocols": {"type": "array", "minItems": 4},
+    "decision_results": {"type": "object"},
+    "sensitivity": {"type": "array", "minItems": 3},
+    "demo_expectation_met": {"type": "boolean"},
+    "measured_result": {
+      "type": "object",
+      "required": [
+        "first_numerical_divergence_step",
+        "first_contact_disagreement_step",
+        "reference_decision",
+        "restored_decision",
+        "decision_direction",
+        "verdict"
+      ]
+    },
+    "capability_disclosure": {"type": "object"},
+    "engineering_decision": {"type": "string"},
+    "artifacts": {"type": "object"}
+  }
+}

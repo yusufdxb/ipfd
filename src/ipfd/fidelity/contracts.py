@@ -126,6 +126,7 @@ class StepRecord:
     terminated: Mapping[str, Any] = field(default_factory=dict)
     reward: Mapping[str, Any] = field(default_factory=dict)
     semantic: Mapping[str, Any] = field(default_factory=dict)
+    applied_actions: Any = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -135,6 +136,7 @@ class StepRecord:
             "terminated": to_builtin(self.terminated),
             "reward": to_builtin(self.reward),
             "semantic": to_builtin(self.semantic),
+            "applied_actions": to_builtin(self.applied_actions),
         }
 
 
@@ -158,7 +160,19 @@ class TrajectoryRecord:
 
 @runtime_checkable
 class ReplayAdapter(Protocol):
-    """Minimal simulator-neutral state replay interface."""
+    """Simulator-neutral paired replay interface used by the live auditor.
+
+    A live audit owns two roles: environment 0 is the uninterrupted reference
+    and environment 1 is the restore target.  ``reset`` and ``action`` are part
+    of the contract because the runner calls them while preparing the branch;
+    they are not optional lifecycle conveniences.
+    """
+
+    def reset(self, seed: int) -> ObservationRecord | None:
+        ...
+
+    def action(self, step: int, source: Any, env_ids: Sequence[int]) -> ArrayLike:
+        ...
 
     def capture(self, env_ids: Sequence[int]) -> Snapshot:
         ...

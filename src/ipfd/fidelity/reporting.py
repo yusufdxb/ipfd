@@ -79,6 +79,8 @@ def contract_document() -> dict[str, Any]:
             "universal_tolerance": False,
             "raw_measurements_preserved": True,
             "environment_specific_tolerances_required": True,
+            "per_field_overrides_supported": True,
+            "units_are_part_of_the_declared_contract": True,
         },
         "scope_fields": [
             "simulator",
@@ -142,7 +144,9 @@ def _markdown(summary: dict[str, Any], result: dict[str, Any]) -> str:
     for item in summary["configurations"]:
         scope = item["scope"]
         levels = item["levels"]
-        divergence = levels["L2"]["first_numerical_divergence"]
+        divergence = levels["L2"].get(
+            "first_divergence", levels["L2"]["first_numerical_divergence"]
+        )
         lines.append(
             "| {simulator} {version} | {protocol} | {horizon} | {decision} | {l0} | {l1} | {l2} | {l3} | {result} |".format(
                 simulator=scope["simulator"],
@@ -197,11 +201,16 @@ def _divergence_svg(records: list[dict[str, Any]]) -> str:
         y = top + plot_height * (1.0 - error / scale_error)
         points.append(f"{x:.2f},{y:.2f}")
     polyline = " ".join(points)
-    note = "No per-step curve retained" if not points else f"max raw state error {max_error:.6g}"
+    note = (
+        "No per-step curve retained"
+        if not points
+        else f"largest raw field error {max_error:.6g}; mixed units"
+    )
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"
   viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
   <title id="title">Replay divergence growth</title>
-  <desc id="desc">Maximum raw state error across audited branches by continuation step.</desc>
+  <desc id="desc">Largest raw field error across audited branches by continuation step.
+    Values may mix units and are diagnostic only.</desc>
   <rect width="100%" height="100%" fill="#ffffff"/>
   <line x1="{left}" y1="{top}" x2="{left}" y2="{top + plot_height}" stroke="#334155"/>
   <line x1="{left}" y1="{top + plot_height}" x2="{left + plot_width}" y2="{top + plot_height}" stroke="#334155"/>
@@ -209,7 +218,7 @@ def _divergence_svg(records: list[dict[str, Any]]) -> str:
   <text x="{width / 2}" y="22" text-anchor="middle" font-family="sans-serif" font-size="16">Replay divergence growth</text>
   <text x="{width / 2}" y="{height - 12}" text-anchor="middle" font-family="sans-serif" font-size="13">Continuation step</text>
   <text x="16" y="{height / 2}" transform="rotate(-90 16 {height / 2})"
-    text-anchor="middle" font-family="sans-serif" font-size="13">Maximum raw state error</text>
+    text-anchor="middle" font-family="sans-serif" font-size="13">Largest raw field error (mixed units)</text>
   <text x="{left + 8}" y="{top + 18}" font-family="sans-serif" font-size="12" fill="#475569">{html.escape(note)}</text>
 </svg>
 """

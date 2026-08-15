@@ -42,6 +42,37 @@ def test_comparison_preserves_raw_errors_and_environment_selection():
     assert result["fields"]["q"]["threshold"] == 0.001
 
 
+def test_comparison_supports_unit_specific_field_tolerances():
+    result = compare_values(
+        {"qpos": np.array([0.0]), "qvel": np.array([0.0])},
+        {"qpos": np.array([2.0e-4]), "qvel": np.array([5.0e-3])},
+        absolute=0.0,
+        field_tolerances={
+            "qpos": {"absolute": 1.5e-4, "unit": "m"},
+            "qvel": {"absolute": 1.0e-2, "unit": "m/s"},
+        },
+    )
+
+    assert result["passed"] is False
+    assert result["fields"]["qpos"]["within_tolerance"] is False
+    assert result["fields"]["qvel"]["within_tolerance"] is True
+    assert result["fields"]["qvel"]["absolute_tolerance"] == 1.0e-2
+    assert result["fields"]["qpos"]["unit"] == "m"
+
+
+def test_boolean_semantics_are_exact_even_under_numeric_tolerance():
+    result = compare_values(
+        {"terminated": np.array([False])},
+        {"terminated": np.array([True])},
+        absolute=1.0,
+    )
+
+    assert result["passed"] is False
+    assert result["fields"]["terminated"]["comparison"] == "exact_boolean"
+    assert result["fields"]["terminated"]["reference_at_first_difference"] is False
+    assert result["fields"]["terminated"]["candidate_at_first_difference"] is True
+
+
 def test_comparison_handles_nested_semantic_and_invalid_numeric_values():
     nested = {"tuple": (np.array([[1], [2]]),), "list": [np.array([[3], [4]])]}
     selected = extract_env(nested, 1)

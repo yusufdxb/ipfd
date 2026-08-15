@@ -4,20 +4,34 @@ Audit which numerical trajectories and downstream decisions a declared simulator
 snapshot-and-restore protocol supports. The v1 rollout-analysis imports remain
 available for historical artifact compatibility, but they are not the v2 mission.
 
-The public surface is intentionally small:
+The primary public surface is intentionally small:
 
-    from ipfd import Rollout, build_report, plot_timeline
-    from ipfd.adapters.synthetic import make_silent_failure_rollout
+    from ipfd import DecisionContract, audit, check_adapter
 
-    rollout = make_silent_failure_rollout(seed=0)
-    report = build_report(rollout)
-    print(report.summary())
-    plot_timeline(rollout, report, "timeline.png")
+    result = audit(
+        adapter=my_adapter,
+        protocol="expanded_runtime_state",
+        branch_step=120,
+        horizons=[1, 5, 10, 30, 90],
+        decision="task_success",
+    )
+    print(result.verdict)
+
+Historical rollout-analysis imports remain available for artifact compatibility.
 """
 
 from __future__ import annotations
 
+__version__ = "2.0.0.dev0"
+
 from .actionability import ActionabilityReport, PointOfNoReturnInterval, evaluate_actionability
+from .adapter_check import (
+    AdapterCheck,
+    AdapterCheckReport,
+    AdapterCheckStatus,
+    check_adapter,
+)
+from .audit import AuditResult, DecisionContract, audit
 from .evidence_gate import EvidenceCriteria, EvidenceGateResult, evaluate_evidence
 from .ponr import (
     ProbeStatistics,
@@ -29,8 +43,6 @@ from .replay import load_rollout, save_rollout
 from .report import AnalysisConfig, FailureDebugReport, build_report
 from .types import Rollout
 
-__version__ = "2.0.0.dev0"
-
 
 def plot_timeline(rollout: Rollout, report: FailureDebugReport, path: str) -> str:
     """Lazily render a legacy rollout timeline without loading Matplotlib on import."""
@@ -41,6 +53,13 @@ def plot_timeline(rollout: Rollout, report: FailureDebugReport, path: str) -> st
 
 __all__ = [
     "Rollout",
+    "audit",
+    "AuditResult",
+    "DecisionContract",
+    "check_adapter",
+    "AdapterCheck",
+    "AdapterCheckReport",
+    "AdapterCheckStatus",
     "AnalysisConfig",
     "FailureDebugReport",
     "build_report",

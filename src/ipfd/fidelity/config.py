@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from typing import Any
 
@@ -34,7 +35,7 @@ class AuditConfig:
     continuation_mode: str
     action_source: str
     decision_functions: tuple[str, ...]
-    tolerances: dict[str, dict[str, float]]
+    tolerances: dict[str, dict[str, Any]]
     independent_cluster_key: str
     output_directory: Path
     minimum_independent_clusters: int
@@ -45,6 +46,26 @@ class AuditConfig:
     def tolerance(self, category: str) -> tuple[float, float]:
         values = self.tolerances.get(category, self.tolerances.get("default", {}))
         return float(values.get("absolute", 0.0)), float(values.get("relative", 0.0))
+
+    def field_tolerances(self, category: str) -> dict[str, dict[str, Any]]:
+        """Return optional per-field overrides within one record category."""
+
+        values = self.tolerances.get(category, self.tolerances.get("default", {}))
+        fields = values.get("fields", {})
+        if not isinstance(fields, dict):  # validated configs cannot reach this branch
+            return {}
+        result: dict[str, dict[str, Any]] = {}
+        for name, policy in fields.items():
+            if not isinstance(policy, dict):
+                continue
+            normalized: dict[str, Any] = {
+                "absolute": float(policy.get("absolute", values.get("absolute", 0.0))),
+                "relative": float(policy.get("relative", values.get("relative", 0.0))),
+            }
+            if isinstance(policy.get("unit"), str):
+                normalized["unit"] = policy["unit"]
+            result[str(name)] = normalized
+        return result
 
 
 def _require_nonempty_string(data: dict[str, Any], key: str) -> str:
@@ -85,18 +106,52 @@ def _horizons(raw: Any) -> tuple[int, ...]:
     return values
 
 
-def _tolerances(raw: Any) -> dict[str, dict[str, float]]:
+def _tolerances(raw: Any) -> dict[str, dict[str, Any]]:
     if not isinstance(raw, dict) or not raw:
         raise ValueError("tolerances must be a non-empty mapping")
-    result: dict[str, dict[str, float]] = {}
+    result: dict[str, dict[str, Any]] = {}
     for category, value in raw.items():
         if not isinstance(value, dict):
             raise ValueError(f"tolerances.{category} must be a mapping")
         absolute = float(value.get("absolute", 0.0))
         relative = float(value.get("relative", 0.0))
-        if absolute < 0.0 or relative < 0.0:
+        if not isfinite(absolute) or not isfinite(relative) or absolute < 0.0 or relative < 0.0:
             raise ValueError(f"tolerances.{category} values must be non-negative")
-        result[str(category)] = {"absolute": absolute, "relative": relative}
+        policy: dict[str, Any] = {"absolute": absolute, "relative": relative}
+        fields = value.get("fields", {})
+        if not isinstance(fields, dict):
+            raise ValueError(f"tolerances.{category}.fields must be a mapping")
+        field_policies: dict[str, dict[str, Any]] = {}
+        for field_name, field_value in fields.items():
+            if not isinstance(field_name, str) or not field_name:
+                raise ValueError(f"tolerances.{category}.fields keys must be non-empty strings")
+            if not isinstance(field_value, dict):
+                raise ValueError(f"tolerances.{category}.fields.{field_name} must be a mapping")
+            field_absolute = float(field_value.get("absolute", absolute))
+            field_relative = float(field_value.get("relative", relative))
+            if (
+                not isfinite(field_absolute)
+                or not isfinite(field_relative)
+                or field_absolute < 0.0
+                or field_relative < 0.0
+            ):
+                raise ValueError(
+                    f"tolerances.{category}.fields.{field_name} values must be non-negative"
+                )
+            field_policies[field_name] = {
+                "absolute": field_absolute,
+                "relative": field_relative,
+            }
+            unit = field_value.get("unit")
+            if unit is not None:
+                if not isinstance(unit, str) or not unit.strip():
+                    raise ValueError(
+                        f"tolerances.{category}.fields.{field_name}.unit must be a non-empty string"
+                    )
+                field_policies[field_name]["unit"] = unit.strip()
+        if field_policies:
+            policy["fields"] = field_policies
+        result[str(category)] = policy
     if "default" not in result:
         raise ValueError("tolerances.default is required; IPFD does not supply a universal tolerance")
     return result

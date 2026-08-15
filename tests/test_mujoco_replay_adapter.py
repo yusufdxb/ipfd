@@ -20,9 +20,10 @@ def _adapter(
     regime: str,
     protocol: str = "integration_with_warmstart",
     continuation: str = "restored",
+    **settings,
 ) -> MuJoCoReplayAdapter:
     return MuJoCoReplayAdapter(
-        settings={"regime": regime, "initial_position_jitter": 0.0},
+        settings={"regime": regime, "initial_position_jitter": 0.0, **settings},
         snapshot_protocol=protocol,
         continuation_mode=continuation,
     )
@@ -56,8 +57,14 @@ def test_adapter_is_import_gated_and_satisfies_protocol():
     [
         (
             "minimal_visible",
-            {"simulation_time", "generalized_positions", "generalized_velocities"},
-            {"controls", "solver_acceleration_warmstart"},
+            {
+                "simulation_time",
+                "generalized_positions",
+                "generalized_velocities",
+                "actuator_activations",
+                "controls",
+            },
+            {"solver_acceleration_warmstart"},
             False,
         ),
         (
@@ -175,6 +182,83 @@ def test_sustained_contact_settles_and_stays_stable_through_step_90():
         adapter.close()
 
 
+def test_filtered_contact_exposes_delayed_decision_failure_from_omitted_activation():
+    minimal = _adapter(
+        "filtered_contact",
+        "minimal_visible",
+        minimal_capture_actuator_activation=False,
+        activation_preload_steps=100,
+        post_preload_control=0.55,
+        timestep=0.002,
+        frame_skip=1,
+    )
+    integration = _adapter(
+        "filtered_contact",
+        "integration_with_warmstart",
+        activation_preload_steps=100,
+        post_preload_control=0.55,
+        timestep=0.002,
+        frame_skip=1,
+    )
+    try:
+        for adapter in (minimal, integration):
+            for step in range(100):
+                adapter.step(adapter.action(step, "deterministic", (0, 1)))
+            adapter.restore(adapter.capture((0,)), (1,))
+
+        boundary = minimal.observe((0, 1))
+        np.testing.assert_array_equal(boundary.scene_state["qpos"][0], boundary.scene_state["qpos"][1])
+        np.testing.assert_array_equal(boundary.scene_state["qvel"][0], boundary.scene_state["qvel"][1])
+        np.testing.assert_array_equal(
+            boundary.policy_observations["state"][0], boundary.policy_observations["state"][1]
+        )
+        np.testing.assert_array_equal(
+            boundary.controller_targets["ctrl"][0], boundary.controller_targets["ctrl"][1]
+        )
+        assert "actuator_activation_state" in boundary.unavailable
+        assert "actuator_activations" in minimal.capture((0,)).unavailable_components
+        assert minimal._data[0].act[0] < -0.95
+        np.testing.assert_array_equal(minimal._data[1].act, 0.0)
+
+        records = {minimal: [], integration: []}
+        errors = {minimal: [], integration: []}
+        for continuation_step in range(1, 91):
+            absolute_step = 100 + continuation_step - 1
+            for adapter in (minimal, integration):
+                record = adapter.step(adapter.action(absolute_step, "deterministic", (0, 1)))
+                records[adapter].append(record)
+                errors[adapter].append(
+                    float(
+                        np.max(
+                            np.abs(
+                                record.observation.policy_observations["state"][0]
+                                - record.observation.policy_observations["state"][1]
+                            )
+                        )
+                    )
+                )
+
+        assert max(errors[minimal][:10]) < 0.01
+        assert max(errors[minimal][:30]) < 0.01
+        assert errors[minimal][89] > 0.01
+        reference = TrajectoryRecord(steps=records[minimal], actions=[], env_id=0)
+        restored = TrajectoryRecord(steps=records[minimal], actions=[], env_id=1)
+        assert minimal.decision(reference, "remains_in_contact") is True
+        assert minimal.decision(restored, "remains_in_contact") is False
+        restored_contact = [bool(item.contact_state["active"][1]) for item in records[minimal]]
+        assert all(restored_contact[:60])
+        assert any(not value for value in restored_contact[60:])
+
+        np.testing.assert_array_equal(errors[integration], 0.0)
+        integration_reference = TrajectoryRecord(steps=records[integration], actions=[], env_id=0)
+        integration_restored = TrajectoryRecord(steps=records[integration], actions=[], env_id=1)
+        assert integration.decision(integration_reference, "remains_in_contact") is True
+        assert integration.decision(integration_restored, "remains_in_contact") is True
+    finally:
+        minimal.close()
+        integration.close()
+
+
 def test_unknown_decision_and_mismatched_protocol_fail_clearly():
     adapter = _adapter("free_space")
     other = _adapter("free_space", "minimal_visible")
@@ -187,3 +271,21 @@ def test_unknown_decision_and_mismatched_protocol_fail_clearly():
     finally:
         adapter.close()
         other.close()
+
+
+def test_restore_rejects_incompatible_integration_configuration():
+    source = _adapter("filtered_contact", timestep=0.002)
+    target = _adapter("filtered_contact", timestep=0.01)
+    try:
+        snapshot = source.capture((0,))
+        assert snapshot.metadata["model_xml_sha256"]
+        assert snapshot.metadata["model_configuration_sha256"]
+        with pytest.raises(ValueError, match="integration configuration"):
+            target.restore(snapshot, (1,))
+        provenance = source.provenance()
+        assert provenance["model_configuration"]["timestep"] == 0.002
+        assert provenance["task_state_captured"] == ["initial_qpos"]
+        assert "contact_active" in provenance["task_state_recomputed_or_measured"]
+    finally:
+        source.close()
+        target.close()

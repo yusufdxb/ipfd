@@ -1,0 +1,21 @@
+schema_version: 1
+adapter:
+  kind: python
+  simulator: documented deterministic example
+  factory: examples.custom_adapter:make_adapter
+simulator_version: "1"
+environment: point-mass-v1
+task: threshold
+snapshot_protocol: full_state
+branch_states:
+  - {id: point-seed-1, step: 2, seed: 1, cluster: seed-1}
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: exact_action
+action_source: deterministic
+decision_functions: [threshold_reached]
+tolerances:
+  default: {absolute: 0.0, relative: 0.0}
+independent_cluster_key: seed
+minimum_independent_clusters: 1
+output_directory: ../results/custom-adapter
+reduction: {enabled: false}

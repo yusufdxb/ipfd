@@ -436,6 +436,7 @@ class IsaacLabReplayAdapter:
                 "truncated": _take(truncated, self._ids((0, 1))),
             },
             reward={"reward": _take(reward, self._ids((0, 1)))},
+            applied_actions=actions,
         )
 
     def decision(self, record: TrajectoryRecord, name: str) -> bool:

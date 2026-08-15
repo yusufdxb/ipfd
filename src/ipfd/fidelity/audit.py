@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import importlib
+import json
+import sys
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import replace
@@ -39,6 +43,33 @@ def create_adapter(config: AuditConfig) -> ReplayAdapter:
             snapshot_protocol=config.snapshot_protocol,
             continuation_mode=config.continuation_mode,
         )
+    if kind == "python":
+        factory_name = config.adapter.get("factory")
+        if not isinstance(factory_name, str) or ":" not in factory_name:
+            raise ValueError("adapter.factory must use trusted.module:factory syntax")
+        module_name, attribute_name = factory_name.split(":", 1)
+        if not module_name or not attribute_name:
+            raise ValueError("adapter.factory must use trusted.module:factory syntax")
+        try:
+            module = importlib.import_module(module_name)
+        except ModuleNotFoundError as first_error:
+            cwd = str(Path.cwd())
+            if cwd not in sys.path:
+                sys.path.insert(0, cwd)
+            try:
+                module = importlib.import_module(module_name)
+            except ModuleNotFoundError:
+                raise first_error from None
+        factory = getattr(module, attribute_name)
+        if not callable(factory):
+            raise TypeError("adapter.factory target must be callable")
+        kwargs = config.adapter.get("kwargs", {})
+        if not isinstance(kwargs, Mapping):
+            raise TypeError("adapter.kwargs must be a mapping")
+        adapter = factory(**dict(kwargs))
+        if not isinstance(adapter, ReplayAdapter):
+            raise TypeError("adapter.factory did not return a ReplayAdapter")
+        return adapter
     raise ValueError(f"unknown live adapter kind: {kind!r}")
 
 
@@ -53,11 +84,16 @@ def _compare_observation(config: AuditConfig, observation: ObservationRecord) ->
             extract_env(values, 1),
             absolute=absolute,
             relative=relative,
+            field_tolerances=config.field_tolerances(category),
         )
         categories[category] = result
         comparable_fields += int(result["comparable_fields"])
         passed = passed and bool(result["passed"])
-    if comparable_fields == 0:
+    required_evidence = bool(
+        int(categories["scene_state"]["comparable_fields"]) > 0
+        and int(categories["policy_observations"]["comparable_fields"]) > 0
+    )
+    if not required_evidence:
         verdict = ContractVerdict.INSUFFICIENT_EVIDENCE.value
     else:
         verdict = (
@@ -67,9 +103,18 @@ def _compare_observation(config: AuditConfig, observation: ObservationRecord) ->
         )
     return {
         "verdict": verdict,
-        "passed": passed if comparable_fields else None,
+        "passed": passed if required_evidence else None,
         "measured_exposed_state_only": True,
         "comparable_fields": comparable_fields,
+        "required_evidence": {
+            "scene_state_comparable_fields": int(
+                categories["scene_state"]["comparable_fields"]
+            ),
+            "policy_observations_comparable_fields": int(
+                categories["policy_observations"]["comparable_fields"]
+            ),
+            "sufficient": required_evidence,
+        },
         "unavailable": list(observation.unavailable),
         "categories": categories,
     }
@@ -83,6 +128,7 @@ def _compare_step(config: AuditConfig, step: StepRecord) -> dict[str, Any]:
             extract_env(values, 1),
             absolute=absolute,
             relative=relative,
+            field_tolerances=config.field_tolerances(category),
         )
 
     state = compare("scene_state", step.observation.scene_state)
@@ -91,25 +137,36 @@ def _compare_step(config: AuditConfig, step: StepRecord) -> dict[str, Any]:
     task_outputs = compare("task_outputs", step.task_outputs)
     termination = compare("termination", step.terminated)
     reward = compare("reward", step.reward)
+    semantic_events = compare("semantic", step.semantic)
+    required_evidence = bool(
+        int(state["comparable_fields"]) > 0
+        and int(observation["comparable_fields"]) > 0
+    )
     numerical_passed = bool(state["passed"] and observation["passed"] and reward["passed"])
-    semantic_passed = bool(contact["passed"] and task_outputs["passed"] and termination["passed"])
-    comparable_fields = sum(
-        int(item["comparable_fields"])
-        for item in (state, observation, contact, task_outputs, termination, reward)
+    semantic_passed = bool(
+        contact["passed"]
+        and task_outputs["passed"]
+        and termination["passed"]
+        and semantic_events["passed"]
     )
     passed = numerical_passed and semantic_passed
     verdict = (
         ContractVerdict.INSUFFICIENT_EVIDENCE.value
-        if comparable_fields == 0
+        if not required_evidence
         else ContractVerdict.SUPPORTED.value
         if passed
         else ContractVerdict.UNSUPPORTED.value
     )
     return {
         "verdict": verdict,
-        "passed": passed if comparable_fields else None,
-        "numerical_passed": numerical_passed if comparable_fields else None,
-        "semantic_passed": semantic_passed if comparable_fields else None,
+        "passed": passed if required_evidence else None,
+        "numerical_passed": numerical_passed if required_evidence else None,
+        "semantic_passed": semantic_passed if required_evidence else None,
+        "required_evidence": {
+            "next_state_comparable_fields": int(state["comparable_fields"]),
+            "next_observation_comparable_fields": int(observation["comparable_fields"]),
+            "sufficient": required_evidence,
+        },
         "numerical": {
             "next_state": state,
             "next_observation": observation,
@@ -119,6 +176,7 @@ def _compare_step(config: AuditConfig, step: StepRecord) -> dict[str, Any]:
             "contact_state": contact,
             "task_outputs": task_outputs,
             "termination": termination,
+            "events": semantic_events,
         },
     }
 
@@ -131,6 +189,71 @@ def _actions_identical(actions: Any) -> bool:
     if array.ndim == 0 or array.shape[0] < 2:
         return False
     return bool(np.array_equal(array[0], array[1]))
+
+
+def _canonical_bytes(value: Any) -> bytes:
+    return json.dumps(
+        to_builtin(value),
+        allow_nan=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+
+
+def _canonical_sha256(value: Any) -> str:
+    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
+
+
+def _prefix_sha256(values: Sequence[Any]) -> list[str]:
+    digest = hashlib.sha256()
+    result: list[str] = []
+    for value in values:
+        payload = _canonical_bytes(value)
+        digest.update(len(payload).to_bytes(8, byteorder="big"))
+        digest.update(payload)
+        result.append(digest.hexdigest())
+    return result
+
+
+def _applied_actions_match(requested: Any, applied: Any) -> bool | None:
+    if applied is None:
+        return None
+    return bool(
+        _actions_identical(applied)
+        and _canonical_sha256(requested) == _canonical_sha256(applied)
+    )
+
+
+def _divergent_fields(step_comparison: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Retain compact, signed threshold-crossing evidence for debugging."""
+
+    events: list[dict[str, Any]] = []
+    for channel in ("numerical", "semantic"):
+        for category, comparison in step_comparison[channel].items():
+            for field, metrics in comparison["fields"].items():
+                if bool(metrics.get("within_tolerance", False)):
+                    continue
+                events.append(
+                    {
+                        "channel": channel,
+                        "category": category,
+                        "field": field,
+                        "max_abs": metrics.get("max_abs"),
+                        "signed_candidate_minus_reference": metrics.get("signed_at_max"),
+                        "reference_at_max": metrics.get(
+                            "reference_at_max",
+                            metrics.get("reference_at_first_difference"),
+                        ),
+                        "candidate_at_max": metrics.get(
+                            "candidate_at_max",
+                            metrics.get("candidate_at_first_difference"),
+                        ),
+                        "threshold": metrics.get("threshold"),
+                        "unit": metrics.get("unit"),
+                        "comparison": metrics.get("comparison", "numeric_tolerance"),
+                    }
+                )
+    return events
 
 
 def _run_once(
@@ -146,11 +269,19 @@ def _run_once(
     if not callable(reset) or not callable(action):
         raise TypeError("live audit adapters must implement reset(seed) and action(step, source, env_ids)")
     reset(branch.seed)
+    preparation_action_delivery: bool | None = True
     for step_index in range(branch.step):
         branch_actions = action(step_index, config.action_source, (0, 1))
         if not _actions_identical(branch_actions):
             raise RuntimeError("branch preparation actions are not identical across the paired environments")
-        adapter.step(branch_actions)
+        preparation_record = adapter.step(branch_actions)
+        preparation_delivery = _applied_actions_match(
+            branch_actions, preparation_record.applied_actions
+        )
+        if preparation_delivery is False:
+            preparation_action_delivery = False
+        elif preparation_delivery is None and preparation_action_delivery is not False:
+            preparation_action_delivery = None
 
     snapshot = adapter.capture((0,))
     adapter.restore(snapshot, (1,))
@@ -164,6 +295,13 @@ def _run_once(
     first_numerical: int | None = None
     first_observation: int | None = None
     first_contact: int | None = None
+    first_task_output: int | None = None
+    first_termination: int | None = None
+    first_reward: int | None = None
+    first_semantic_event: int | None = None
+    first_action_delivery_mismatch: int | None = None
+    evidence_sufficient = True
+    action_delivery: bool | None = preparation_action_delivery
     maximum_state_error = 0.0
     terminal_state_error = 0.0
     l1: dict[str, Any] | None = None
@@ -178,45 +316,109 @@ def _run_once(
         steps.append(step_record)
         actions.append(to_builtin(values))
         step_comparison = _compare_step(config, step_record)
+        delivered = _applied_actions_match(values, step_record.applied_actions)
+        if delivered is False:
+            action_delivery = False
+            if first_action_delivery_mismatch is None:
+                first_action_delivery_mismatch = continuation_step
+        elif delivered is None and action_delivery is not False:
+            action_delivery = None
+        step_comparison["action_delivery"] = {
+            "requested_identical": identical,
+            "applied_actions_disclosed": delivered is not None,
+            "applied_matches_request": delivered,
+        }
+        if delivered is None:
+            step_comparison["verdict"] = ContractVerdict.INSUFFICIENT_EVIDENCE.value
+            step_comparison["passed"] = None
+        elif delivered is False:
+            step_comparison["verdict"] = ContractVerdict.UNSUPPORTED.value
+            step_comparison["passed"] = False
         if continuation_step == 1:
             l1 = step_comparison
         state = step_comparison["numerical"]["next_state"]
         observation = step_comparison["numerical"]["next_observation"]
         contact = step_comparison["semantic"]["contact_state"]
+        task_output = step_comparison["semantic"]["task_outputs"]
+        termination = step_comparison["semantic"]["termination"]
+        semantic_event = step_comparison["semantic"]["events"]
+        reward = step_comparison["numerical"]["reward"]
         state_error = maximum_error(state)
         observation_error = maximum_error(observation)
         contact_error = maximum_error(contact)
         maximum_state_error = max(maximum_state_error, state_error)
         terminal_state_error = state_error
+        evidence_sufficient = evidence_sufficient and step_comparison["passed"] is not None
         if first_numerical is None and not state["passed"]:
             first_numerical = continuation_step
         if first_observation is None and not observation["passed"]:
             first_observation = continuation_step
         if first_contact is None and not contact["passed"]:
             first_contact = continuation_step
+        if first_task_output is None and not task_output["passed"]:
+            first_task_output = continuation_step
+        if first_termination is None and not termination["passed"]:
+            first_termination = continuation_step
+        if first_reward is None and not reward["passed"]:
+            first_reward = continuation_step
+        if first_semantic_event is None and not semantic_event["passed"]:
+            first_semantic_event = continuation_step
         growth.append(
             {
                 "step": continuation_step,
                 "state_max_abs": state_error,
                 "observation_max_abs": observation_error,
                 "contact_max_abs": contact_error,
+                "divergent_fields": _divergent_fields(step_comparison),
             }
         )
 
     if l1 is None:  # pragma: no cover - config rejects a zero horizon
         raise RuntimeError("one-step record was not produced")
-    l2_passed = first_numerical is None and first_observation is None and first_contact is None
+    divergence_steps = {
+        "state": first_numerical,
+        "observation": first_observation,
+        "contact": first_contact,
+        "task_output": first_task_output,
+        "termination": first_termination,
+        "reward": first_reward,
+        "semantic_event": first_semantic_event,
+        "action_delivery": first_action_delivery_mismatch,
+    }
+    earliest_divergence = min(
+        (value for value in divergence_steps.values() if value is not None),
+        default=None,
+    )
+    l2_passed: bool | None = (
+        False
+        if action_delivery is False
+        else None
+        if not evidence_sufficient or action_delivery is None
+        else earliest_divergence is None
+    )
     l2 = {
         "verdict": (
-            ContractVerdict.SUPPORTED.value
-            if l2_passed
+            ContractVerdict.INSUFFICIENT_EVIDENCE.value
+            if l2_passed is None
+            else ContractVerdict.SUPPORTED.value
+            if l2_passed is True
             else ContractVerdict.UNSUPPORTED.value
         ),
         "passed": l2_passed,
         "identical_actions": action_identity,
+        "identical_requested_actions": action_identity,
+        "preparation_action_delivery": preparation_action_delivery,
+        "applied_action_delivery": action_delivery,
+        "first_action_delivery_mismatch": first_action_delivery_mismatch,
         "first_numerical_divergence": first_numerical,
         "first_observation_divergence": first_observation,
         "first_contact_divergence": first_contact,
+        "first_task_output_divergence": first_task_output,
+        "first_termination_divergence": first_termination,
+        "first_reward_divergence": first_reward,
+        "first_semantic_event_divergence": first_semantic_event,
+        "first_divergence": earliest_divergence,
+        "first_divergence_by_channel": divergence_steps,
         "maximum_state_error": maximum_state_error,
         "terminal_state_error": terminal_state_error,
         "divergence_growth_curve": growth,
@@ -264,10 +466,46 @@ def _run_once(
             "unavailable_components": list(snapshot.unavailable_components),
             "metadata": to_builtin(snapshot.metadata),
         },
+        "snapshot_sha256": _canonical_sha256(snapshot.to_dict()),
+        "action_prefix_sha256": _prefix_sha256(actions),
+        "trajectory_prefix_sha256": _prefix_sha256(
+            [step.to_dict() for step in steps]
+        ),
         "levels": {"L0": l0, "L1": l1, "L2": l2, "L3": l3},
         "captured_snapshot": snapshot.to_dict(),
         "identical_actions": actions,
     }
+
+
+def _validate_horizon_reruns(records: Sequence[Mapping[str, Any]]) -> None:
+    """Reject horizon results built from different snapshots or action prefixes."""
+
+    by_branch: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    for record in records:
+        by_branch[str(record["branch_id"])].append(record)
+    for branch_id, group in by_branch.items():
+        snapshots = {str(record["snapshot_sha256"]) for record in group}
+        if len(snapshots) != 1:
+            raise RuntimeError(
+                f"branch {branch_id!r} produced different snapshots across horizon reruns"
+            )
+        longest = max(group, key=lambda item: int(item["horizon"]))
+        reference_prefixes = longest["action_prefix_sha256"]
+        reference_trajectory_prefixes = longest["trajectory_prefix_sha256"]
+        for record in group:
+            horizon = int(record["horizon"])
+            prefixes = record["action_prefix_sha256"]
+            if prefixes != reference_prefixes[:horizon]:
+                raise RuntimeError(
+                    f"branch {branch_id!r} produced different continuation action prefixes "
+                    f"across horizon reruns"
+                )
+            trajectory_prefixes = record["trajectory_prefix_sha256"]
+            if trajectory_prefixes != reference_trajectory_prefixes[:horizon]:
+                raise RuntimeError(
+                    f"branch {branch_id!r} produced different paired trajectory prefixes "
+                    f"across horizon reruns; no coherent fidelity frontier can be claimed"
+                )
 
 
 def _aggregate(config: AuditConfig, records: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -292,13 +530,21 @@ def _aggregate(config: AuditConfig, records: Sequence[Mapping[str, Any]]) -> lis
         decisions = [record["levels"]["L3"]["decisions"][decision_name] for record in group]
         l0_passed = aggregate_passed(l0_values)
         l1_passed = aggregate_passed(l1_values)
-        first_divergences = [
-            int(value["first_numerical_divergence"])
-            for value in l2_values
-            if value["first_numerical_divergence"] is not None
-        ]
+        def earliest(
+            field: str,
+            level_values: Sequence[Mapping[str, Any]],
+        ) -> int | None:
+            values = [
+                int(value[field])
+                for value in level_values
+                if value.get(field) is not None
+            ]
+            return min(values) if values else None
+
+        first_divergence = earliest("first_divergence", l2_values)
+        first_numerical = earliest("first_numerical_divergence", l2_values)
         decision_disagreement = any(not bool(value["agreement"]) for value in decisions)
-        l2_passed = all(bool(value["passed"]) for value in l2_values)
+        l2_passed = aggregate_passed([value["passed"] for value in l2_values])
         level_values = (l0_passed, l1_passed, l2_passed, not decision_disagreement)
         if not enough:
             result = ContractVerdict.INSUFFICIENT_EVIDENCE.value
@@ -341,7 +587,36 @@ def _aggregate(config: AuditConfig, records: Sequence[Mapping[str, Any]]) -> lis
                     "L1": {"passed": l1_passed if enough else None},
                     "L2": {
                         "passed": l2_passed if enough else None,
-                        "first_numerical_divergence": min(first_divergences) if first_divergences else None,
+                        "applied_action_delivery": (
+                            aggregate_passed(
+                                [value["applied_action_delivery"] for value in l2_values]
+                            )
+                            if enough
+                            else None
+                        ),
+                        "first_action_delivery_mismatch": earliest(
+                            "first_action_delivery_mismatch", l2_values
+                        ),
+                        "first_divergence": first_divergence,
+                        "first_numerical_divergence": first_numerical,
+                        "first_observation_divergence": earliest(
+                            "first_observation_divergence", l2_values
+                        ),
+                        "first_contact_divergence": earliest(
+                            "first_contact_divergence", l2_values
+                        ),
+                        "first_task_output_divergence": earliest(
+                            "first_task_output_divergence", l2_values
+                        ),
+                        "first_termination_divergence": earliest(
+                            "first_termination_divergence", l2_values
+                        ),
+                        "first_reward_divergence": earliest(
+                            "first_reward_divergence", l2_values
+                        ),
+                        "first_semantic_event_divergence": earliest(
+                            "first_semantic_event_divergence", l2_values
+                        ),
                         "maximum_state_error": max(float(value["maximum_state_error"]) for value in l2_values),
                     },
                     "L3": {
@@ -379,6 +654,8 @@ def audit_configuration(adapter: ReplayAdapter, config: AuditConfig) -> dict[str
                 first_failure = (branch, horizon, record, "L3", l3_failures[0])
             elif first_failure is None and not record["levels"]["L2"]["passed"]:
                 first_failure = (branch, horizon, record, "L2", config.decision_functions[0])
+
+    _validate_horizon_reruns(records)
 
     configurations = _aggregate(config, records)
     minimal_reproducer: dict[str, Any] | None = None
@@ -482,12 +759,17 @@ def run_audit(config: AuditConfig, *, adapter: ReplayAdapter | None = None) -> d
             raise RuntimeError(
                 "adapter provenance must report simulator_version for a live audit"
             )
-        if str(actual_version) != config.simulator_version:
+        declared_version = config.simulator_version
+        if declared_version in {"installed", "runtime"}:
+            effective_config = replace(config, simulator_version=str(actual_version))
+        elif str(actual_version) != declared_version:
             raise RuntimeError(
                 "declared simulator_version does not match the live adapter: "
-                f"declared {config.simulator_version!r}, actual {actual_version!r}"
+                f"declared {declared_version!r}, actual {actual_version!r}"
             )
-        result = audit_configuration(selected_adapter, config)
+        else:
+            effective_config = config
+        result = audit_configuration(selected_adapter, effective_config)
         result["provenance"] = collect_provenance(
             adapter=selected_adapter.provenance(),
             config_path=config.source_path,

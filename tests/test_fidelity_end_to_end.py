@@ -142,7 +142,9 @@ def test_archive_reporting_matrix_and_cli_end_to_end(tmp_path, capsys):
     assert rewritten["summary"]["failure_reproducer_produced"] is False
     assert not (child.output_directory / "minimal_reproducer.json").exists()
     assert not (child.output_directory / "regression_report.json").exists()
-    assert "max raw state error 0.1" in (child.output_directory / "divergence.svg").read_text()
+    assert "largest raw field error 0.1; mixed units" in (
+        child.output_directory / "divergence.svg"
+    ).read_text()
 
     matrix_path = _matrix_config(tmp_path, child_path)
     matrix = run_audit_matrix(load_config(matrix_path))
@@ -150,5 +152,5 @@ def test_archive_reporting_matrix_and_cli_end_to_end(tmp_path, capsys):
     assert matrix["cases"][0]["overall_result"] == "UNSUPPORTED"
     assert not matrix["cases"][0]["output_directory"].startswith("/")
 
-    assert main(["audit", "--config", str(matrix_path)]) == 0
+    assert main(["audit", "--config", str(matrix_path)]) == 1
     assert "COMPLETED_WITH_UNSUPPORTED_SCOPES" in capsys.readouterr().out

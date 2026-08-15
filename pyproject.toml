@@ -57,6 +57,9 @@ ipfd-demo = "ipfd.demo:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+ipfd = ["demo_config.yaml"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
