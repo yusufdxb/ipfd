@@ -1,0 +1,2573 @@
+{
+  "added_scopes": [],
+  "comparisons": [
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 1,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 1,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 1,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 1,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 5,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 5,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 5,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 5,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 10,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 10,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 10,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 10,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 30,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 30,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 30,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 30,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "collision",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 90,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "forward_progress",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 90,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    },
+    {
+      "baseline_result": "SUPPORTED",
+      "baseline_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "candidate_result": "SUPPORTED",
+      "candidate_scope": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "hardware_and_software_provenance": "provenance.json",
+        "horizon": 90,
+        "independent_cluster_key": "seed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.8.1",
+        "snapshot_protocol": "integration_with_warmstart",
+        "task": "deterministic_free_motion",
+        "tolerances": {
+          "contact_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "controller_targets": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "counters": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "default": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "policy_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "privileged_observations": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "reward": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "scene_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "sensor_state": {
+            "absolute": 1e-11,
+            "relative": 1e-10
+          },
+          "task_outputs": {
+            "absolute": 0.0,
+            "relative": 0.0
+          },
+          "task_state": {
+            "absolute": 1e-12,
+            "relative": 1e-10
+          },
+          "termination": {
+            "absolute": 0.0,
+            "relative": 0.0
+          }
+        }
+      },
+      "comparison_key": {
+        "action_source": "deterministic",
+        "continuation_mode": "restored",
+        "decision_function": "within_bounds",
+        "environment": "ipfd_mujoco_free_space_v1",
+        "horizon": 90,
+        "task": "deterministic_free_motion"
+      },
+      "decision_disagreement": {
+        "baseline": false,
+        "candidate": false,
+        "changed": false
+      },
+      "first_divergence": {
+        "baseline_no_divergence_observed": true,
+        "baseline_step": null,
+        "candidate_no_divergence_observed": true,
+        "candidate_step": null,
+        "change": "same"
+      },
+      "l0": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "l1": {
+        "baseline_passed": true,
+        "candidate_passed": true,
+        "changed": false
+      },
+      "previously_supported_became_unsupported": false,
+      "scope_changes": [
+        {
+          "baseline": "3.5.0",
+          "baseline_present": true,
+          "candidate": "3.8.1",
+          "candidate_present": true,
+          "field": "simulator_version"
+        }
+      ]
+    }
+  ],
+  "removed_scopes": [],
+  "schema_version": 1,
+  "summary": {
+    "added_configurations": 0,
+    "decision_disagreement_changed": false,
+    "first_divergence_change_counts": {
+      "earlier": 0,
+      "later": 0,
+      "same": 15,
+      "unavailable": 0
+    },
+    "l0_changed": false,
+    "l1_changed": false,
+    "matched_configurations": 15,
+    "previously_supported_became_unsupported": false,
+    "removed_configurations": 0
+  },
+  "supported_to_unsupported": []
+}

@@ -39,19 +39,19 @@ recovery predicate and are not current proof of physical recoverability.
 
 ```bash
 python3 -m pip install build
-python3 -m build
+python3 -m build --wheel
 python3 -m venv /tmp/ipfd-check
-/tmp/ipfd-check/bin/pip install dist/*.whl
+/tmp/ipfd-check/bin/pip install "mujoco>=3.5" dist/*.whl
 cp tests/fixtures/learned_teleport_rollout.npz /tmp/ipfd-check/
 cd /tmp/ipfd-check
 ./bin/ipfd analyze learned_teleport_rollout.npz --report report.json --plot timeline.png
-./bin/ipfd-demo --json demo.json
+./bin/ipfd demo --output demo-results
 ./bin/pip check
 ```
 
 This proves that the wheel contains the advertised library and console commands.
-CI repeats the same check outside the source tree and also installs the source
-distribution.
+It also proves that the bundled live MuJoCo demo runs outside the source tree.
+CI repeats the same check and installs the source distribution separately.
 
 ## Part C: live GPU revalidation
 

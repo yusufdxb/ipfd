@@ -1,0 +1,2279 @@
+{
+  "captured_snapshot": {
+    "captured_components": [
+      "simulation_time",
+      "generalized_positions",
+      "generalized_velocities",
+      "actuator_activations",
+      "control_and_sensor_history",
+      "task_initial_qpos",
+      "adapter_control_step_counter"
+    ],
+    "metadata": {
+      "component_sizes": {
+        "actuator_activations": 0,
+        "applied_cartesian_forces": 12,
+        "applied_generalized_forces": 1,
+        "control_and_sensor_history": 0,
+        "controls": 1,
+        "equality_constraint_activation": 0,
+        "generalized_positions": 1,
+        "generalized_velocities": 1,
+        "mocap_orientations": 0,
+        "mocap_positions": 0,
+        "plugin_state": 0,
+        "simulation_time": 1,
+        "solver_acceleration_warmstart": 1,
+        "user_data": 0
+      },
+      "continuation_behavior": "restored",
+      "environment": "sustained_contact",
+      "source_env_ids": [
+        0
+      ],
+      "state_signature": 31,
+      "state_size": 3
+    },
+    "protocol": "minimal_visible",
+    "unavailable_components": [
+      "applied_cartesian_forces",
+      "applied_generalized_forces",
+      "controls",
+      "equality_constraint_activation",
+      "mocap_orientations",
+      "mocap_positions",
+      "plugin_state",
+      "solver_acceleration_warmstart",
+      "user_data",
+      "derived_contact_manifolds_recomputed_by_mj_forward",
+      "constraint_solver_iteration_scratch",
+      "renderer_state",
+      "external_policy_or_controller_history",
+      "adapter_random_generator_state"
+    ],
+    "values": {
+      "adapter_control_steps": [
+        25
+      ],
+      "state_vectors": [
+        [
+          0.25000000000000017,
+          -0.2070128133959626,
+          0.20948991442570217
+        ]
+      ],
+      "task_initial_qpos": [
+        [
+          0.0026611950336633237
+        ]
+      ]
+    }
+  },
+  "expected_decision": {
+    "within_bounds": true
+  },
+  "failure_kind": "L2",
+  "first_divergence_point": {
+    "contact": null,
+    "numerical": 1,
+    "observation": 1
+  },
+  "identical_actions": [
+    [
+      [
+        -0.1
+      ],
+      [
+        -0.1
+      ]
+    ]
+  ],
+  "reduction": {
+    "algorithm": "bounded_prefix_and_dimension_reduction",
+    "attempts_not_supported": [
+      {
+        "dimension": "decision_predicate",
+        "status": "NOT_APPLICABLE_TO_NUMERICAL_FAILURE"
+      },
+      {
+        "dimension": "number_of_active_entities",
+        "status": "NOT_SUPPORTED_BY_ADAPTER"
+      },
+      {
+        "dimension": "disturbance_schedule",
+        "status": "NOT_SUPPORTED_BY_ADAPTER"
+      },
+      {
+        "dimension": "snapshot_state_components",
+        "status": "NOT_SUPPORTED_BY_ADAPTER"
+      }
+    ],
+    "budget_exhausted": false,
+    "initial": {
+      "action_sequence_length": 1,
+      "branch_id": "sustained-seed-101-step-150",
+      "branch_step": 150,
+      "cluster": "seed-101",
+      "decision_name": "within_bounds",
+      "fails": true,
+      "failure_kind": "L2",
+      "horizon": 1,
+      "seed": 101
+    },
+    "max_trials": 120,
+    "minimal": {
+      "action_sequence_length": 1,
+      "branch_id": "sustained-seed-101-step-150",
+      "branch_step": 25,
+      "cluster": "seed-101",
+      "decision_name": "within_bounds",
+      "fails": true,
+      "failure_kind": "L2",
+      "horizon": 1,
+      "seed": 101
+    },
+    "minimal_evidence": {
+      "adapter_provenance": {
+        "adapter": "MuJoCoReplayAdapter",
+        "continuation_behavior": "restored",
+        "continuation_mode": "restored",
+        "controller_or_policy_history_captured": false,
+        "environment": "sustained_contact",
+        "frame_skip": 5,
+        "instances": 2,
+        "model_dimensions": {
+          "na": 0,
+          "nhistory": 0,
+          "nq": 1,
+          "nsensordata": 2,
+          "nu": 1,
+          "nv": 1
+        },
+        "model_source": "embedded_asset_free_mjcf",
+        "package_version": "3.5.0",
+        "random_state_handling": {
+          "adapter_rng_state_captured": false,
+          "post_reset_stochastic_events": false,
+          "reset_seed": 101,
+          "simulator_random_state": "none_used_by_embedded_models"
+        },
+        "sensor_refresh_behavior": "mj_forward is called after mj_setState; sensors and derived contact state are recomputed",
+        "simulator": "MuJoCo",
+        "simulator_version": "3.5.0",
+        "snapshot_protocol": "minimal_visible",
+        "solver_state_availability": {
+          "constraint_solver_iteration_scratch": "unavailable",
+          "contact_manifolds": "recomputed_not_serialized",
+          "warm_start_in_snapshot_protocol": false,
+          "warm_start_preserved_for_continuation": false
+        },
+        "state_components_captured": [
+          "simulation_time",
+          "generalized_positions",
+          "generalized_velocities",
+          "actuator_activations",
+          "control_and_sensor_history",
+          "task_initial_qpos",
+          "adapter_control_step_counter"
+        ],
+        "state_components_unavailable": [
+          "applied_cartesian_forces",
+          "applied_generalized_forces",
+          "controls",
+          "equality_constraint_activation",
+          "mocap_orientations",
+          "mocap_positions",
+          "plugin_state",
+          "solver_acceleration_warmstart",
+          "user_data",
+          "derived_contact_manifolds_recomputed_by_mj_forward",
+          "constraint_solver_iteration_scratch",
+          "renderer_state",
+          "external_policy_or_controller_history",
+          "adapter_random_generator_state"
+        ],
+        "task_state_captured": [
+          "within_bounds",
+          "contact_active",
+          "contact_count",
+          "initial_qpos"
+        ],
+        "timestep": 0.002,
+        "unsupported_restoration_claims": [
+          "No claim that derived contact manifolds or solver scratch are serialized",
+          "No claim that external policy, controller, renderer, or process state is restored",
+          "No universal MuJoCo fidelity verdict"
+        ]
+      },
+      "captured_snapshot": {
+        "captured_components": [
+          "simulation_time",
+          "generalized_positions",
+          "generalized_velocities",
+          "actuator_activations",
+          "control_and_sensor_history",
+          "task_initial_qpos",
+          "adapter_control_step_counter"
+        ],
+        "metadata": {
+          "component_sizes": {
+            "actuator_activations": 0,
+            "applied_cartesian_forces": 12,
+            "applied_generalized_forces": 1,
+            "control_and_sensor_history": 0,
+            "controls": 1,
+            "equality_constraint_activation": 0,
+            "generalized_positions": 1,
+            "generalized_velocities": 1,
+            "mocap_orientations": 0,
+            "mocap_positions": 0,
+            "plugin_state": 0,
+            "simulation_time": 1,
+            "solver_acceleration_warmstart": 1,
+            "user_data": 0
+          },
+          "continuation_behavior": "restored",
+          "environment": "sustained_contact",
+          "source_env_ids": [
+            0
+          ],
+          "state_signature": 31,
+          "state_size": 3
+        },
+        "protocol": "minimal_visible",
+        "unavailable_components": [
+          "applied_cartesian_forces",
+          "applied_generalized_forces",
+          "controls",
+          "equality_constraint_activation",
+          "mocap_orientations",
+          "mocap_positions",
+          "plugin_state",
+          "solver_acceleration_warmstart",
+          "user_data",
+          "derived_contact_manifolds_recomputed_by_mj_forward",
+          "constraint_solver_iteration_scratch",
+          "renderer_state",
+          "external_policy_or_controller_history",
+          "adapter_random_generator_state"
+        ],
+        "values": {
+          "adapter_control_steps": [
+            25
+          ],
+          "state_vectors": [
+            [
+              0.25000000000000017,
+              -0.2070128133959626,
+              0.20948991442570217
+            ]
+          ],
+          "task_initial_qpos": [
+            [
+              0.0026611950336633237
+            ]
+          ]
+        }
+      },
+      "identical_actions": [
+        [
+          [
+            -0.1
+          ],
+          [
+            -0.1
+          ]
+        ]
+      ]
+    },
+    "minimal_result": {
+      "action_source": "deterministic",
+      "branch_id": "sustained-seed-101-step-150",
+      "branch_step": 25,
+      "cluster": "seed-101",
+      "continuation_mode": "restored",
+      "horizon": 1,
+      "levels": {
+        "L0": {
+          "categories": {
+            "controller_targets": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 1,
+              "fields": {
+                "ctrl": {
+                  "comparable": true,
+                  "max_abs": 0.1,
+                  "reference_scale": 0.1,
+                  "rms": 0.1,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                }
+              },
+              "maximum_absolute_error": 0.1,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            },
+            "counters": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 2,
+              "fields": {
+                "control_steps": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 25.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "simulation_time": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.25000000000000017,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            },
+            "policy_observations": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 1,
+              "fields": {
+                "state": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.20948991442570217,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            },
+            "privileged_observations": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 3,
+              "fields": {
+                "actuator_force": {
+                  "comparable": true,
+                  "max_abs": 0.1,
+                  "reference_scale": 0.1,
+                  "rms": 0.1,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                },
+                "constraint_force": {
+                  "comparable": true,
+                  "max_abs": 0.09499999999998998,
+                  "reference_scale": 6.007492818271532,
+                  "rms": 0.09499999999998998,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                },
+                "qacc": {
+                  "comparable": true,
+                  "max_abs": 0.004999999999999449,
+                  "reference_scale": 3.9129816774497406,
+                  "rms": 0.004999999999999449,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                }
+              },
+              "maximum_absolute_error": 0.1,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            },
+            "scene_state": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 4,
+              "fields": {
+                "act": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "mover_position": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.042987186604037386,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "qpos": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.2070128133959626,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "qvel": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.20948991442570217,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            },
+            "sensor_state": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 1,
+              "fields": {
+                "sensordata": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.20948991442570217,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            },
+            "task_state": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 4,
+              "fields": {
+                "contact_active": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "contact_count": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "initial_qpos": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0026611950336633237,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "within_bounds": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            }
+          },
+          "comparable_fields": 16,
+          "measured_exposed_state_only": true,
+          "passed": false,
+          "unavailable": [
+            "external_policy_observation_history",
+            "external_task_manager_state",
+            "contact_solver_cache"
+          ],
+          "verdict": "UNSUPPORTED"
+        },
+        "L1": {
+          "numerical": {
+            "next_observation": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 1,
+              "fields": {
+                "state": {
+                  "comparable": true,
+                  "max_abs": 2.7755575615628914e-17,
+                  "reference_scale": 0.2051659110193694,
+                  "rms": 1.962615573354719e-17,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                }
+              },
+              "maximum_absolute_error": 2.7755575615628914e-17,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            },
+            "next_state": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 4,
+              "fields": {
+                "act": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "mover_position": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0448340889806306,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "qpos": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.2051659110193694,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "qvel": {
+                  "comparable": true,
+                  "max_abs": 2.7755575615628914e-17,
+                  "reference_scale": 0.16742514529497698,
+                  "rms": 2.7755575615628914e-17,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                }
+              },
+              "maximum_absolute_error": 2.7755575615628914e-17,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            },
+            "reward": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 1,
+              "fields": {
+                "value": {
+                  "comparable": true,
+                  "max_abs": 2.7755575615628914e-17,
+                  "reference_scale": 0.167325145294977,
+                  "rms": 2.7755575615628914e-17,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                }
+              },
+              "maximum_absolute_error": 2.7755575615628914e-17,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            }
+          },
+          "numerical_passed": false,
+          "passed": false,
+          "semantic": {
+            "contact_state": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 3,
+              "fields": {
+                "active": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "count": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "maximum_penetration": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.005165911019369404,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            },
+            "task_outputs": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 3,
+              "fields": {
+                "forward_progress": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.20782710605303273,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "speed": {
+                  "comparable": true,
+                  "max_abs": 2.7755575615628914e-17,
+                  "reference_scale": 0.16742514529497698,
+                  "rms": 2.7755575615628914e-17,
+                  "threshold": 0.0,
+                  "within_tolerance": false
+                },
+                "within_bounds": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 1.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 2.7755575615628914e-17,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": false,
+              "relative_tolerance": 0.0
+            },
+            "termination": {
+              "absolute_tolerance": 0.0,
+              "comparable_fields": 2,
+              "fields": {
+                "out_of_bounds": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                },
+                "terminated": {
+                  "comparable": true,
+                  "max_abs": 0.0,
+                  "reference_scale": 0.0,
+                  "rms": 0.0,
+                  "threshold": 0.0,
+                  "within_tolerance": true
+                }
+              },
+              "maximum_absolute_error": 0.0,
+              "missing_in_candidate": [],
+              "missing_in_reference": [],
+              "passed": true,
+              "relative_tolerance": 0.0
+            }
+          },
+          "semantic_passed": false,
+          "verdict": "UNSUPPORTED"
+        },
+        "L2": {
+          "divergence_growth_curve": [
+            {
+              "contact_max_abs": 0.0,
+              "observation_max_abs": 2.7755575615628914e-17,
+              "state_max_abs": 2.7755575615628914e-17,
+              "step": 1
+            }
+          ],
+          "first_contact_divergence": null,
+          "first_numerical_divergence": 1,
+          "first_observation_divergence": 1,
+          "identical_actions": true,
+          "maximum_state_error": 2.7755575615628914e-17,
+          "passed": false,
+          "terminal_state_error": 2.7755575615628914e-17,
+          "verdict": "UNSUPPORTED"
+        },
+        "L3": {
+          "decision_disagreement": false,
+          "decisions": {
+            "within_bounds": {
+              "agreement": true,
+              "reference": true,
+              "restored": true,
+              "verdict": "SUPPORTED"
+            }
+          },
+          "passed": true,
+          "verdict": "SUPPORTED"
+        }
+      },
+      "schema_version": 1,
+      "seed": 101,
+      "snapshot_inventory": {
+        "captured_components": [
+          "simulation_time",
+          "generalized_positions",
+          "generalized_velocities",
+          "actuator_activations",
+          "control_and_sensor_history",
+          "task_initial_qpos",
+          "adapter_control_step_counter"
+        ],
+        "metadata": {
+          "component_sizes": {
+            "actuator_activations": 0,
+            "applied_cartesian_forces": 12,
+            "applied_generalized_forces": 1,
+            "control_and_sensor_history": 0,
+            "controls": 1,
+            "equality_constraint_activation": 0,
+            "generalized_positions": 1,
+            "generalized_velocities": 1,
+            "mocap_orientations": 0,
+            "mocap_positions": 0,
+            "plugin_state": 0,
+            "simulation_time": 1,
+            "solver_acceleration_warmstart": 1,
+            "user_data": 0
+          },
+          "continuation_behavior": "restored",
+          "environment": "sustained_contact",
+          "source_env_ids": [
+            0
+          ],
+          "state_signature": 31,
+          "state_size": 3
+        },
+        "unavailable_components": [
+          "applied_cartesian_forces",
+          "applied_generalized_forces",
+          "controls",
+          "equality_constraint_activation",
+          "mocap_orientations",
+          "mocap_positions",
+          "plugin_state",
+          "solver_acceleration_warmstart",
+          "user_data",
+          "derived_contact_manifolds_recomputed_by_mj_forward",
+          "constraint_solver_iteration_scratch",
+          "renderer_state",
+          "external_policy_or_controller_history",
+          "adapter_random_generator_state"
+        ]
+      },
+      "snapshot_protocol": "minimal_visible"
+    },
+    "schema_version": 1,
+    "trial_count": 2,
+    "trials": [
+      {
+        "candidate": {
+          "action_sequence_length": 1,
+          "branch_id": "sustained-seed-101-step-150",
+          "branch_step": 0,
+          "cluster": "seed-101",
+          "decision_name": "within_bounds",
+          "fails": true,
+          "failure_kind": "L2",
+          "horizon": 1,
+          "seed": 101
+        },
+        "dimension": "branch_timing",
+        "failure_preserved": false,
+        "result": {
+          "adapter_provenance": {
+            "adapter": "MuJoCoReplayAdapter",
+            "continuation_behavior": "restored",
+            "continuation_mode": "restored",
+            "controller_or_policy_history_captured": false,
+            "environment": "sustained_contact",
+            "frame_skip": 5,
+            "instances": 2,
+            "model_dimensions": {
+              "na": 0,
+              "nhistory": 0,
+              "nq": 1,
+              "nsensordata": 2,
+              "nu": 1,
+              "nv": 1
+            },
+            "model_source": "embedded_asset_free_mjcf",
+            "package_version": "3.5.0",
+            "random_state_handling": {
+              "adapter_rng_state_captured": false,
+              "post_reset_stochastic_events": false,
+              "reset_seed": 101,
+              "simulator_random_state": "none_used_by_embedded_models"
+            },
+            "sensor_refresh_behavior": "mj_forward is called after mj_setState; sensors and derived contact state are recomputed",
+            "simulator": "MuJoCo",
+            "simulator_version": "3.5.0",
+            "snapshot_protocol": "minimal_visible",
+            "solver_state_availability": {
+              "constraint_solver_iteration_scratch": "unavailable",
+              "contact_manifolds": "recomputed_not_serialized",
+              "warm_start_in_snapshot_protocol": false,
+              "warm_start_preserved_for_continuation": false
+            },
+            "state_components_captured": [
+              "simulation_time",
+              "generalized_positions",
+              "generalized_velocities",
+              "actuator_activations",
+              "control_and_sensor_history",
+              "task_initial_qpos",
+              "adapter_control_step_counter"
+            ],
+            "state_components_unavailable": [
+              "applied_cartesian_forces",
+              "applied_generalized_forces",
+              "controls",
+              "equality_constraint_activation",
+              "mocap_orientations",
+              "mocap_positions",
+              "plugin_state",
+              "solver_acceleration_warmstart",
+              "user_data",
+              "derived_contact_manifolds_recomputed_by_mj_forward",
+              "constraint_solver_iteration_scratch",
+              "renderer_state",
+              "external_policy_or_controller_history",
+              "adapter_random_generator_state"
+            ],
+            "task_state_captured": [
+              "within_bounds",
+              "contact_active",
+              "contact_count",
+              "initial_qpos"
+            ],
+            "timestep": 0.002,
+            "unsupported_restoration_claims": [
+              "No claim that derived contact manifolds or solver scratch are serialized",
+              "No claim that external policy, controller, renderer, or process state is restored",
+              "No universal MuJoCo fidelity verdict"
+            ]
+          },
+          "captured_snapshot": {
+            "captured_components": [
+              "simulation_time",
+              "generalized_positions",
+              "generalized_velocities",
+              "actuator_activations",
+              "control_and_sensor_history",
+              "task_initial_qpos",
+              "adapter_control_step_counter"
+            ],
+            "metadata": {
+              "component_sizes": {
+                "actuator_activations": 0,
+                "applied_cartesian_forces": 12,
+                "applied_generalized_forces": 1,
+                "control_and_sensor_history": 0,
+                "controls": 1,
+                "equality_constraint_activation": 0,
+                "generalized_positions": 1,
+                "generalized_velocities": 1,
+                "mocap_orientations": 0,
+                "mocap_positions": 0,
+                "plugin_state": 0,
+                "simulation_time": 1,
+                "solver_acceleration_warmstart": 1,
+                "user_data": 0
+              },
+              "continuation_behavior": "restored",
+              "environment": "sustained_contact",
+              "source_env_ids": [
+                0
+              ],
+              "state_signature": 31,
+              "state_size": 3
+            },
+            "protocol": "minimal_visible",
+            "unavailable_components": [
+              "applied_cartesian_forces",
+              "applied_generalized_forces",
+              "controls",
+              "equality_constraint_activation",
+              "mocap_orientations",
+              "mocap_positions",
+              "plugin_state",
+              "solver_acceleration_warmstart",
+              "user_data",
+              "derived_contact_manifolds_recomputed_by_mj_forward",
+              "constraint_solver_iteration_scratch",
+              "renderer_state",
+              "external_policy_or_controller_history",
+              "adapter_random_generator_state"
+            ],
+            "values": {
+              "adapter_control_steps": [
+                0
+              ],
+              "state_vectors": [
+                [
+                  0.0,
+                  0.0026611950336633237,
+                  0.0
+                ]
+              ],
+              "task_initial_qpos": [
+                [
+                  0.0026611950336633237
+                ]
+              ]
+            }
+          },
+          "fails": false,
+          "identical_actions": [
+            [
+              [
+                -0.1
+              ],
+              [
+                -0.1
+              ]
+            ]
+          ],
+          "record": {
+            "action_source": "deterministic",
+            "branch_id": "sustained-seed-101-step-150",
+            "branch_step": 0,
+            "cluster": "seed-101",
+            "continuation_mode": "restored",
+            "horizon": 1,
+            "levels": {
+              "L0": {
+                "categories": {
+                  "controller_targets": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "ctrl": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "counters": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 2,
+                    "fields": {
+                      "control_steps": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "simulation_time": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "policy_observations": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "state": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0026611950336633237,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "privileged_observations": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "actuator_force": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "constraint_force": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qacc": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 9.81,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "scene_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "act": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "mover_position": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.2526611950336633,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0026611950336633237,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qvel": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "sensor_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "sensordata": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0026611950336633237,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "task_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "contact_active": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "contact_count": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "initial_qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0026611950336633237,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "within_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "comparable_fields": 16,
+                "measured_exposed_state_only": true,
+                "passed": true,
+                "unavailable": [
+                  "external_policy_observation_history",
+                  "external_task_manager_state",
+                  "contact_solver_cache"
+                ],
+                "verdict": "SUPPORTED"
+              },
+              "L1": {
+                "numerical": {
+                  "next_observation": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "state": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.09907027693561285,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "next_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "act": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "mover_position": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.2520667337459203,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0020667337459203176,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qvel": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.09907027693561285,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "reward": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "value": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.09917027693561285,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "numerical_passed": true,
+                "passed": true,
+                "semantic": {
+                  "contact_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "active": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "count": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "maximum_penetration": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "task_outputs": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "forward_progress": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0005944612877430062,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "speed": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.09907027693561285,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "within_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "termination": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 2,
+                    "fields": {
+                      "out_of_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "terminated": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "semantic_passed": true,
+                "verdict": "SUPPORTED"
+              },
+              "L2": {
+                "divergence_growth_curve": [
+                  {
+                    "contact_max_abs": 0.0,
+                    "observation_max_abs": 0.0,
+                    "state_max_abs": 0.0,
+                    "step": 1
+                  }
+                ],
+                "first_contact_divergence": null,
+                "first_numerical_divergence": null,
+                "first_observation_divergence": null,
+                "identical_actions": true,
+                "maximum_state_error": 0.0,
+                "passed": true,
+                "terminal_state_error": 0.0,
+                "verdict": "SUPPORTED"
+              },
+              "L3": {
+                "decision_disagreement": false,
+                "decisions": {
+                  "within_bounds": {
+                    "agreement": true,
+                    "reference": true,
+                    "restored": true,
+                    "verdict": "SUPPORTED"
+                  }
+                },
+                "passed": true,
+                "verdict": "SUPPORTED"
+              }
+            },
+            "schema_version": 1,
+            "seed": 101,
+            "snapshot_inventory": {
+              "captured_components": [
+                "simulation_time",
+                "generalized_positions",
+                "generalized_velocities",
+                "actuator_activations",
+                "control_and_sensor_history",
+                "task_initial_qpos",
+                "adapter_control_step_counter"
+              ],
+              "metadata": {
+                "component_sizes": {
+                  "actuator_activations": 0,
+                  "applied_cartesian_forces": 12,
+                  "applied_generalized_forces": 1,
+                  "control_and_sensor_history": 0,
+                  "controls": 1,
+                  "equality_constraint_activation": 0,
+                  "generalized_positions": 1,
+                  "generalized_velocities": 1,
+                  "mocap_orientations": 0,
+                  "mocap_positions": 0,
+                  "plugin_state": 0,
+                  "simulation_time": 1,
+                  "solver_acceleration_warmstart": 1,
+                  "user_data": 0
+                },
+                "continuation_behavior": "restored",
+                "environment": "sustained_contact",
+                "source_env_ids": [
+                  0
+                ],
+                "state_signature": 31,
+                "state_size": 3
+              },
+              "unavailable_components": [
+                "applied_cartesian_forces",
+                "applied_generalized_forces",
+                "controls",
+                "equality_constraint_activation",
+                "mocap_orientations",
+                "mocap_positions",
+                "plugin_state",
+                "solver_acceleration_warmstart",
+                "user_data",
+                "derived_contact_manifolds_recomputed_by_mj_forward",
+                "constraint_solver_iteration_scratch",
+                "renderer_state",
+                "external_policy_or_controller_history",
+                "adapter_random_generator_state"
+              ]
+            },
+            "snapshot_protocol": "minimal_visible"
+          }
+        }
+      },
+      {
+        "candidate": {
+          "action_sequence_length": 1,
+          "branch_id": "sustained-seed-101-step-150",
+          "branch_step": 25,
+          "cluster": "seed-101",
+          "decision_name": "within_bounds",
+          "fails": true,
+          "failure_kind": "L2",
+          "horizon": 1,
+          "seed": 101
+        },
+        "dimension": "branch_timing",
+        "failure_preserved": true,
+        "result": {
+          "adapter_provenance": {
+            "adapter": "MuJoCoReplayAdapter",
+            "continuation_behavior": "restored",
+            "continuation_mode": "restored",
+            "controller_or_policy_history_captured": false,
+            "environment": "sustained_contact",
+            "frame_skip": 5,
+            "instances": 2,
+            "model_dimensions": {
+              "na": 0,
+              "nhistory": 0,
+              "nq": 1,
+              "nsensordata": 2,
+              "nu": 1,
+              "nv": 1
+            },
+            "model_source": "embedded_asset_free_mjcf",
+            "package_version": "3.5.0",
+            "random_state_handling": {
+              "adapter_rng_state_captured": false,
+              "post_reset_stochastic_events": false,
+              "reset_seed": 101,
+              "simulator_random_state": "none_used_by_embedded_models"
+            },
+            "sensor_refresh_behavior": "mj_forward is called after mj_setState; sensors and derived contact state are recomputed",
+            "simulator": "MuJoCo",
+            "simulator_version": "3.5.0",
+            "snapshot_protocol": "minimal_visible",
+            "solver_state_availability": {
+              "constraint_solver_iteration_scratch": "unavailable",
+              "contact_manifolds": "recomputed_not_serialized",
+              "warm_start_in_snapshot_protocol": false,
+              "warm_start_preserved_for_continuation": false
+            },
+            "state_components_captured": [
+              "simulation_time",
+              "generalized_positions",
+              "generalized_velocities",
+              "actuator_activations",
+              "control_and_sensor_history",
+              "task_initial_qpos",
+              "adapter_control_step_counter"
+            ],
+            "state_components_unavailable": [
+              "applied_cartesian_forces",
+              "applied_generalized_forces",
+              "controls",
+              "equality_constraint_activation",
+              "mocap_orientations",
+              "mocap_positions",
+              "plugin_state",
+              "solver_acceleration_warmstart",
+              "user_data",
+              "derived_contact_manifolds_recomputed_by_mj_forward",
+              "constraint_solver_iteration_scratch",
+              "renderer_state",
+              "external_policy_or_controller_history",
+              "adapter_random_generator_state"
+            ],
+            "task_state_captured": [
+              "within_bounds",
+              "contact_active",
+              "contact_count",
+              "initial_qpos"
+            ],
+            "timestep": 0.002,
+            "unsupported_restoration_claims": [
+              "No claim that derived contact manifolds or solver scratch are serialized",
+              "No claim that external policy, controller, renderer, or process state is restored",
+              "No universal MuJoCo fidelity verdict"
+            ]
+          },
+          "captured_snapshot": {
+            "captured_components": [
+              "simulation_time",
+              "generalized_positions",
+              "generalized_velocities",
+              "actuator_activations",
+              "control_and_sensor_history",
+              "task_initial_qpos",
+              "adapter_control_step_counter"
+            ],
+            "metadata": {
+              "component_sizes": {
+                "actuator_activations": 0,
+                "applied_cartesian_forces": 12,
+                "applied_generalized_forces": 1,
+                "control_and_sensor_history": 0,
+                "controls": 1,
+                "equality_constraint_activation": 0,
+                "generalized_positions": 1,
+                "generalized_velocities": 1,
+                "mocap_orientations": 0,
+                "mocap_positions": 0,
+                "plugin_state": 0,
+                "simulation_time": 1,
+                "solver_acceleration_warmstart": 1,
+                "user_data": 0
+              },
+              "continuation_behavior": "restored",
+              "environment": "sustained_contact",
+              "source_env_ids": [
+                0
+              ],
+              "state_signature": 31,
+              "state_size": 3
+            },
+            "protocol": "minimal_visible",
+            "unavailable_components": [
+              "applied_cartesian_forces",
+              "applied_generalized_forces",
+              "controls",
+              "equality_constraint_activation",
+              "mocap_orientations",
+              "mocap_positions",
+              "plugin_state",
+              "solver_acceleration_warmstart",
+              "user_data",
+              "derived_contact_manifolds_recomputed_by_mj_forward",
+              "constraint_solver_iteration_scratch",
+              "renderer_state",
+              "external_policy_or_controller_history",
+              "adapter_random_generator_state"
+            ],
+            "values": {
+              "adapter_control_steps": [
+                25
+              ],
+              "state_vectors": [
+                [
+                  0.25000000000000017,
+                  -0.2070128133959626,
+                  0.20948991442570217
+                ]
+              ],
+              "task_initial_qpos": [
+                [
+                  0.0026611950336633237
+                ]
+              ]
+            }
+          },
+          "fails": true,
+          "identical_actions": [
+            [
+              [
+                -0.1
+              ],
+              [
+                -0.1
+              ]
+            ]
+          ],
+          "record": {
+            "action_source": "deterministic",
+            "branch_id": "sustained-seed-101-step-150",
+            "branch_step": 25,
+            "cluster": "seed-101",
+            "continuation_mode": "restored",
+            "horizon": 1,
+            "levels": {
+              "L0": {
+                "categories": {
+                  "controller_targets": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "ctrl": {
+                        "comparable": true,
+                        "max_abs": 0.1,
+                        "reference_scale": 0.1,
+                        "rms": 0.1,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      }
+                    },
+                    "maximum_absolute_error": 0.1,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  },
+                  "counters": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 2,
+                    "fields": {
+                      "control_steps": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 25.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "simulation_time": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.25000000000000017,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "policy_observations": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "state": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.20948991442570217,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "privileged_observations": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "actuator_force": {
+                        "comparable": true,
+                        "max_abs": 0.1,
+                        "reference_scale": 0.1,
+                        "rms": 0.1,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      },
+                      "constraint_force": {
+                        "comparable": true,
+                        "max_abs": 0.09499999999998998,
+                        "reference_scale": 6.007492818271532,
+                        "rms": 0.09499999999998998,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      },
+                      "qacc": {
+                        "comparable": true,
+                        "max_abs": 0.004999999999999449,
+                        "reference_scale": 3.9129816774497406,
+                        "rms": 0.004999999999999449,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      }
+                    },
+                    "maximum_absolute_error": 0.1,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  },
+                  "scene_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "act": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "mover_position": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.042987186604037386,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.2070128133959626,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qvel": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.20948991442570217,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "sensor_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "sensordata": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.20948991442570217,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "task_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "contact_active": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "contact_count": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "initial_qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0026611950336633237,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "within_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "comparable_fields": 16,
+                "measured_exposed_state_only": true,
+                "passed": false,
+                "unavailable": [
+                  "external_policy_observation_history",
+                  "external_task_manager_state",
+                  "contact_solver_cache"
+                ],
+                "verdict": "UNSUPPORTED"
+              },
+              "L1": {
+                "numerical": {
+                  "next_observation": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "state": {
+                        "comparable": true,
+                        "max_abs": 2.7755575615628914e-17,
+                        "reference_scale": 0.2051659110193694,
+                        "rms": 1.962615573354719e-17,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      }
+                    },
+                    "maximum_absolute_error": 2.7755575615628914e-17,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  },
+                  "next_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 4,
+                    "fields": {
+                      "act": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "mover_position": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0448340889806306,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qpos": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.2051659110193694,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "qvel": {
+                        "comparable": true,
+                        "max_abs": 2.7755575615628914e-17,
+                        "reference_scale": 0.16742514529497698,
+                        "rms": 2.7755575615628914e-17,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      }
+                    },
+                    "maximum_absolute_error": 2.7755575615628914e-17,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  },
+                  "reward": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 1,
+                    "fields": {
+                      "value": {
+                        "comparable": true,
+                        "max_abs": 2.7755575615628914e-17,
+                        "reference_scale": 0.167325145294977,
+                        "rms": 2.7755575615628914e-17,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      }
+                    },
+                    "maximum_absolute_error": 2.7755575615628914e-17,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "numerical_passed": false,
+                "passed": false,
+                "semantic": {
+                  "contact_state": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "active": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "count": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "maximum_penetration": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.005165911019369404,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  },
+                  "task_outputs": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 3,
+                    "fields": {
+                      "forward_progress": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.20782710605303273,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "speed": {
+                        "comparable": true,
+                        "max_abs": 2.7755575615628914e-17,
+                        "reference_scale": 0.16742514529497698,
+                        "rms": 2.7755575615628914e-17,
+                        "threshold": 0.0,
+                        "within_tolerance": false
+                      },
+                      "within_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 1.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 2.7755575615628914e-17,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": false,
+                    "relative_tolerance": 0.0
+                  },
+                  "termination": {
+                    "absolute_tolerance": 0.0,
+                    "comparable_fields": 2,
+                    "fields": {
+                      "out_of_bounds": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      },
+                      "terminated": {
+                        "comparable": true,
+                        "max_abs": 0.0,
+                        "reference_scale": 0.0,
+                        "rms": 0.0,
+                        "threshold": 0.0,
+                        "within_tolerance": true
+                      }
+                    },
+                    "maximum_absolute_error": 0.0,
+                    "missing_in_candidate": [],
+                    "missing_in_reference": [],
+                    "passed": true,
+                    "relative_tolerance": 0.0
+                  }
+                },
+                "semantic_passed": false,
+                "verdict": "UNSUPPORTED"
+              },
+              "L2": {
+                "divergence_growth_curve": [
+                  {
+                    "contact_max_abs": 0.0,
+                    "observation_max_abs": 2.7755575615628914e-17,
+                    "state_max_abs": 2.7755575615628914e-17,
+                    "step": 1
+                  }
+                ],
+                "first_contact_divergence": null,
+                "first_numerical_divergence": 1,
+                "first_observation_divergence": 1,
+                "identical_actions": true,
+                "maximum_state_error": 2.7755575615628914e-17,
+                "passed": false,
+                "terminal_state_error": 2.7755575615628914e-17,
+                "verdict": "UNSUPPORTED"
+              },
+              "L3": {
+                "decision_disagreement": false,
+                "decisions": {
+                  "within_bounds": {
+                    "agreement": true,
+                    "reference": true,
+                    "restored": true,
+                    "verdict": "SUPPORTED"
+                  }
+                },
+                "passed": true,
+                "verdict": "SUPPORTED"
+              }
+            },
+            "schema_version": 1,
+            "seed": 101,
+            "snapshot_inventory": {
+              "captured_components": [
+                "simulation_time",
+                "generalized_positions",
+                "generalized_velocities",
+                "actuator_activations",
+                "control_and_sensor_history",
+                "task_initial_qpos",
+                "adapter_control_step_counter"
+              ],
+              "metadata": {
+                "component_sizes": {
+                  "actuator_activations": 0,
+                  "applied_cartesian_forces": 12,
+                  "applied_generalized_forces": 1,
+                  "control_and_sensor_history": 0,
+                  "controls": 1,
+                  "equality_constraint_activation": 0,
+                  "generalized_positions": 1,
+                  "generalized_velocities": 1,
+                  "mocap_orientations": 0,
+                  "mocap_positions": 0,
+                  "plugin_state": 0,
+                  "simulation_time": 1,
+                  "solver_acceleration_warmstart": 1,
+                  "user_data": 0
+                },
+                "continuation_behavior": "restored",
+                "environment": "sustained_contact",
+                "source_env_ids": [
+                  0
+                ],
+                "state_signature": 31,
+                "state_size": 3
+              },
+              "unavailable_components": [
+                "applied_cartesian_forces",
+                "applied_generalized_forces",
+                "controls",
+                "equality_constraint_activation",
+                "mocap_orientations",
+                "mocap_positions",
+                "plugin_state",
+                "solver_acceleration_warmstart",
+                "user_data",
+                "derived_contact_manifolds_recomputed_by_mj_forward",
+                "constraint_solver_iteration_scratch",
+                "renderer_state",
+                "external_policy_or_controller_history",
+                "adapter_random_generator_state"
+              ]
+            },
+            "snapshot_protocol": "minimal_visible"
+          }
+        }
+      }
+    ]
+  },
+  "required_assets_and_versions": {
+    "adapter": "MuJoCoReplayAdapter",
+    "continuation_behavior": "restored",
+    "continuation_mode": "restored",
+    "controller_or_policy_history_captured": false,
+    "environment": "sustained_contact",
+    "frame_skip": 5,
+    "instances": 2,
+    "model_dimensions": {
+      "na": 0,
+      "nhistory": 0,
+      "nq": 1,
+      "nsensordata": 2,
+      "nu": 1,
+      "nv": 1
+    },
+    "model_source": "embedded_asset_free_mjcf",
+    "package_version": "3.5.0",
+    "random_state_handling": {
+      "adapter_rng_state_captured": false,
+      "post_reset_stochastic_events": false,
+      "reset_seed": 101,
+      "simulator_random_state": "none_used_by_embedded_models"
+    },
+    "sensor_refresh_behavior": "mj_forward is called after mj_setState; sensors and derived contact state are recomputed",
+    "simulator": "MuJoCo",
+    "simulator_version": "3.5.0",
+    "snapshot_protocol": "minimal_visible",
+    "solver_state_availability": {
+      "constraint_solver_iteration_scratch": "unavailable",
+      "contact_manifolds": "recomputed_not_serialized",
+      "warm_start_in_snapshot_protocol": false,
+      "warm_start_preserved_for_continuation": false
+    },
+    "state_components_captured": [
+      "simulation_time",
+      "generalized_positions",
+      "generalized_velocities",
+      "actuator_activations",
+      "control_and_sensor_history",
+      "task_initial_qpos",
+      "adapter_control_step_counter"
+    ],
+    "state_components_unavailable": [
+      "applied_cartesian_forces",
+      "applied_generalized_forces",
+      "controls",
+      "equality_constraint_activation",
+      "mocap_orientations",
+      "mocap_positions",
+      "plugin_state",
+      "solver_acceleration_warmstart",
+      "user_data",
+      "derived_contact_manifolds_recomputed_by_mj_forward",
+      "constraint_solver_iteration_scratch",
+      "renderer_state",
+      "external_policy_or_controller_history",
+      "adapter_random_generator_state"
+    ],
+    "task_state_captured": [
+      "within_bounds",
+      "contact_active",
+      "contact_count",
+      "initial_qpos"
+    ],
+    "timestep": 0.002,
+    "unsupported_restoration_claims": [
+      "No claim that derived contact manifolds or solver scratch are serialized",
+      "No claim that external policy, controller, renderer, or process state is restored",
+      "No universal MuJoCo fidelity verdict"
+    ]
+  },
+  "restored_decision": {
+    "within_bounds": true
+  },
+  "schema_version": 1,
+  "scope": {
+    "action_source": "deterministic",
+    "continuation_mode": "restored",
+    "decision_function": "collision",
+    "environment": "ipfd_mujoco_sustained_contact_v1",
+    "hardware_and_software_provenance": "provenance.json",
+    "horizon": 1,
+    "independent_cluster_key": "seed",
+    "simulator": "MuJoCo",
+    "simulator_version": "3.5.0",
+    "snapshot_protocol": "minimal_visible",
+    "task": "block_on_plane_sustained_push",
+    "tolerances": {
+      "contact_state": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "controller_targets": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "counters": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "default": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "policy_observations": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "privileged_observations": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "reward": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "scene_state": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "sensor_state": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "task_outputs": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "task_state": {
+        "absolute": 0.0,
+        "relative": 0.0
+      },
+      "termination": {
+        "absolute": 0.0,
+        "relative": 0.0
+      }
+    }
+  }
+}

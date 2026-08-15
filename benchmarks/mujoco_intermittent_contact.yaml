@@ -1,0 +1,63 @@
+schema_version: 1
+adapter:
+  kind: mujoco
+  simulator: MuJoCo
+  regime: intermittent_contact
+  timestep: 0.002
+  frame_skip: 5
+  contact_push_steps: 40
+  contact_window: 10
+  position_bound: 3.0
+  stable_velocity: 0.02
+  initial_position_jitter: 0.003
+simulator_version: "3.5.0"
+environment: ipfd_mujoco_intermittent_contact_v1
+task: bounded_slider_collision
+snapshot_protocol: full_physics
+branch_states:
+  - id: intermittent-seed-101-step-40
+    step: 40
+    seed: 101
+    cluster: seed-101
+  - id: intermittent-seed-211-step-40
+    step: 40
+    seed: 211
+    cluster: seed-211
+  - id: intermittent-seed-307-step-40
+    step: 40
+    seed: 307
+    cluster: seed-307
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: restored
+action_source: deterministic
+decision_functions:
+  - within_bounds
+  - collision
+  - sustained_contact
+  - stable_contact
+tolerances:
+  default: {absolute: 1.0e-10, relative: 1.0e-8}
+  scene_state: {absolute: 1.0e-9, relative: 1.0e-8}
+  policy_observations: {absolute: 1.0e-9, relative: 1.0e-8}
+  privileged_observations: {absolute: 1.0e-9, relative: 1.0e-8}
+  task_state: {absolute: 1.0e-10, relative: 1.0e-8}
+  controller_targets: {absolute: 0.0, relative: 0.0}
+  sensor_state: {absolute: 1.0e-8, relative: 1.0e-7}
+  counters: {absolute: 0.0, relative: 0.0}
+  contact_state: {absolute: 1.0e-8, relative: 1.0e-7}
+  task_outputs: {absolute: 1.0e-10, relative: 1.0e-8}
+  termination: {absolute: 0.0, relative: 0.0}
+  reward: {absolute: 1.0e-9, relative: 1.0e-8}
+independent_cluster_key: seed
+minimum_independent_clusters: 3
+output_directory: ../results/v2/mujoco_intermittent_contact
+reduction:
+  enabled: true
+  max_trials: 100
+  branch_steps: [0, 10, 20, 30]
+  reduce_horizon_and_action_prefix: true
+  reduce_active_entities: true
+  reduce_branch_timing: true
+  reduce_disturbance_schedule: true
+  reduce_decision_predicate: true
+  reduce_snapshot_components: true

@@ -1,0 +1,31 @@
+schema_version: 1
+adapter:
+  kind: matrix
+  cases:
+    - mujoco_free_space.yaml
+    - mujoco_intermittent_contact.yaml
+    - mujoco_sustained_minimal.yaml
+    - mujoco_sustained_full_physics.yaml
+    - mujoco_sustained_integration.yaml
+    - isaac_lab_archived.yaml
+simulator_version: mixed-declared-per-child
+environment: replay_fidelity_benchmark_matrix
+task: execute_declared_child_audits
+snapshot_protocol: mixed-declared-per-child
+branch_states:
+  - id: matrix-orchestration
+    step: 0
+    seed: 0
+    cluster: matrix
+horizons: [1, 5, 10, 30, 90]
+continuation_mode: declared-per-child
+action_source: declared-per-child
+decision_functions:
+  - declared_per_child
+tolerances:
+  default: {absolute: 0.0, relative: 0.0}
+independent_cluster_key: declared-per-child
+minimum_independent_clusters: 1
+output_directory: ../results/v2/matrix
+reduction:
+  enabled: false

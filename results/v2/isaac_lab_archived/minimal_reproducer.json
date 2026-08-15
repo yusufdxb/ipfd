@@ -1,0 +1,318 @@
+{
+  "captured_snapshot": null,
+  "expected_decision": {
+    "sustained_lift": true
+  },
+  "first_divergence_point": {
+    "contact": 1,
+    "numerical": 1,
+    "observation": 1
+  },
+  "identical_actions": null,
+  "minimal": {
+    "branch_id": "101:gripper_open_interruption:first_contact:23",
+    "branch_step": 23,
+    "decision_name": "sustained_lift",
+    "horizon": 30,
+    "seed": 101
+  },
+  "missing": [
+    "captured snapshot values",
+    "recorded action sequence values",
+    "per-step divergence-growth curve"
+  ],
+  "note": "The immutable study retained paired metrics, not a self-contained snapshot/action reproducer.",
+  "record": {
+    "action_source": "archived_identical_recorded_actions",
+    "branch_id": "101:gripper_open_interruption:first_contact:23",
+    "branch_step": 23,
+    "cluster": "101",
+    "continuation_mode": "exact_action",
+    "disturbance": "gripper_open_interruption",
+    "horizon": 30,
+    "levels": {
+      "L0": {
+        "categories": {
+          "controller_targets": {
+            "absolute_tolerance": 1e-06,
+            "fields": {
+              "targets": {
+                "max_abs": 0.0,
+                "threshold": 1e-06,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "counters": {
+            "absolute_tolerance": 0.0,
+            "fields": {
+              "common_step_counter": {
+                "max_abs": 0.0,
+                "threshold": 0.0,
+                "within_tolerance": true
+              },
+              "episode_length": {
+                "max_abs": 0.0,
+                "threshold": 0.0,
+                "within_tolerance": true
+              },
+              "sim_step_counter": {
+                "max_abs": 0.0,
+                "threshold": 0.0,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "policy_observations": {
+            "absolute_tolerance": 1e-06,
+            "fields": {
+              "observation": {
+                "max_abs": 0.0,
+                "threshold": 1e-06,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "privileged_observations": {
+            "passed": null,
+            "reason": "not retained by archived study",
+            "unavailable": true
+          },
+          "scene_state": {
+            "absolute_tolerance": 1e-05,
+            "fields": {
+              "joint_position": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "joint_velocity": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "object_pose": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "object_velocity": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "robot_root_pose": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "robot_root_velocity": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "sensor_state": {
+            "absolute_tolerance": 0.001,
+            "fields": {
+              "contact_force": {
+                "max_abs": 183.35240173339844,
+                "threshold": 0.001,
+                "within_tolerance": false
+              }
+            },
+            "maximum_absolute_error": 183.35240173339844,
+            "passed": false,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "task_state": {
+            "absolute_tolerance": 1e-05,
+            "fields": {
+              "command": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          }
+        },
+        "measured_exposed_state_only": true,
+        "passed": false,
+        "verdict": "UNSUPPORTED"
+      },
+      "L1": {
+        "numerical": {
+          "next_observation": {
+            "absolute_tolerance": 1e-06,
+            "fields": {
+              "observation": {
+                "max_abs": 0.4511040449142456,
+                "threshold": 1e-06,
+                "within_tolerance": false
+              }
+            },
+            "maximum_absolute_error": 0.4511040449142456,
+            "passed": false,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "next_state": {
+            "absolute_tolerance": 1e-05,
+            "fields": {
+              "joint_position": {
+                "max_abs": 0.001039057970046997,
+                "threshold": 1e-05,
+                "within_tolerance": false
+              },
+              "joint_velocity": {
+                "max_abs": 0.4511040449142456,
+                "threshold": 1e-05,
+                "within_tolerance": false
+              },
+              "object_pose": {
+                "max_abs": 0.00917526613920927,
+                "threshold": 1e-05,
+                "within_tolerance": false
+              },
+              "object_velocity": {
+                "max_abs": 8.631999015808105,
+                "threshold": 1e-05,
+                "within_tolerance": false
+              },
+              "robot_root_pose": {
+                "max_abs": 3.725290298461914e-09,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "robot_root_velocity": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 8.631999015808105,
+            "passed": false,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          }
+        },
+        "numerical_passed": false,
+        "passed": null,
+        "semantic": {
+          "contact_state": {
+            "absolute_tolerance": 0.001,
+            "fields": {
+              "contact_force": {
+                "max_abs": 14.639230728149414,
+                "threshold": 0.001,
+                "within_tolerance": false
+              }
+            },
+            "maximum_absolute_error": 14.639230728149414,
+            "passed": false,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          },
+          "task_outputs": {
+            "absolute_tolerance": 1e-05,
+            "fields": {
+              "command": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "common_step_counter": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "episode_length": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "sim_step_counter": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              },
+              "targets": {
+                "max_abs": 0.0,
+                "threshold": 1e-05,
+                "within_tolerance": true
+              }
+            },
+            "maximum_absolute_error": 0.0,
+            "passed": true,
+            "raw_reference_and_candidate_values_retained": false,
+            "relative_tolerance": null
+          }
+        },
+        "semantic_passed": false,
+        "unavailable": [
+          "termination_state",
+          "reward"
+        ],
+        "verdict": "INSUFFICIENT_EVIDENCE"
+      },
+      "L2": {
+        "divergence_growth_curve": null,
+        "first_contact_divergence": 1,
+        "first_numerical_divergence": 1,
+        "first_observation_divergence": 1,
+        "identical_actions": true,
+        "maximum_state_error": 41.14010238647461,
+        "passed": false,
+        "terminal_state_error": 2.140942096710205,
+        "unavailable": [
+          "per-step divergence-growth curve"
+        ],
+        "verdict": "UNSUPPORTED"
+      },
+      "L3": {
+        "decision_disagreement": true,
+        "decisions": {
+          "sustained_lift": {
+            "agreement": false,
+            "reference": true,
+            "restored": false,
+            "verdict": "UNSUPPORTED"
+          }
+        },
+        "passed": false,
+        "verdict": "UNSUPPORTED"
+      }
+    },
+    "phase": "first_contact",
+    "schema_version": 1,
+    "seed": 101,
+    "snapshot_protocol": "expanded_runtime_state"
+  },
+  "restored_decision": {
+    "sustained_lift": false
+  },
+  "schema_version": 1,
+  "status": "ARCHIVED_RECORD_REDUCED_BUT_NOT_SELF_CONTAINED"
+}

@@ -13,19 +13,22 @@ Steps 1 to 4 need **no GPU and no Isaac Lab**. Steps 5 to 7 need Isaac Lab and a
 # 1. Clone
 git clone https://github.com/yusufdxb/ipfd && cd ipfd
 
-# 2. Install (analysis layer only)
-pip install -e ".[dev]"
+# 2. Install the development and lightweight MuJoCo paths
+pip install -e ".[dev,mujoco]"
 
 # 3. Run the tests  -> expect the suite to pass
 pytest
 
-# 4. Run the synthetic example
-python3 examples/run_synthetic.py
+# 4. Run the counterfactual-fidelity demo
+ipfd demo
 ```
 
-**Expected from step 4:** two reports printed to the terminal: one
-`SILENT COLLAPSE` (failure) report and one `nominal` (success) report, plus two
-figures written to `examples/figures/` (`silent_failure.png`, `success.png`).
+**Expected from step 4:** the narrow exposed-state boundary passes, the preloaded
+continuation degrades at h=30 and changes the h=90 contact decision, and the
+integration-state protocol passes through h=90. The actuator-activation ablation
+removes the L2/L3 mismatch while retaining an exact derived-field L0 failure. The
+command also reports the nearby control sensitivity and writes JSON, PNG, and
+hash-manifest artifacts under `ipfd-demo-results/`.
 
 ## Learned-policy revalidation (compatible Isaac Lab runtime + CUDA GPU)
 
@@ -73,7 +76,7 @@ that is expected, not a failure.
 | Evidence | Confirms |
 |---|---|
 | Passing tests (step 3) | The pure-NumPy analysis layer is intact on your Python. |
-| Two reports + two PNGs (step 4) | The end-to-end report + plot path works with no GPU. |
+| MuJoCo demo + report (step 4) | The live paired restore, horizon audit, decision check, and artifact path work with no GPU. |
 | `IPFD_RUNTIME_SMOKE: overall PASS` (step 5) | IPFD attaches to a real Isaac Lab rollout. |
 | Competence JSON (step 6) | The exact checkpoint held a sustained final lift at the declared rate. |
 | Complete run JSON with raw repeated verdicts (steps 7 and 8) | The run is eligible for multi-seed aggregation. One run is not release evidence. |

@@ -44,13 +44,14 @@ jobs:
       - name: Exercise the built wheel outside the source tree
         run: |
           python -m venv /tmp/ipfd-release
-          /tmp/ipfd-release/bin/pip install dist/*.whl
+          /tmp/ipfd-release/bin/pip install "mujoco>=3.5" dist/*.whl
           cd /tmp
-          /tmp/ipfd-release/bin/ipfd-demo --json /tmp/ipfd-demo.json
+          /tmp/ipfd-release/bin/ipfd demo --output /tmp/ipfd-demo
           /tmp/ipfd-release/bin/ipfd --help
           /tmp/ipfd-release/bin/ipfd-evidence-gate --help
           /tmp/ipfd-release/bin/pip check
-          test -s /tmp/ipfd-demo.json
+          test -s /tmp/ipfd-demo/summary.json
+          test -s /tmp/ipfd-demo/report.png
       - name: Enforce tagged-commit GPU evidence
         run: |
           EVIDENCE_COMMIT=$(/tmp/ipfd-release/bin/python - <<'PY'

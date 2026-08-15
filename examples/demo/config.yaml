@@ -1,0 +1,32 @@
+schema_version: 1
+experiment: filtered_actuator_floor_contact
+environment: ipfd_mujoco_filtered_contact_v1
+task: filtered_actuator_floor_contact
+regime: filtered_contact
+model: embedded_mjcf
+timestep_seconds: 0.002
+frame_skip: 1
+position_bound: 0.1
+initial_position_jitter: 0.003
+branch_step: 100
+horizons: [1, 5, 10, 30, 90]
+seed_groups: [101, 211, 307]
+action_schedule:
+  preload_steps: 100
+  preload_control: -1.0
+  continuation_control: 0.55
+protocols:
+  control: {snapshot: minimal_visible, branch_step: 0}
+  failure: {snapshot: minimal_visible, branch_step: 100}
+  mechanism_ablation: {snapshot: minimal_visible, capture_actuator_activation: true}
+  improved: {snapshot: integration_with_warmstart, branch_step: 100}
+tolerances:
+  position_m: 1.5e-4
+  velocity_mps: 1.0e-2
+decision:
+  name: remains_in_contact
+  true_label: remains in contact
+  false_label: lifts off
+  horizon: 90
+sensitivity_controls: [0.50, 0.55, 0.60]
+output_directory: ipfd-demo-results
