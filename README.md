@@ -158,6 +158,10 @@ and [`CORRECTED_EXPERIMENT_PROTOCOL.md`](CORRECTED_EXPERIMENT_PROTOCOL.md).
 An exact-content xz copy of the 10.2 MB per-branch JSONL is committed as
 [`results/fidelity/corrected_five_seed_decisions.jsonl.xz`](results/fidelity/corrected_five_seed_decisions.jsonl.xz).
 Its decoded SHA-256 matches the immutable source digest in the artifact manifest.
+The committed
+[`corrected_five_seed_primary_audit.json`](results/fidelity/corrected_five_seed_primary_audit.json)
+records the paired primary analysis, complete configuration, source identities,
+and implementation revision.
 
 ## Why IPFD changed direction
 

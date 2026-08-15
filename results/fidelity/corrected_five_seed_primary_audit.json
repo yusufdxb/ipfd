@@ -1,0 +1,1312 @@
+{
+  "configuration": {
+    "bootstrap_confidence": 0.95,
+    "bootstrap_method": "equal_seed_macro_percentile_cluster_bootstrap",
+    "bootstrap_rng": "python_random_mt19937",
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 20260729,
+    "compare_protocols": [
+      "scene_plus_basic_manager_state",
+      "expanded_runtime_state"
+    ],
+    "effective_group_by": [
+      "protocol",
+      "continuation",
+      "predicate"
+    ],
+    "filters": {
+      "continuation": [
+        "exact_action"
+      ],
+      "predicate": [
+        "sustained_lift"
+      ]
+    },
+    "gate_rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+    "max_disagreement": 0.05,
+    "minimum_independent_seeds": 5,
+    "related_provenance": {
+      "bytes": 3621,
+      "logical_name": "study_provenance.json",
+      "sha256": "23cc623fc5573db86f22db4e5783f1ba10abbfff24451f1283b148d32a8af288"
+    },
+    "requested_group_by": [
+      "protocol",
+      "continuation"
+    ]
+  },
+  "envelopes": [
+    {
+      "claim_strength": "DESCRIPTIVE_ONLY",
+      "error_profile": {
+        "agreements": 433,
+        "comparisons": 444,
+        "disagreement_rate": 0.024774774774774775,
+        "disagreements": 11,
+        "false_recoverable": 0,
+        "false_unrecoverable": 11,
+        "reference_false_candidate_true": 0,
+        "reference_true_candidate_false": 11
+      },
+      "first_observed_disagreement_horizon": 30,
+      "frontier": {
+        "claim_strength": "DESCRIPTIVE_ONLY",
+        "extrapolation": "NOT_PERMITTED",
+        "first_observed_disagreement_horizon": 30,
+        "first_rejected_tested_horizon": 90,
+        "interpolation": "NOT_PERMITTED",
+        "last_acceptable_tested_horizon": 30,
+        "max_disagreement": 0.05,
+        "minimum_independent_seeds": 5,
+        "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+        "status": "BRACKETED"
+      },
+      "independent_seed_count": 5,
+      "points": [
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 1,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 1,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 3,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 3,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 5,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 5,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 10,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 10,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.013513513513513514,
+          "disagreements": 1,
+          "false_recoverable": 0,
+          "false_unrecoverable": 1,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 30,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 30,
+          "independent_seed_count": 5,
+          "interpretation": "disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.013333333333333332,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.04
+          },
+          "seed_mean_disagreement_rate": 0.013333333333333332,
+          "seed_rate_maximum": 0.06666666666666667,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 1,
+          "threshold_interpretation": "degraded within tolerance"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.13513513513513514,
+          "disagreements": 10,
+          "false_recoverable": 0,
+          "false_unrecoverable": 10,
+          "gate": {
+            "accepted": false,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "observed disagreement exceeded the tolerance at or before the requested horizon",
+            "requested_horizon": 90,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "expanded_runtime_state"
+            },
+            "status": "REJECT_HIGH_DISAGREEMENT"
+          },
+          "horizon": 90,
+          "independent_seed_count": 5,
+          "interpretation": "disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.4,
+              "disagreements": 6,
+              "false_recoverable": 0,
+              "false_unrecoverable": 6
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.2,
+              "disagreements": 3,
+              "false_recoverable": 0,
+              "false_unrecoverable": 3
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.13333333333333336,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.013333333333333332,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.27999999999999997
+          },
+          "seed_mean_disagreement_rate": 0.13333333333333336,
+          "seed_rate_maximum": 0.4,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 3,
+          "threshold_interpretation": "reject above 5.00% tolerance"
+        }
+      ],
+      "pooled_observed_strata": {
+        "disturbance": [
+          "gripper_open_interruption",
+          "object_teleport"
+        ],
+        "phase": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ]
+      },
+      "scope": {
+        "continuation": "exact_action",
+        "predicate": "sustained_lift",
+        "protocol": "expanded_runtime_state"
+      },
+      "tested_horizons": [
+        1,
+        3,
+        5,
+        10,
+        30,
+        90
+      ]
+    },
+    {
+      "claim_strength": "DESCRIPTIVE_ONLY",
+      "error_profile": {
+        "agreements": 426,
+        "comparisons": 444,
+        "disagreement_rate": 0.04054054054054054,
+        "disagreements": 18,
+        "false_recoverable": 0,
+        "false_unrecoverable": 18,
+        "reference_false_candidate_true": 0,
+        "reference_true_candidate_false": 18
+      },
+      "first_observed_disagreement_horizon": 10,
+      "frontier": {
+        "claim_strength": "DESCRIPTIVE_ONLY",
+        "extrapolation": "NOT_PERMITTED",
+        "first_observed_disagreement_horizon": 10,
+        "first_rejected_tested_horizon": 30,
+        "interpolation": "NOT_PERMITTED",
+        "last_acceptable_tested_horizon": 10,
+        "max_disagreement": 0.05,
+        "minimum_independent_seeds": 5,
+        "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+        "status": "BRACKETED"
+      },
+      "independent_seed_count": 5,
+      "points": [
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 1,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 1,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 3,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 3,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.0,
+          "disagreements": 0,
+          "false_recoverable": 0,
+          "false_unrecoverable": 0,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 5,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 5,
+          "independent_seed_count": 5,
+          "interpretation": "no disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.0,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.0
+          },
+          "seed_mean_disagreement_rate": 0.0,
+          "seed_rate_maximum": 0.0,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 0,
+          "threshold_interpretation": "no disagreement observed"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.02702702702702703,
+          "disagreements": 2,
+          "false_recoverable": 0,
+          "false_unrecoverable": 2,
+          "gate": {
+            "accepted": true,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "the supplied sampled scope met the empirical rule through the requested tested horizon",
+            "requested_horizon": 10,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "ACCEPT_OBSERVED_ENVELOPE"
+          },
+          "horizon": 10,
+          "independent_seed_count": 5,
+          "interpretation": "disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.026666666666666665,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.0,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.05333333333333333
+          },
+          "seed_mean_disagreement_rate": 0.026666666666666665,
+          "seed_rate_maximum": 0.06666666666666667,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 2,
+          "threshold_interpretation": "degraded within tolerance"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.05405405405405406,
+          "disagreements": 4,
+          "false_recoverable": 0,
+          "false_unrecoverable": 4,
+          "gate": {
+            "accepted": false,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "observed disagreement exceeded the tolerance at or before the requested horizon",
+            "requested_horizon": 30,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "REJECT_HIGH_DISAGREEMENT"
+          },
+          "horizon": 30,
+          "independent_seed_count": 5,
+          "interpretation": "disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.13333333333333333,
+              "disagreements": 2,
+              "false_recoverable": 0,
+              "false_unrecoverable": 2
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.07142857142857142,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.05428571428571429,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.013333333333333332,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.09523809523809523
+          },
+          "seed_mean_disagreement_rate": 0.05428571428571429,
+          "seed_rate_maximum": 0.13333333333333333,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 3,
+          "threshold_interpretation": "reject above 5.00% tolerance"
+        },
+        {
+          "branch_support_count": 74,
+          "claim_strength": "DESCRIPTIVE_ONLY",
+          "comparisons": 74,
+          "disagreement_rate": 0.16216216216216217,
+          "disagreements": 12,
+          "false_recoverable": 0,
+          "false_unrecoverable": 12,
+          "gate": {
+            "accepted": false,
+            "claim_strength": "DESCRIPTIVE_ONLY",
+            "max_disagreement": 0.05,
+            "minimum_independent_seeds": 5,
+            "rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+            "reason": "observed disagreement exceeded the tolerance at or before the requested horizon",
+            "requested_horizon": 90,
+            "scope": {
+              "continuation": "exact_action",
+              "predicate": "sustained_lift",
+              "protocol": "scene_plus_basic_manager_state"
+            },
+            "status": "REJECT_HIGH_DISAGREEMENT"
+          },
+          "horizon": 90,
+          "independent_seed_count": 5,
+          "interpretation": "disagreement observed",
+          "per_seed": [
+            {
+              "cluster_id": "101",
+              "comparisons": 15,
+              "disagreement_rate": 0.4,
+              "disagreements": 6,
+              "false_recoverable": 0,
+              "false_unrecoverable": 6
+            },
+            {
+              "cluster_id": "211",
+              "comparisons": 15,
+              "disagreement_rate": 0.2,
+              "disagreements": 3,
+              "false_recoverable": 0,
+              "false_unrecoverable": 3
+            },
+            {
+              "cluster_id": "307",
+              "comparisons": 15,
+              "disagreement_rate": 0.13333333333333333,
+              "disagreements": 2,
+              "false_recoverable": 0,
+              "false_unrecoverable": 2
+            },
+            {
+              "cluster_id": "401",
+              "comparisons": 14,
+              "disagreement_rate": 0.0,
+              "disagreements": 0,
+              "false_recoverable": 0,
+              "false_unrecoverable": 0
+            },
+            {
+              "cluster_id": "503",
+              "comparisons": 15,
+              "disagreement_rate": 0.06666666666666667,
+              "disagreements": 1,
+              "false_recoverable": 0,
+              "false_unrecoverable": 1
+            }
+          ],
+          "seed_bootstrap": {
+            "confidence": 0.95,
+            "estimate": 0.16,
+            "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+            "lower": 0.05333333333333333,
+            "random_seed": 20260729,
+            "resampling_unit": "independent_seed",
+            "samples": 10000,
+            "upper": 0.29333333333333333
+          },
+          "seed_mean_disagreement_rate": 0.16,
+          "seed_rate_maximum": 0.4,
+          "seed_rate_minimum": 0.0,
+          "seeds_with_disagreement": 4,
+          "threshold_interpretation": "reject above 5.00% tolerance"
+        }
+      ],
+      "pooled_observed_strata": {
+        "disturbance": [
+          "gripper_open_interruption",
+          "object_teleport"
+        ],
+        "phase": [
+          "approach",
+          "disturbance_onset",
+          "first_contact",
+          "free_space_pre_manipulation",
+          "initial_lift",
+          "post_disturbance_recovery",
+          "stable_grasp",
+          "sustained_lift"
+        ]
+      },
+      "scope": {
+        "continuation": "exact_action",
+        "predicate": "sustained_lift",
+        "protocol": "scene_plus_basic_manager_state"
+      },
+      "tested_horizons": [
+        1,
+        3,
+        5,
+        10,
+        30,
+        90
+      ]
+    }
+  ],
+  "evidence_manifest": {
+    "analysis": {
+      "configuration": {
+        "bootstrap_confidence": 0.95,
+        "bootstrap_method": "equal_seed_macro_percentile_cluster_bootstrap",
+        "bootstrap_rng": "python_random_mt19937",
+        "bootstrap_samples": 10000,
+        "bootstrap_seed": 20260729,
+        "compare_protocols": [
+          "scene_plus_basic_manager_state",
+          "expanded_runtime_state"
+        ],
+        "effective_group_by": [
+          "protocol",
+          "continuation",
+          "predicate"
+        ],
+        "filters": {
+          "continuation": [
+            "exact_action"
+          ],
+          "predicate": [
+            "sustained_lift"
+          ]
+        },
+        "gate_rate_basis": "EQUAL_SEED_MEAN_DISAGREEMENT_RATE",
+        "max_disagreement": 0.05,
+        "minimum_independent_seeds": 5,
+        "related_provenance": {
+          "bytes": 3621,
+          "logical_name": "study_provenance.json",
+          "sha256": "23cc623fc5573db86f22db4e5783f1ba10abbfff24451f1283b148d32a8af288"
+        },
+        "requested_group_by": [
+          "protocol",
+          "continuation"
+        ]
+      },
+      "configuration_sha256": "6b3e4cea99e12309fbb059a4965d1fc39443e258001692b509b6b87026398130",
+      "independent_cluster_key": "cluster_id",
+      "uncertainty_unit": "whole_independent_seed_cluster"
+    },
+    "code": {
+      "git_commit": "e407269b488990a733f13e91e6bd27f3cc49f26b",
+      "git_dirty": false,
+      "ipfd_version": "2.0.0.dev0"
+    },
+    "kind": "counterfactual_fidelity_evidence_manifest",
+    "schema_version": 1,
+    "source": {
+      "bytes": 105792,
+      "compression": "xz",
+      "content_bytes": 10166696,
+      "content_sha256": "1c55862ce4a24bf564396c8d86873b13fc1667e491aada27bfff6c8d2166ce8f",
+      "input_schema": "flat_branch_comparison_v1",
+      "logical_name": "corrected_five_seed_decisions.jsonl.xz",
+      "records": 5328,
+      "sha256": "4a2d8338347e9940aa3eb88dd7da12413a11c6aafb26274ec9a626d7adc48018"
+    }
+  },
+  "independent_seed_count": 5,
+  "interpretation_limit": "This empirical envelope is scoped to the supplied evidence. No disagreement observed does not prove validity, and branch comparisons are not independent trials.",
+  "kind": "counterfactual_fidelity_audit",
+  "protocol_comparison": {
+    "branch_rate_difference_b_minus_a": -0.015765765765765768,
+    "claim_strength": "DESCRIPTIVE_ONLY",
+    "paired_outcomes": {
+      "both_agree": 424,
+      "both_disagree": 9,
+      "fixed_by_protocol_b": 9,
+      "introduced_by_protocol_b": 2
+    },
+    "pairs": 444,
+    "per_seed": [
+      {
+        "cluster_id": "101",
+        "difference_b_minus_a": -0.011111111111111113,
+        "pairs": 90,
+        "protocol_a_disagreement_rate": 0.08888888888888889,
+        "protocol_b_disagreement_rate": 0.07777777777777778
+      },
+      {
+        "cluster_id": "211",
+        "difference_b_minus_a": 0.0,
+        "pairs": 90,
+        "protocol_a_disagreement_rate": 0.03333333333333333,
+        "protocol_b_disagreement_rate": 0.03333333333333333
+      },
+      {
+        "cluster_id": "307",
+        "difference_b_minus_a": -0.03333333333333333,
+        "pairs": 90,
+        "protocol_a_disagreement_rate": 0.044444444444444446,
+        "protocol_b_disagreement_rate": 0.011111111111111112
+      },
+      {
+        "cluster_id": "401",
+        "difference_b_minus_a": -0.011904761904761904,
+        "pairs": 84,
+        "protocol_a_disagreement_rate": 0.011904761904761904,
+        "protocol_b_disagreement_rate": 0.0
+      },
+      {
+        "cluster_id": "503",
+        "difference_b_minus_a": -0.022222222222222223,
+        "pairs": 90,
+        "protocol_a_disagreement_rate": 0.022222222222222223,
+        "protocol_b_disagreement_rate": 0.0
+      }
+    ],
+    "protocol_a": "scene_plus_basic_manager_state",
+    "protocol_a_profile": {
+      "agreements": 426,
+      "comparisons": 444,
+      "disagreement_rate": 0.04054054054054054,
+      "disagreements": 18,
+      "false_recoverable": 0,
+      "false_unrecoverable": 18,
+      "reference_false_candidate_true": 0,
+      "reference_true_candidate_false": 18
+    },
+    "protocol_b": "expanded_runtime_state",
+    "protocol_b_profile": {
+      "agreements": 433,
+      "comparisons": 444,
+      "disagreement_rate": 0.024774774774774775,
+      "disagreements": 11,
+      "false_recoverable": 0,
+      "false_unrecoverable": 11,
+      "reference_false_candidate_true": 0,
+      "reference_true_candidate_false": 11
+    },
+    "relative_disagreement_reduction": 0.3888888888888889,
+    "schedule_identity_verified": true,
+    "seed_bootstrap": {
+      "confidence": 0.95,
+      "estimate": -0.015714285714285715,
+      "interpretation": "DESCRIPTIVE_SEED_RESAMPLING_INTERVAL",
+      "lower": -0.02666666666666666,
+      "random_seed": 20260729,
+      "resampling_unit": "independent_seed",
+      "samples": 10000,
+      "upper": -0.006666666666666668
+    },
+    "seed_mean_difference_b_minus_a": -0.015714285714285715
+  },
+  "record_count": 888,
+  "schema_version": 1
+}
