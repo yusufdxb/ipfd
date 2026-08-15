@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import importlib
+
 import numpy as np
 import pytest
 
 from ipfd import DecisionContract, audit, check_adapter
 from ipfd.adapter_check import AdapterCheckStatus
 from ipfd.fidelity.contracts import ContractVerdict, ObservationRecord, Snapshot, StepRecord, TrajectoryRecord
+
+audit_module = importlib.import_module("ipfd.audit")
 
 
 class PairedAdapter:
@@ -229,3 +233,173 @@ def test_decision_contract_copies_parameters_and_audit_rejects_nondeterminism() 
             horizons=[1],
             decision=contract,
         )
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "exception", "message"),
+    [
+        ({"name": ""}, ValueError, "name"),
+        ({"evaluator": 1}, TypeError, "callable"),
+        ({"description": 1}, TypeError, "description"),
+        ({"parameters": []}, TypeError, "parameters"),
+        ({"true_label": ""}, ValueError, "true_label"),
+        ({"false_label": ""}, ValueError, "false_label"),
+        ({"true_label": "same", "false_label": "same"}, ValueError, "labels"),
+    ],
+)
+def test_decision_contract_rejects_ambiguous_definitions(
+    kwargs: dict[str, object],
+    exception: type[Exception],
+    message: str,
+) -> None:
+    values: dict[str, object] = {"name": "decision", "evaluator": lambda _record: True}
+    values.update(kwargs)
+
+    with pytest.raises(exception, match=message):
+        DecisionContract(**values)  # type: ignore[arg-type]
+
+
+def test_decision_contract_rejects_non_boolean_results_and_labels_false() -> None:
+    contract = DecisionContract(name="decision", evaluator=lambda _record: 1)  # type: ignore[arg-type,return-value]
+
+    with pytest.raises(TypeError, match="must return bool"):
+        contract.evaluate(TrajectoryRecord(steps=[], actions=[], env_id=0))
+    assert contract.label(False) == "false"
+
+
+@pytest.mark.parametrize(
+    ("tolerances", "exception", "message"),
+    [
+        ({"scene_state": {}}, ValueError, "default"),
+        ({"default": {}, "": {}}, ValueError, "category names"),
+        ({"default": [], "scene_state": {}}, TypeError, "must be a mapping"),
+        ({"default": {"absolute": -1.0}}, ValueError, "finite and non-negative"),
+        ({"default": {"relative": float("inf")}}, ValueError, "finite and non-negative"),
+        ({"default": {"fields": []}}, TypeError, "fields.*mapping"),
+        ({"default": {"fields": {"": {}}}}, ValueError, "field tolerance names"),
+        ({"default": {"fields": {"x": []}}}, TypeError, "field tolerance default.x"),
+        (
+            {"default": {"fields": {"x": {"absolute": -1.0}}}},
+            ValueError,
+            "field tolerances must be finite",
+        ),
+        (
+            {"default": {"fields": {"x": {"unit": ""}}}},
+            ValueError,
+            "units must be non-empty",
+        ),
+    ],
+)
+def test_tolerance_validation_fails_closed(
+    tolerances: dict[str, object],
+    exception: type[Exception],
+    message: str,
+) -> None:
+    with pytest.raises(exception, match=message):
+        audit_module._normalized_tolerances(tolerances)
+
+
+def test_tolerance_normalization_preserves_field_units() -> None:
+    result = audit_module._normalized_tolerances(
+        {
+            "default": {"absolute": 0.1, "relative": 0.2},
+            "scene_state": {
+                "fields": {"qpos": {"absolute": 0.01, "unit": "m"}}
+            },
+        }
+    )
+
+    assert result["scene_state"]["fields"]["qpos"] == {
+        "absolute": 0.01,
+        "relative": 0.0,
+        "unit": "m",
+    }
+
+
+@pytest.mark.parametrize(
+    ("overrides", "exception", "message"),
+    [
+        ({"branch_step": True}, ValueError, "branch_step"),
+        ({"branch_step": -1}, ValueError, "branch_step"),
+        ({"seed": True}, TypeError, "seed"),
+        ({"horizons": "1"}, TypeError, "horizons"),
+        ({"horizons": []}, ValueError, "positive integers"),
+        ({"horizons": [True]}, ValueError, "positive integers"),
+        ({"continuation": ""}, ValueError, "continuation"),
+        ({"continuation": "policy"}, ValueError, "must be one of"),
+        ({"action_source": ""}, ValueError, "action_source"),
+        ({"decision": ""}, ValueError, "decision"),
+        ({"decision": 1}, TypeError, "DecisionContract"),
+        ({"protocol": "different"}, ValueError, "does not match"),
+        ({"metadata": {"task": ""}}, ValueError, "metadata"),
+    ],
+)
+def test_public_audit_rejects_invalid_arguments(
+    overrides: dict[str, object],
+    exception: type[Exception],
+    message: str,
+) -> None:
+    values: dict[str, object] = {
+        "adapter": PairedAdapter(),
+        "branch_step": 0,
+        "horizons": [1],
+        "decision": "above_threshold",
+    }
+    values.update(overrides)
+
+    with pytest.raises(exception, match=message):
+        audit(**values)  # type: ignore[arg-type]
+
+
+def test_public_audit_rejects_missing_interface_method() -> None:
+    adapter = PairedAdapter()
+    adapter.step = None  # type: ignore[method-assign]
+
+    with pytest.raises(TypeError, match="missing required methods: step"):
+        audit(adapter=adapter, branch_step=0, horizons=[1], decision="above_threshold")
+
+
+def test_frontier_reports_insufficient_and_non_monotonic_support() -> None:
+    configurations = [
+        {"scope": {"horizon": 1}, "result": "SUPPORTED"},
+        {"scope": {"horizon": 5}, "result": "INSUFFICIENT_EVIDENCE"},
+        {"scope": {"horizon": 10}, "result": "SUPPORTED"},
+        {"scope": {"horizon": 30}, "result": "UNSUPPORTED"},
+    ]
+
+    result = audit_module._frontier(configurations)
+
+    assert result["first_untrusted_horizon"] == 5
+    assert result["last_supported_horizon_before_failure"] == 1
+    assert result["non_monotonic"] is True
+
+
+def test_adapter_check_stops_on_a_missing_required_method() -> None:
+    adapter = PairedAdapter()
+    adapter.observe = None  # type: ignore[method-assign]
+
+    report = check_adapter(adapter, decision="above_threshold")
+
+    assert report.verdict is ContractVerdict.UNSUPPORTED
+    assert [item.name for item in report.checks] == ["required_interface"]
+    assert report.checks[0].evidence["missing_methods"] == ["observe"]
+
+
+class RaisingCaptureAdapter(PairedAdapter):
+    def capture(self, env_ids: tuple[int, ...]) -> Snapshot:
+        del env_ids
+        raise RuntimeError("capture unavailable")
+
+
+def test_adapter_check_retains_fail_closed_evidence_when_capture_raises() -> None:
+    report = check_adapter(RaisingCaptureAdapter(), decision="above_threshold")
+    statuses = {item.name: item.status for item in report.checks}
+
+    assert report.verdict is ContractVerdict.UNSUPPORTED
+    assert statuses["deterministic_repeated_capture"] is AdapterCheckStatus.FAIL
+    assert statuses["explicit_unavailable_state"] is AdapterCheckStatus.INSUFFICIENT_EVIDENCE
+    assert statuses["capture_by_value"] is AdapterCheckStatus.FAIL
+    assert statuses["protocol_mismatch_rejection"] is AdapterCheckStatus.FAIL
+    assert statuses["compatible_restore_boundary"] is AdapterCheckStatus.FAIL
+    assert statuses["observe_side_effects"] is AdapterCheckStatus.FAIL
+    assert statuses["automatic_reset_not_observed"] is AdapterCheckStatus.INSUFFICIENT_EVIDENCE
